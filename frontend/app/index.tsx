@@ -277,12 +277,20 @@ export default function CodeDockQuantumNexus() {
     }
   }, [showTutorial]);
 
-  // Load data
+  // ============================================================================
+  // HOTFIX: Enhanced Data Loading with Retry & Connection Management
+  // ============================================================================
   useEffect(() => {
     loadData();
+    // Start entrance animation
+    Animated.parallel([
+      Animated.timing(fadeAnim, { toValue: 1, duration: 500, useNativeDriver: true }),
+      Animated.timing(slideAnim, { toValue: 0, duration: 400, useNativeDriver: true }),
+    ]).start();
   }, []);
 
   const loadData = async () => {
+    setConnectionStatus('reconnecting');
     try {
       const savedTheme = await AsyncStorage.getItem('codedock_theme');
       if (savedTheme) setTheme(savedTheme as 'dark' | 'light');
@@ -293,8 +301,10 @@ export default function CodeDockQuantumNexus() {
       const advUnlocked = await AsyncStorage.getItem('advanced_unlocked');
       setAdvancedUnlocked(advUnlocked === 'true');
 
-      // Load languages
-      const langResponse = await axios.get(`${API_URL}/api/languages`);
+      // Load languages with retry
+      const langResponse = await retryWithBackoff(() => 
+        axios.get(`${API_URL}/api/languages`, { timeout: CONFIG.API_TIMEOUT })
+      );
       setLanguages(langResponse.data.languages || []);
       
       const defaultLang = langResponse.data.languages?.find((l: Language) => l.key === 'python');
@@ -303,31 +313,49 @@ export default function CodeDockQuantumNexus() {
         loadTemplates('python');
       }
 
-      // Load AI modes
-      const aiResponse = await axios.get(`${API_URL}/api/ai/modes`);
+      // Load AI modes with retry
+      const aiResponse = await retryWithBackoff(() => 
+        axios.get(`${API_URL}/api/ai/modes`, { timeout: CONFIG.API_TIMEOUT })
+      );
       setAIModes(aiResponse.data.modes || []);
 
       // Load tooltips
-      const tooltipResponse = await axios.get(`${API_URL}/api/tooltips`);
-      setTooltips(tooltipResponse.data.tooltips || {});
+      try {
+        const tooltipResponse = await axios.get(`${API_URL}/api/tooltips`, { timeout: CONFIG.API_TIMEOUT });
+        setTooltips(tooltipResponse.data.tooltips || {});
+      } catch { /* Non-critical */ }
 
       // Load tutorial steps
-      const tutorialResponse = await axios.get(`${API_URL}/api/tutorial/steps`);
-      setTutorialSteps(tutorialResponse.data.steps || []);
+      try {
+        const tutorialResponse = await axios.get(`${API_URL}/api/tutorial/steps`, { timeout: CONFIG.API_TIMEOUT });
+        setTutorialSteps(tutorialResponse.data.steps || []);
+      } catch { /* Non-critical */ }
 
       // Load dock info
-      const dockResponse = await axios.get(`${API_URL}/api/dock/available`);
-      setAvailableDocks(dockResponse.data.docks || []);
+      try {
+        const dockResponse = await axios.get(`${API_URL}/api/dock/available`, { timeout: CONFIG.API_TIMEOUT });
+        setAvailableDocks(dockResponse.data.docks || []);
+      } catch { /* Non-critical */ }
 
       // Load files
       loadFiles();
+
+      // Mark as connected
+      setConnectionStatus('connected');
+      setLastError(null);
+      setRetryCount(0);
 
       // Show tutorial for first-time users
       if (tutorialDone !== 'true') {
         setTimeout(() => setShowTutorial(true), 1000);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to load:', error);
+      const parsedError = parseError(error);
+      setLastError(parsedError);
+      setConnectionStatus('disconnected');
+      setRetryCount(prev => prev + 1);
+      
       // Fallback languages
       setLanguages([
         { key: 'python', name: 'Python', display_name: 'Python 3.12+', extension: '.py', icon: 'logo-python', color: '#3776AB', executable: true, type: 'builtin', tier: 1 },

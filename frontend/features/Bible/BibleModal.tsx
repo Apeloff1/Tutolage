@@ -150,6 +150,7 @@ export const BibleModal: React.FC<BibleModalProps> = memo(({
   }, [onLoadCode, onClose]);
 
   const handleClose = useCallback(() => {
+    stopMusic();
     setSelectedChapter(null);
     setCurrentSectionIndex(0);
     onClose();

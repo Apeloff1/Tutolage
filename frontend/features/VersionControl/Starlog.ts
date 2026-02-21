@@ -198,7 +198,8 @@ export class Starlog {
   deleteMission(id: string): boolean {
     const deleted = this.missions.delete(id);
     if (this.currentMissionId === id) {
-      this.currentMissionId = this.missions.size > 0 ? this.missions.keys().next().value : null;
+      const firstKey = this.missions.keys().next();
+      this.currentMissionId = this.missions.size > 0 && !firstKey.done ? firstKey.value : null;
     }
     this.save();
     return deleted;

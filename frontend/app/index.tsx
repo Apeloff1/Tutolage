@@ -1,7 +1,7 @@
 // ============================================================================
 // CODEDOCK QUANTUM NEXUS - Main Application
-// Version: 6.0.0 | Quantum Compiler Suite Edition
-// Designed for First-Time User Experience
+// Version: 7.0.0 | Ultimate Compiler Galaxy Edition
+// Voice Commands • Pipeline Visualizer • Learning Intelligence
 // ============================================================================
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
@@ -22,6 +22,10 @@ import { useAPI } from '../hooks/useAPI';
 // Features
 import { BibleModal } from '../features/Bible/BibleModal';
 import { CompilerModal } from '../features/Compiler/CompilerModal';
+import { PipelineVisualizer } from '../features/Pipeline/PipelineVisualizer';
+import { LearningDashboard } from '../features/Learning/LearningDashboard';
+import { useVoiceCommands, speak } from '../features/Voice/useVoiceCommands';
+import { starlog } from '../features/VersionControl/Starlog';
 
 // Types
 import { Language, Template, AIMode } from '../types';

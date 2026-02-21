@@ -12,8 +12,30 @@ import axios from 'axios';
 
 const API_URL = process.env.EXPO_PUBLIC_BACKEND_URL || '';
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
-const VERSION = "4.0.0";
-const CODENAME = "Nexus";
+const VERSION = "4.1.0";
+const CODENAME = "Nexus Pro";
+
+// ============================================================================
+// CONFIGURATION & CONSTANTS - Refactor-Ready Architecture
+// ============================================================================
+const CONFIG = {
+  API_TIMEOUT: 15000,
+  MAX_RETRIES: 3,
+  RETRY_DELAY: 1000,
+  CACHE_TTL: 5 * 60 * 1000, // 5 minutes
+  ANIMATION_DURATION: 300,
+  TOAST_DURATION: 3000,
+};
+
+// Enhanced error types for better debugging
+type ErrorType = 'network' | 'timeout' | 'server' | 'validation' | 'unknown';
+
+interface AppError {
+  type: ErrorType;
+  message: string;
+  code?: number;
+  retry?: boolean;
+}
 
 // Types
 interface Language {

@@ -1,17 +1,26 @@
 // ============================================================================
 // CODEDOCK - BIBLE MODAL COMPONENT
 // Complete Day 1 to Godtier Coding Manual
+// With Ambient Bossa Nova Learning Music
 // ============================================================================
 
-import React, { memo, useState, useCallback } from 'react';
+import React, { memo, useState, useCallback, useEffect, useRef } from 'react';
 import {
   View, Text, StyleSheet, Modal, TouchableOpacity,
-  ScrollView, Platform, Alert, Vibration
+  ScrollView, Platform, Alert, Vibration, Switch
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { Audio } from 'expo-av';
 import { ThemeColors } from '../../constants/themes';
 import { BibleChapter, BibleProgress } from '../../types';
 import { CODING_BIBLE, getTierColor, getBibleStats } from './bibleContent';
+
+// Ambient Bossa Nova / Classical music URLs (royalty-free)
+const AMBIENT_TRACKS = [
+  'https://cdn.pixabay.com/download/audio/2022/10/25/audio_946b0939c8.mp3', // Soft Jazz
+  'https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3', // Chill
+  'https://cdn.pixabay.com/download/audio/2024/11/04/audio_4956b4edd1.mp3', // Classical
+];
 
 interface BibleModalProps {
   visible: boolean;

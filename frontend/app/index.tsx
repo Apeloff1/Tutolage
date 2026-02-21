@@ -808,6 +808,16 @@ export default function CodeDockApp() {
         onToggleBookmark={toggleBookmark}
         onLoadCode={handleBibleLoadCode}
       />
+
+      {/* Compiler Suite Modal */}
+      <CompilerModal
+        visible={showCompilerModal}
+        onClose={() => setShowCompilerModal(false)}
+        colors={colors}
+        code={code}
+        language={selectedLanguage?.key || 'python'}
+        onApplyFix={(fixedCode) => setCode(fixedCode)}
+      />
     </SafeAreaView>
   );
 }

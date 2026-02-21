@@ -43,8 +43,75 @@ export const BibleModal: React.FC<BibleModalProps> = memo(({
 }) => {
   const [selectedChapter, setSelectedChapter] = useState<BibleChapter | null>(null);
   const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
+  const [musicEnabled, setMusicEnabled] = useState(true);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const soundRef = useRef<Audio.Sound | null>(null);
 
   const stats = getBibleStats(progress.completedChapters);
+
+  // Music management
+  useEffect(() => {
+    if (visible && musicEnabled) {
+      playAmbientMusic();
+    }
+    return () => {
+      stopMusic();
+    };
+  }, [visible]);
+
+  useEffect(() => {
+    if (visible) {
+      if (musicEnabled && !isPlaying) {
+        playAmbientMusic();
+      } else if (!musicEnabled && isPlaying) {
+        stopMusic();
+      }
+    }
+  }, [musicEnabled]);
+
+  const playAmbientMusic = async () => {
+    try {
+      await Audio.setAudioModeAsync({
+        playsInSilentModeIOS: true,
+        staysActiveInBackground: false,
+        shouldDuckAndroid: true,
+      });
+
+      // Pick a random track
+      const trackUrl = AMBIENT_TRACKS[Math.floor(Math.random() * AMBIENT_TRACKS.length)];
+      
+      const { sound } = await Audio.Sound.createAsync(
+        { uri: trackUrl },
+        { 
+          isLooping: true, 
+          volume: 0.3,  // Soft background volume
+          shouldPlay: true 
+        }
+      );
+      
+      soundRef.current = sound;
+      setIsPlaying(true);
+    } catch (error) {
+      console.log('Music playback error:', error);
+    }
+  };
+
+  const stopMusic = async () => {
+    try {
+      if (soundRef.current) {
+        await soundRef.current.stopAsync();
+        await soundRef.current.unloadAsync();
+        soundRef.current = null;
+        setIsPlaying(false);
+      }
+    } catch (error) {
+      console.log('Stop music error:', error);
+    }
+  };
+
+  const toggleMusic = () => {
+    setMusicEnabled(!musicEnabled);
+  };
 
   const openChapter = useCallback((chapter: BibleChapter) => {
     setSelectedChapter(chapter);

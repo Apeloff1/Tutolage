@@ -11,7 +11,7 @@ import time
 from typing import Dict, Any, List
 
 # Use the correct backend URL from environment
-BACKEND_URL = "https://teachmode-editor.preview.emergentagent.com/api"
+BACKEND_URL = "https://mobile-code-ide-2.preview.emergentagent.com/api"
 
 class QuantumV3Tester:
     def __init__(self):

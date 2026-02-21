@@ -70,10 +70,43 @@ export default function CodeDockApp() {
   const [showAIModal, setShowAIModal] = useState(false);
   const [showBibleModal, setShowBibleModal] = useState(false);
   const [showCompilerModal, setShowCompilerModal] = useState(false);
+  const [showPipelineModal, setShowPipelineModal] = useState(false);
+  const [showLearningModal, setShowLearningModal] = useState(false);
   const [showTutorial, setShowTutorial] = useState(false);
   const [showOutput, setShowOutput] = useState(false);
   const [showWebPreview, setShowWebPreview] = useState(false);
   const [htmlPreview, setHtmlPreview] = useState('');
+  
+  // Voice Command Handler
+  const handleVoiceCommand = useCallback((action: string, params?: any) => {
+    switch (action) {
+      case 'RUN_CODE':
+        executeCode();
+        break;
+      case 'CLEAR_CODE':
+        clearCode();
+        break;
+      case 'SAVE_FILE':
+        saveFile();
+        break;
+      case 'OPEN_MODAL':
+        if (params?.modal === 'compiler') setShowCompilerModal(true);
+        else if (params?.modal === 'bible') setShowBibleModal(true);
+        else if (params?.modal === 'settings') setShowSettingsModal(true);
+        break;
+      case 'RUN_ANALYSIS':
+        setShowCompilerModal(true);
+        break;
+      case 'HELP':
+        speak('Available commands: Run code, Clear code, Save file, Open compiler, Open bible, Engage LTO, Engage PGO, Set optimization level O3');
+        break;
+      default:
+        console.log('Voice command:', action, params);
+    }
+  }, []);
+
+  // Voice Commands Hook
+  const voice = useVoiceCommands(handleVoiceCommand);
   
   // AI State
   const [selectedAIMode, setSelectedAIMode] = useState<AIMode | null>(null);

@@ -354,8 +354,8 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Backend API testing"
-    - "Code execution reliability"
+    - "Backend API testing - COMPLETED"
+    - "Code execution reliability - COMPLETED"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"

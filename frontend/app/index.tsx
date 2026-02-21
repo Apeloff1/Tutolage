@@ -891,9 +891,9 @@ def subtract(first_number, second_number):
 • Simple is better than complex
 • Done is better than perfect`,
         tips: [
-          'The best code is code you don\\'t have to write',
+          'The best code is code you do not have to write',
           'Debugging is twice as hard as writing code',
-          'If you\\'re not embarrassed by v1, you launched too late'
+          'If you are not embarrassed by v1, you launched too late'
         ]
       },
       {

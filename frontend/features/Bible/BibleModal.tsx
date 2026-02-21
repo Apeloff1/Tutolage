@@ -178,12 +178,35 @@ export const BibleModal: React.FC<BibleModalProps> = memo(({
                 <View style={styles.progressInfo}>
                   <Text style={[styles.progressTitle, { color: colors.text }]}>Your Journey</Text>
                   <Text style={[styles.progressSubtitle, { color: colors.textMuted }]}>
-                    {stats.completedCount}/{stats.totalChapters} chapters completed
+                    {stats.completedCount}/{stats.totalChapters} chapters • ~52 weeks
                   </Text>
                 </View>
                 <View style={[styles.progressCircle, { borderColor: '#FFD700' }]}>
                   <Text style={[styles.progressPercent, { color: '#FFD700' }]}>{stats.percentage}%</Text>
                 </View>
+              </View>
+
+              {/* Music Control */}
+              <View style={[styles.musicControl, { backgroundColor: colors.surfaceAlt }]}>
+                <View style={styles.musicInfo}>
+                  <Ionicons 
+                    name={isPlaying ? 'musical-notes' : 'musical-notes-outline'} 
+                    size={18} 
+                    color={isPlaying ? colors.primary : colors.textMuted} 
+                  />
+                  <View>
+                    <Text style={[styles.musicTitle, { color: colors.text }]}>Ambient Learning Music</Text>
+                    <Text style={[styles.musicSubtitle, { color: colors.textMuted }]}>
+                      {isPlaying ? 'Soft bossa nova playing...' : 'Music paused'}
+                    </Text>
+                  </View>
+                </View>
+                <Switch
+                  value={musicEnabled}
+                  onValueChange={toggleMusic}
+                  trackColor={{ false: colors.surfaceAlt, true: colors.primary + '50' }}
+                  thumbColor={musicEnabled ? colors.primary : colors.textMuted}
+                />
               </View>
 
               {/* Chapter List */}

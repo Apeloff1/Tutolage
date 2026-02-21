@@ -1421,6 +1421,12 @@ const styles = StyleSheet.create({
   languageVersion: { fontSize: 11 },
   headerActions: { flexDirection: 'row', gap: 4 },
   headerButton: { padding: 8, borderRadius: 8 },
+  // HOTFIX: Error Banner Styles
+  errorBanner: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 12, paddingVertical: 8, borderWidth: 1, borderRadius: 0 },
+  errorBannerContent: { flexDirection: 'row', alignItems: 'center', gap: 8, flex: 1 },
+  errorBannerText: { fontSize: 13, fontWeight: '500' },
+  errorBannerRetry: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 6, gap: 4 },
+  errorBannerRetryText: { color: '#FFF', fontSize: 12, fontWeight: '600' },
   toolbar: { paddingVertical: 8 },
   toolbarContent: { paddingHorizontal: 12, gap: 8 },
   toolButton: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 8, borderRadius: 8, gap: 6 },

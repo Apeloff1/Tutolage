@@ -647,6 +647,18 @@ export default function CodeDockQuantumNexus() {
         </Pressable>
         
         <View style={styles.headerActions}>
+          {/* HOTFIX: Connection Status Indicator */}
+          {connectionStatus !== 'connected' && (
+            <TouchableOpacity 
+              style={[styles.headerButton, { backgroundColor: connectionStatus === 'disconnected' ? colors.error + '20' : colors.warning + '20' }]} 
+              onPress={loadData}>
+              <Ionicons 
+                name={connectionStatus === 'disconnected' ? 'cloud-offline' : 'cloud-upload'} 
+                size={18} 
+                color={connectionStatus === 'disconnected' ? colors.error : colors.warning} 
+              />
+            </TouchableOpacity>
+          )}
           {!tutorialCompleted && (
             <TouchableOpacity style={[styles.headerButton, { backgroundColor: colors.tutorial + '20' }]} 
               onPress={() => setShowTutorial(true)}>
@@ -661,6 +673,22 @@ export default function CodeDockQuantumNexus() {
           </TouchableOpacity>
         </View>
       </View>
+
+      {/* HOTFIX: Error Banner */}
+      {lastError && (
+        <Animated.View style={[styles.errorBanner, { backgroundColor: colors.error + '15', borderColor: colors.error }]}>
+          <View style={styles.errorBannerContent}>
+            <Ionicons name="alert-circle" size={18} color={colors.error} />
+            <Text style={[styles.errorBannerText, { color: colors.error }]}>{lastError.message}</Text>
+          </View>
+          {lastError.retry && (
+            <TouchableOpacity style={[styles.errorBannerRetry, { backgroundColor: colors.error }]} onPress={loadData}>
+              <Ionicons name="refresh" size={14} color="#FFF" />
+              <Text style={styles.errorBannerRetryText}>Retry</Text>
+            </TouchableOpacity>
+          )}
+        </Animated.View>
+      )}
 
       {/* Toolbar */}
       <View style={[styles.toolbar, { backgroundColor: colors.surfaceAlt }]}>

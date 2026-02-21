@@ -428,65 +428,73 @@ export default function CodeDockApp() {
       </View>
 
       {/* ============ AI BAR ============ */}
-      <Animated.View style={[styles.aiBar, { backgroundColor: colors.surface, transform: [{ scale: pulseAnim }] }]}>
-        <Pressable 
-          style={[styles.aiButton, { backgroundColor: colors.primary + '15', borderColor: colors.primary + '40' }]}
-          onPress={() => setShowAIModal(true)}
+      <View style={[styles.aiBar, { backgroundColor: colors.surface }]}>
+        <ScrollView 
+          horizontal 
+          showsHorizontalScrollIndicator={false} 
+          contentContainerStyle={styles.aiBarContent}
         >
-          <Ionicons name="sparkles" size={18} color={colors.primary} />
-          <Text style={[styles.aiButtonText, { color: colors.primary }]}>AI Assist</Text>
-          <View style={[styles.aiBadge, { backgroundColor: colors.primary }]}>
-            <Text style={styles.aiBadgeText}>GPT-4o</Text>
-          </View>
-        </Pressable>
-        
-        {/* Compiler Suite Button */}
-        <TouchableOpacity 
-          style={[styles.featureChip, { backgroundColor: '#8B5CF620' }]} 
-          onPress={() => setShowCompilerModal(true)}
-        >
-          <Ionicons name="construct" size={14} color="#8B5CF6" />
-          <Text style={[styles.featureChipText, { color: '#8B5CF6' }]}>Compiler</Text>
-        </TouchableOpacity>
-        
-        {/* Bible Button */}
-        <TouchableOpacity 
-          style={[styles.featureChip, { backgroundColor: '#FFD70020' }]} 
-          onPress={() => setShowBibleModal(true)}
-        >
-          <Ionicons name="book" size={14} color="#FFD700" />
-          <Text style={[styles.featureChipText, { color: '#FFD700' }]}>Bible</Text>
-        </TouchableOpacity>
-        
-        {/* Pipeline Visualizer Button */}
-        <TouchableOpacity 
-          style={[styles.featureChip, { backgroundColor: '#06B6D420' }]} 
-          onPress={() => setShowPipelineModal(true)}
-        >
-          <Ionicons name="git-network" size={14} color="#06B6D4" />
-          <Text style={[styles.featureChipText, { color: '#06B6D4' }]}>Pipeline</Text>
-        </TouchableOpacity>
-        
-        {/* Learning Dashboard Button */}
-        <TouchableOpacity 
-          style={[styles.featureChip, { backgroundColor: '#10B98120' }]} 
-          onPress={() => setShowLearningModal(true)}
-        >
-          <Ionicons name="analytics" size={14} color="#10B981" />
-          <Text style={[styles.featureChipText, { color: '#10B981' }]}>Learn</Text>
-        </TouchableOpacity>
-        
-        {/* Voice Command Button */}
-        {voice.isSupported && (
+          <Animated.View style={{ transform: [{ scale: pulseAnim }] }}>
+            <Pressable 
+              style={[styles.aiButton, { backgroundColor: colors.primary + '15', borderColor: colors.primary + '40' }]}
+              onPress={() => setShowAIModal(true)}
+            >
+              <Ionicons name="sparkles" size={18} color={colors.primary} />
+              <Text style={[styles.aiButtonText, { color: colors.primary }]}>AI</Text>
+              <View style={[styles.aiBadge, { backgroundColor: colors.primary }]}>
+                <Text style={styles.aiBadgeText}>GPT-4o</Text>
+              </View>
+            </Pressable>
+          </Animated.View>
+          
+          {/* Compiler Suite Button */}
           <TouchableOpacity 
-            style={[styles.featureChip, { backgroundColor: voice.isListening ? '#EF444440' : '#EF444420' }]} 
-            onPress={voice.toggleListening}
+            style={[styles.featureChip, { backgroundColor: '#8B5CF620' }]} 
+            onPress={() => setShowCompilerModal(true)}
           >
-            <Ionicons name={voice.isListening ? 'mic' : 'mic-outline'} size={14} color="#EF4444" />
-            <Text style={[styles.featureChipText, { color: '#EF4444' }]}>{voice.isListening ? 'Listening...' : 'Voice'}</Text>
+            <Ionicons name="construct" size={14} color="#8B5CF6" />
+            <Text style={[styles.featureChipText, { color: '#8B5CF6' }]}>Compiler</Text>
           </TouchableOpacity>
-        )}
-      </Animated.View>
+          
+          {/* Bible Button */}
+          <TouchableOpacity 
+            style={[styles.featureChip, { backgroundColor: '#FFD70020' }]} 
+            onPress={() => setShowBibleModal(true)}
+          >
+            <Ionicons name="book" size={14} color="#FFD700" />
+            <Text style={[styles.featureChipText, { color: '#FFD700' }]}>Bible</Text>
+          </TouchableOpacity>
+          
+          {/* Pipeline Visualizer Button */}
+          <TouchableOpacity 
+            style={[styles.featureChip, { backgroundColor: '#06B6D420' }]} 
+            onPress={() => setShowPipelineModal(true)}
+          >
+            <Ionicons name="git-network" size={14} color="#06B6D4" />
+            <Text style={[styles.featureChipText, { color: '#06B6D4' }]}>Pipeline</Text>
+          </TouchableOpacity>
+          
+          {/* Learning Dashboard Button */}
+          <TouchableOpacity 
+            style={[styles.featureChip, { backgroundColor: '#10B98120' }]} 
+            onPress={() => setShowLearningModal(true)}
+          >
+            <Ionicons name="analytics" size={14} color="#10B981" />
+            <Text style={[styles.featureChipText, { color: '#10B981' }]}>Learn</Text>
+          </TouchableOpacity>
+          
+          {/* Voice Command Button */}
+          {voice.isSupported && (
+            <TouchableOpacity 
+              style={[styles.featureChip, { backgroundColor: voice.isListening ? '#EF444440' : '#EF444420' }]} 
+              onPress={voice.toggleListening}
+            >
+              <Ionicons name={voice.isListening ? 'mic' : 'mic-outline'} size={14} color="#EF4444" />
+              <Text style={[styles.featureChipText, { color: '#EF4444' }]}>{voice.isListening ? 'Listening...' : 'Voice'}</Text>
+            </TouchableOpacity>
+          )}
+        </ScrollView>
+      </View>
 
       {/* ============ EDITOR ============ */}
       <KeyboardAvoidingView style={styles.mainContent} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>

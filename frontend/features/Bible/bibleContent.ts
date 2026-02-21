@@ -1,295 +1,506 @@
 // ============================================================================
-// CODEDOCK QUANTUM NEXUS - CODING BIBLE CONTENT
-// The Complete Day 1 to Godtier Programming Manual
-// Version: 4.2.0 | 16 Comprehensive Chapters
+// CODEDOCK QUANTUM NEXUS - THE COMPLETE CODING BIBLE
+// A Year-Long Journey from Zero to Mastery
+// 52 Weeks • 12 Months • Infinite Possibilities
+// ============================================================================
+// "The journey of a thousand miles begins with a single line of code."
 // ============================================================================
 
 import { BibleChapter } from '../../types';
 
+// ============================================================================
+// YEAR-LONG CURRICULUM STRUCTURE
+// ============================================================================
+// Month 1-2:   AWAKENING      (Weeks 1-8)   - First Steps & Fundamentals
+// Month 3-4:   FOUNDATION     (Weeks 9-16)  - Building Blocks
+// Month 5-6:   EXPANSION      (Weeks 17-24) - Growing Your Skills
+// Month 7-8:   DEPTH          (Weeks 25-32) - Going Deeper
+// Month 9-10:  MASTERY        (Weeks 33-40) - Advanced Concepts
+// Month 11-12: TRANSCENDENCE  (Weeks 41-52) - Expert & Beyond
+// ============================================================================
+
 export const CODING_BIBLE: BibleChapter[] = [
-  // ========== BEGINNER TIER ==========
+  // ═══════════════════════════════════════════════════════════════════════════
+  // MONTH 1-2: AWAKENING - Your First Steps into Code
+  // ═══════════════════════════════════════════════════════════════════════════
   {
-    id: 'day1',
+    id: 'week1',
     day: 1,
     tier: 'beginner',
-    title: 'The Genesis',
+    title: 'The Awakening',
     subtitle: 'Your First Line of Code',
     icon: 'sunny',
     color: '#22C55E',
     unlocked: true,
-    estimatedTime: '30 min',
+    estimatedTime: '45 min',
     sections: [
       {
-        title: 'Welcome, Future Developer',
-        content: `Today marks the beginning of your coding journey. By the end of this chapter, you will understand what programming is and write your very first program.
+        title: 'Welcome to Your Journey',
+        content: `Welcome, future developer. Today marks the beginning of something extraordinary.
 
-Programming is simply giving instructions to a computer in a language it understands. Think of it like writing a recipe - each step must be clear and precise.
+You are about to learn the language of the future - the ability to create, to build, to bring ideas to life with nothing but your thoughts and a keyboard.
 
-Every expert was once a beginner. The key is to start, make mistakes, and learn from them.`,
-        tips: ['Every expert was once a beginner', 'Mistakes are how we learn', 'Take breaks when frustrated']
+Programming is not about memorizing syntax. It is about learning to think in new ways, to break down problems into smaller pieces, and to express solutions with precision and elegance.
+
+Take a deep breath. You belong here.`,
+        tips: ['Every expert was once a complete beginner', 'Progress over perfection', 'Embrace confusion - it means you are learning']
       },
       {
-        title: 'What is Code?',
-        content: `Code is text that tells a computer what to do. Just like how English has grammar rules, programming languages have syntax rules.
+        title: 'What is Programming?',
+        content: `At its core, programming is communication. You are learning to speak to computers.
 
-The computer reads your code line by line, from top to bottom, and executes each instruction in order. This is called sequential execution.`,
-        code: `# This is a comment - the computer ignores it
-# Comments help explain your code to humans
+Computers are incredibly powerful but also incredibly literal. They do exactly what you tell them - nothing more, nothing less. This is both their strength and the source of most bugs.
 
-# Below is actual code that runs:
+Think of code as a recipe. Each instruction must be clear, precise, and in the right order. The computer follows your recipe step by step, from top to bottom.`,
+        code: `# Your first program - a tradition dating back decades
+# Every programmer starts here
+
 print("Hello, World!")
 
-# The print() function displays text on screen`,
+# Congratulations! You just gave a computer an instruction
+# and it listened.`,
         language: 'python',
-        tips: ['Comments start with # in Python', 'Indentation matters in Python', 'Strings need quotes']
+        tips: ['print() displays text on the screen', 'Text must be in quotes', 'Python reads top to bottom']
       },
       {
-        title: 'Variables: Storing Information',
-        content: `Variables are like labeled boxes that store data. You give them a name and put something inside. You can then use that name to access the stored value.
+        title: 'Variables: Giving Names to Things',
+        content: `Variables are containers for information. Think of them as labeled boxes where you store data for later use.
 
-Variable names should be descriptive - 'user_age' is better than 'x'.`,
-        code: `# Creating variables
-name = "Alex"
-age = 25
-is_learning = True
-height = 5.9
+When you create a variable, you are telling the computer: "Remember this value, and when I use this name, give me the value back."
+
+Choose names that describe what the variable holds. Your future self will thank you.`,
+        code: `# Creating variables is like labeling boxes
+name = "Ada"           # A box labeled 'name' containing "Ada"
+age = 28               # A box labeled 'age' containing 28
+is_programmer = True   # A box labeled 'is_programmer' containing True
 
 # Using variables
-print(name)
-print("Age:", age)
-print("Learning:", is_learning)`,
-        language: 'python',
-        tips: ['Use snake_case for variable names', 'Variables can be reassigned', 'Choose descriptive names']
+print(name)            # Opens the 'name' box, shows "Ada"
+print(age)             # Shows 28
+
+# Variables can change (that is why they are called variables!)
+age = 29               # Birthday! Update the box
+print(age)             # Now shows 29`,
+        language: 'python'
       },
       {
-        title: 'Data Types',
-        content: `Different types of data need different storage. Python automatically detects the type, but understanding them is crucial.
+        title: 'The Four Fundamental Types',
+        content: `Data comes in different types, just like in real life. Python automatically recognizes these types:
 
-The four basic types are:
-- Strings: Text in quotes ("Hello")
-- Integers: Whole numbers (42, -10, 0)
-- Floats: Decimal numbers (3.14, -0.5)
-- Booleans: True or False`,
-        code: `# Strings - text data
+• Strings (str): Text, always in quotes. "Hello" or 'Hello'
+• Integers (int): Whole numbers. 42, -7, 0
+• Floats (float): Decimal numbers. 3.14, -0.5, 2.0
+• Booleans (bool): True or False. Nothing else.
+
+Understanding types helps you understand what operations are possible.`,
+        code: `# Strings - for text
 greeting = "Hello, World!"
-name = 'Alice'  # Single or double quotes work
+name = 'Alice'  # Single or double quotes both work
 
 # Integers - whole numbers
-age = 25
-count = -10
+count = 42
+negative = -7
 zero = 0
 
 # Floats - decimal numbers
 pi = 3.14159
 temperature = -5.5
 
-# Booleans - True or False
-is_active = True
+# Booleans - only True or False
+is_learning = True
 is_finished = False
 
-# Check the type
+# Check the type of anything
 print(type(greeting))  # <class 'str'>
-print(type(age))       # <class 'int'>`,
+print(type(count))     # <class 'int'>
+print(type(pi))        # <class 'float'>
+print(type(is_learning))  # <class 'bool'>`,
         language: 'python'
       }
     ],
     exercises: [
       {
-        id: 'ex1-1',
-        title: 'Hello You!',
-        description: 'Create a variable with your name and print a personalized greeting.',
-        starterCode: '# Store your name in a variable\n# Then print "Hello, [your name]!"\n\n',
+        id: 'w1-ex1',
+        title: 'Your Personal Introduction',
+        description: 'Create variables for your name, age, and a fun fact about yourself. Print them all.',
+        starterCode: '# Create your variables here\n\n# Print a nice introduction\n',
         language: 'python',
-        hints: ['Use a variable like: my_name = "..."', 'Use print() to display output', 'You can combine strings with +'],
-        solution: 'my_name = "Alex"\nprint("Hello, " + my_name + "!")'
+        hints: ['Use descriptive variable names', 'Strings need quotes, numbers do not', 'You can use + to join strings']
       }
     ]
   },
   {
-    id: 'day2',
-    day: 2,
+    id: 'week2',
+    day: 8,
     tier: 'beginner',
-    title: 'The Flow',
-    subtitle: 'Making Decisions in Code',
-    icon: 'git-branch',
+    title: 'The Conversation',
+    subtitle: 'Input, Output & Basic Math',
+    icon: 'chatbubbles',
     color: '#3B82F6',
     unlocked: true,
-    estimatedTime: '45 min',
+    estimatedTime: '50 min',
     sections: [
       {
-        title: 'Conditional Statements',
-        content: `Programs need to make decisions. The if statement checks if something is true and acts accordingly.
+        title: 'Talking to Your Program',
+        content: `Programs become interactive when they can receive input from users. The input() function pauses your program and waits for the user to type something.
 
-This is called conditional logic - the code runs only if a condition is met.`,
-        code: `age = 18
+This is how you create conversations between humans and computers.`,
+        code: `# Getting input from the user
+name = input("What is your name? ")
+print("Hello, " + name + "!")
+
+# input() always returns a string
+age_text = input("How old are you? ")
+print(type(age_text))  # <class 'str'> - it is text!
+
+# Convert to number for math
+age = int(age_text)
+print("Next year you will be", age + 1)`,
+        language: 'python',
+        tips: ['input() always returns a string', 'Use int() to convert to integer', 'Use float() for decimal numbers']
+      },
+      {
+        title: 'The Art of Arithmetic',
+        content: `Python is a powerful calculator. Master these operators:
+
++ Addition
+- Subtraction
+* Multiplication
+/ Division (always returns float)
+// Floor division (rounds down to integer)
+% Modulo (remainder after division)
+** Exponentiation (power)`,
+        code: `# Basic math
+print(10 + 3)   # 13
+print(10 - 3)   # 7
+print(10 * 3)   # 30
+print(10 / 3)   # 3.333...
+
+# Special operators
+print(10 // 3)  # 3 (floor division)
+print(10 % 3)   # 1 (remainder)
+print(10 ** 3)  # 1000 (10 cubed)
+
+# Order of operations (PEMDAS)
+result = 2 + 3 * 4      # 14, not 20
+result = (2 + 3) * 4    # 20, parentheses first
+
+# Compound assignment
+count = 10
+count += 5   # Same as: count = count + 5
+count *= 2   # Same as: count = count * 2
+print(count) # 30`,
+        language: 'python'
+      },
+      {
+        title: 'String Magic',
+        content: `Strings have their own special operations. Learn to manipulate text like a pro.`,
+        code: `# Concatenation (joining strings)
+first = "Hello"
+second = "World"
+combined = first + " " + second
+print(combined)  # "Hello World"
+
+# Repetition
+line = "-" * 20
+print(line)  # "--------------------"
+
+# f-strings (formatted strings) - the modern way
+name = "Alice"
+age = 30
+message = f"My name is {name} and I am {age} years old"
+print(message)
+
+# You can put any expression in {}
+print(f"In 5 years I will be {age + 5}")
+print(f"My name in caps: {name.upper()}")`,
+        language: 'python'
+      }
+    ]
+  },
+  {
+    id: 'week3',
+    day: 15,
+    tier: 'beginner',
+    title: 'The Crossroads',
+    subtitle: 'Making Decisions with If/Else',
+    icon: 'git-branch',
+    color: '#8B5CF6',
+    unlocked: true,
+    estimatedTime: '55 min',
+    sections: [
+      {
+        title: 'The Power of Choice',
+        content: `Until now, your programs have been linear - they execute every line from top to bottom. But real programs need to make decisions.
+
+The if statement is your first tool for controlling flow. It lets your program choose different paths based on conditions.`,
+        code: `# The basic if statement
+temperature = 35
+
+if temperature > 30:
+    print("It is hot outside!")
+    print("Stay hydrated!")
+
+# The code inside runs ONLY if the condition is True
+# Notice the indentation - it defines the code block`,
+        language: 'python',
+        tips: ['Indentation matters in Python', 'Use 4 spaces (or 1 tab) for each level', 'The colon : is required after the condition']
+      },
+      {
+        title: 'Two Paths: If and Else',
+        content: `Often you want to do one thing if a condition is true, and something else if it is false. That is where else comes in.`,
+        code: `age = 16
 
 if age >= 18:
     print("You are an adult")
     print("You can vote!")
 else:
     print("You are a minor")
-    print("You cannot vote yet")`,
-        language: 'python',
-        tips: ['Indentation defines code blocks', 'The colon : is required', 'else is optional']
+    print("You cannot vote yet")
+
+# Only ONE of these blocks will run, never both`,
+        language: 'python'
       },
       {
-        title: 'Multiple Conditions with elif',
-        content: `Use elif (else if) to check multiple conditions in sequence. Python checks each condition from top to bottom and executes the first one that is True.`,
-        code: `score = 85
+        title: 'Multiple Paths: Elif',
+        content: `Sometimes you need more than two options. The elif (else if) lets you check multiple conditions in sequence.`,
+        code: `score = 78
 
 if score >= 90:
     grade = "A"
-    print("Excellent!")
+    message = "Excellent!"
 elif score >= 80:
     grade = "B"
-    print("Good job!")
+    message = "Good job!"
 elif score >= 70:
     grade = "C"
-    print("Passing")
+    message = "Satisfactory"
 elif score >= 60:
     grade = "D"
-    print("Needs improvement")
+    message = "Needs improvement"
 else:
     grade = "F"
-    print("Failed")
+    message = "Please see the teacher"
 
-print(f"Your grade: {grade}")`,
+print(f"Grade: {grade}")
+print(message)
+
+# Python checks each condition from top to bottom
+# It runs the FIRST block whose condition is True
+# Then skips all the rest`,
         language: 'python'
       },
       {
         title: 'Comparison Operators',
-        content: `These operators compare values and return True or False. They are the foundation of conditional logic.
+        content: `To make decisions, you need to compare values. These operators return True or False.
 
-Available operators:
-== Equal to
+== Equal to (not = which is assignment!)
 != Not equal to
->  Greater than
-<  Less than
+> Greater than
+< Less than
 >= Greater than or equal
 <= Less than or equal`,
         code: `x = 10
 y = 5
 
-print(x == y)   # False - not equal
-print(x != y)   # True  - not equal
-print(x > y)    # True  - 10 > 5
-print(x < y)    # False - 10 is not < 5
-print(x >= 10)  # True  - 10 >= 10
-print(y <= 5)   # True  - 5 <= 5
+print(x == y)   # False
+print(x != y)   # True
+print(x > y)    # True
+print(x < y)    # False
+print(x >= 10)  # True
+print(y <= 5)   # True
 
-# Common mistake: = vs ==
-# = assigns a value
-# == compares values`,
+# String comparison
+name = "Alice"
+print(name == "Alice")  # True
+print(name == "alice")  # False (case sensitive!)
+print(name.lower() == "alice")  # True`,
         language: 'python',
-        warning: 'Do not confuse = (assignment) with == (comparison)!'
-      },
+        warning: 'Do not confuse = (assignment) with == (comparison). This is the #1 beginner mistake!'
+      }
+    ]
+  },
+  {
+    id: 'week4',
+    day: 22,
+    tier: 'beginner',
+    title: 'The Logic',
+    subtitle: 'Combining Conditions',
+    icon: 'git-merge',
+    color: '#EC4899',
+    unlocked: true,
+    estimatedTime: '45 min',
+    sections: [
       {
         title: 'Logical Operators',
-        content: `Combine multiple conditions with and, or, not. These let you create complex decision logic.
+        content: `Sometimes one condition is not enough. Logical operators let you combine multiple conditions.
 
-- and: Both conditions must be True
-- or: At least one must be True  
-- not: Reverses True/False`,
+and - Both conditions must be True
+or - At least one condition must be True
+not - Reverses True to False, and False to True`,
         code: `age = 25
 has_license = True
 has_car = False
 
-# and - both must be true
+# and - BOTH must be true
 if age >= 18 and has_license:
-    print("Can drive legally")
+    print("You can legally drive")
 
-# or - at least one must be true
+# or - AT LEAST ONE must be true
 if has_license or has_car:
-    print("Has some driving capability")
+    print("You have some driving capability")
 
 # not - reverses the boolean
 if not has_car:
-    print("Does not have a car")
+    print("You need a car")
 
 # Combining them
 if age >= 18 and has_license and not has_car:
-    print("Can drive but needs a car")`,
+    print("You can drive, but you need a car first!")`,
+        language: 'python'
+      },
+      {
+        title: 'Nested Conditions',
+        content: `You can put if statements inside other if statements. This is called nesting.`,
+        code: `user_type = "member"
+years_member = 3
+
+if user_type == "member":
+    print("Welcome back!")
+    
+    if years_member >= 5:
+        print("You are a Gold member!")
+        discount = 20
+    elif years_member >= 2:
+        print("You are a Silver member!")
+        discount = 10
+    else:
+        print("You are a Bronze member!")
+        discount = 5
+    
+    print(f"Your discount: {discount}%")
+else:
+    print("Please sign up for membership benefits!")`,
+        language: 'python',
+        tips: ['Keep nesting shallow when possible', 'Deep nesting can be hard to read', 'Consider using functions to simplify']
+      },
+      {
+        title: 'Truthiness',
+        content: `In Python, values can be "truthy" or "falsy" - they act like True or False in conditions.
+
+Falsy values: False, None, 0, 0.0, "" (empty string), [] (empty list), {} (empty dict)
+Everything else is truthy.`,
+        code: `# These are all "falsy"
+if not 0:
+    print("0 is falsy")
+
+if not "":
+    print("Empty string is falsy")
+
+if not []:
+    print("Empty list is falsy")
+
+# Practical use
+name = input("Enter your name: ")
+
+if name:  # True if name is not empty
+    print(f"Hello, {name}!")
+else:
+    print("You did not enter a name.")
+
+# This is cleaner than: if name != ""`,
         language: 'python'
       }
     ]
   },
   {
-    id: 'day3',
-    day: 3,
+    id: 'week5',
+    day: 29,
     tier: 'beginner',
-    title: 'The Loop',
-    subtitle: 'Repeating Actions Efficiently',
+    title: 'The Repetition',
+    subtitle: 'Loops - Doing Things Over and Over',
     icon: 'repeat',
-    color: '#8B5CF6',
+    color: '#F59E0B',
     unlocked: true,
-    estimatedTime: '45 min',
+    estimatedTime: '60 min',
     sections: [
       {
-        title: 'Why Loops?',
-        content: `Instead of writing the same code 100 times, loops let you repeat actions automatically. This is one of programming's most powerful features.
+        title: 'Why Loops Matter',
+        content: `Imagine you need to print numbers 1 to 100. Without loops, you would write 100 print statements. With loops, you write 2 lines.
 
-Loops save time, reduce errors, and make code maintainable.`,
-        code: `# Without loops (tedious and error-prone!)
+Loops are one of programming's most powerful features. They let you automate repetition.`,
+        code: `# Without loops (painful!)
 print(1)
 print(2)
 print(3)
-print(4)
-print(5)
+# ... 97 more lines ...
 
-# With a loop (elegant and scalable!)
-for i in range(1, 6):
+# With a loop (elegant!)
+for i in range(1, 101):
     print(i)
 
-# Same result, much better code!`,
+# Same result, infinitely better code
+# This is the power of abstraction`,
         language: 'python'
       },
       {
-        title: 'For Loops',
-        content: `For loops iterate over a sequence - perfect when you know how many times to repeat. The range() function generates numbers.`,
-        code: `# Loop through numbers
-for num in range(5):
-    print(num)  # 0, 1, 2, 3, 4
+        title: 'The For Loop',
+        content: `Use for loops when you know how many times to repeat, or when iterating over a collection.`,
+        code: `# Looping through a range of numbers
+for number in range(5):
+    print(number)
+# Output: 0, 1, 2, 3, 4
 
 # range(start, stop, step)
-for num in range(0, 10, 2):
-    print(num)  # 0, 2, 4, 6, 8
+for number in range(2, 10, 2):
+    print(number)
+# Output: 2, 4, 6, 8
 
-# Loop through a list
+# Looping through a list
 fruits = ["apple", "banana", "cherry"]
 for fruit in fruits:
-    print(f"I like {fruit}")
+    print(f"I love {fruit}!")
 
-# Loop with index using enumerate
+# Looping with index using enumerate
 for index, fruit in enumerate(fruits):
     print(f"{index}: {fruit}")`,
         language: 'python',
-        tips: ['range(5) gives 0,1,2,3,4 (not 5!)', 'enumerate() gives both index and value']
+        tips: ['range(5) gives 0,1,2,3,4 - not including 5!', 'enumerate() gives both index and value', 'The loop variable (fruit, number) is created automatically']
       },
       {
-        title: 'While Loops',
-        content: `While loops continue as long as a condition is true. Use them when you do not know in advance how many iterations you need.`,
-        code: `count = 0
-
+        title: 'The While Loop',
+        content: `Use while loops when you do not know how many iterations you need - the loop continues as long as a condition is True.`,
+        code: `# Basic while loop
+count = 0
 while count < 5:
-    print(f"Count is: {count}")
-    count += 1  # CRITICAL: Must update or infinite loop!
+    print(count)
+    count += 1  # CRITICAL! Without this, infinite loop!
+# Output: 0, 1, 2, 3, 4
 
-print("Loop finished!")
-
-# Practical example: User input
+# Practical example: User input validation
 password = ""
 while password != "secret":
     password = input("Enter password: ")
-print("Access granted!")`,
+    if password != "secret":
+        print("Wrong password, try again.")
+print("Access granted!")
+
+# Another example: Game loop
+playing = True
+while playing:
+    action = input("Enter action (quit to exit): ")
+    if action == "quit":
+        playing = False
+    else:
+        print(f"You chose: {action}")
+print("Thanks for playing!")`,
         language: 'python',
-        warning: 'Always ensure your while loop can end! An infinite loop will freeze your program.'
+        warning: 'Always ensure your while loop can end! An infinite loop will freeze your program. Make sure the condition eventually becomes False.'
       },
       {
-        title: 'Break and Continue',
-        content: `Control loop flow precisely:
-- break: Exit the loop immediately
-- continue: Skip to the next iteration`,
-        code: `# break - exit when found
+        title: 'Loop Control: Break and Continue',
+        content: `Sometimes you need finer control over loops. break exits immediately. continue skips to the next iteration.`,
+        code: `# break - exit the loop early
 for i in range(10):
     if i == 5:
         print("Found 5, stopping!")
@@ -297,66 +508,347 @@ for i in range(10):
     print(i)
 # Output: 0, 1, 2, 3, 4, Found 5, stopping!
 
-print("---")
-
-# continue - skip specific values
+# continue - skip this iteration
 for i in range(10):
     if i % 2 == 0:  # Skip even numbers
         continue
     print(i)
-# Output: 1, 3, 5, 7, 9`,
+# Output: 1, 3, 5, 7, 9
+
+# Real example: Search
+numbers = [4, 7, 2, 9, 1, 5, 8]
+target = 9
+
+for num in numbers:
+    if num == target:
+        print(f"Found {target}!")
+        break
+else:  # This else belongs to for, runs if no break
+    print(f"{target} not found")`,
         language: 'python'
       }
     ]
   },
   {
-    id: 'day4',
-    day: 4,
-    tier: 'foundation',
-    title: 'The Function',
-    subtitle: 'Reusable Code Blocks',
-    icon: 'cube',
-    color: '#F59E0B',
+    id: 'week6',
+    day: 36,
+    tier: 'beginner',
+    title: 'The Collection',
+    subtitle: 'Lists - Your First Data Structure',
+    icon: 'list',
+    color: '#14B8A6',
+    unlocked: true,
+    estimatedTime: '55 min',
+    sections: [
+      {
+        title: 'Understanding Lists',
+        content: `A list is an ordered collection of items. Think of it as a numbered container where each slot holds a value.
+
+Lists are mutable - you can change them after creation. They can hold any type of data, even mixed types.`,
+        code: `# Creating lists
+numbers = [1, 2, 3, 4, 5]
+fruits = ["apple", "banana", "cherry"]
+mixed = [1, "hello", True, 3.14]
+empty = []
+
+# Lists are ordered and indexed (starting at 0)
+print(fruits[0])   # "apple" (first item)
+print(fruits[1])   # "banana" (second item)
+print(fruits[-1])  # "cherry" (last item)
+print(fruits[-2])  # "banana" (second to last)
+
+# Length of a list
+print(len(fruits))  # 3`,
+        language: 'python'
+      },
+      {
+        title: 'Modifying Lists',
+        content: `Lists are mutable, meaning you can change them in place.`,
+        code: `fruits = ["apple", "banana", "cherry"]
+
+# Change an item
+fruits[0] = "apricot"
+print(fruits)  # ["apricot", "banana", "cherry"]
+
+# Add items
+fruits.append("date")       # Add to end
+fruits.insert(1, "blueberry")  # Insert at position
+
+# Remove items
+fruits.remove("banana")     # Remove by value
+del fruits[0]               # Remove by index
+last = fruits.pop()         # Remove and return last item
+first = fruits.pop(0)       # Remove and return first item
+
+# Combine lists
+more_fruits = ["elderberry", "fig"]
+all_fruits = fruits + more_fruits  # Creates new list
+fruits.extend(more_fruits)         # Modifies in place`,
+        language: 'python'
+      },
+      {
+        title: 'List Slicing',
+        content: `Slicing lets you extract portions of a list. The syntax is list[start:stop:step].`,
+        code: `numbers = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+# Basic slicing [start:stop] - stop is NOT included
+print(numbers[2:5])    # [2, 3, 4]
+print(numbers[:4])     # [0, 1, 2, 3] (from start)
+print(numbers[6:])     # [6, 7, 8, 9] (to end)
+print(numbers[:])      # Full copy of list
+
+# With step [start:stop:step]
+print(numbers[::2])    # [0, 2, 4, 6, 8] (every 2nd)
+print(numbers[1::2])   # [1, 3, 5, 7, 9] (odd indices)
+print(numbers[::-1])   # [9, 8, 7, 6, 5, 4, 3, 2, 1, 0] (reversed!)
+
+# Negative indices work too
+print(numbers[-3:])    # [7, 8, 9] (last 3)
+print(numbers[:-3])    # [0, 1, 2, 3, 4, 5, 6] (all but last 3)`,
+        language: 'python'
+      },
+      {
+        title: 'List Comprehensions',
+        content: `List comprehensions are a powerful, Pythonic way to create lists. They combine loops and conditions in a single expression.`,
+        code: `# Traditional way
+squares = []
+for x in range(10):
+    squares.append(x ** 2)
+
+# List comprehension (same result, one line!)
+squares = [x ** 2 for x in range(10)]
+print(squares)  # [0, 1, 4, 9, 16, 25, 36, 49, 64, 81]
+
+# With condition (filtering)
+evens = [x for x in range(20) if x % 2 == 0]
+print(evens)  # [0, 2, 4, 6, 8, 10, 12, 14, 16, 18]
+
+# Transform and filter
+words = ["hello", "world", "python", "code"]
+long_upper = [w.upper() for w in words if len(w) > 4]
+print(long_upper)  # ['HELLO', 'WORLD', 'PYTHON']
+
+# Nested loops
+pairs = [(x, y) for x in range(3) for y in range(3)]
+print(pairs)  # [(0,0), (0,1), (0,2), (1,0), ...]`,
+        language: 'python',
+        tips: ['List comprehensions are more Pythonic', 'But do not sacrifice readability', 'Complex logic should use regular loops']
+      }
+    ]
+  },
+  {
+    id: 'week7',
+    day: 43,
+    tier: 'beginner',
+    title: 'The Dictionary',
+    subtitle: 'Key-Value Pairs',
+    icon: 'book',
+    color: '#6366F1',
     unlocked: true,
     estimatedTime: '50 min',
     sections: [
       {
-        title: 'What are Functions?',
-        content: `Functions are reusable blocks of code with a name. Write once, use many times. They help organize code, avoid repetition (DRY principle), and make testing easier.`,
-        code: `# Defining a function
-def greet(name):
-    """Greet a person by name."""
-    return f"Hello, {name}!"
+        title: 'Understanding Dictionaries',
+        content: `Dictionaries store data as key-value pairs. Think of them like a real dictionary: you look up a word (key) to find its definition (value).
 
-# Using the function
-message = greet("Alice")
-print(message)  # Hello, Alice!
+Unlike lists which use numeric indices, dictionaries use keys of any immutable type.`,
+        code: `# Creating a dictionary
+person = {
+    "name": "Alice",
+    "age": 30,
+    "city": "New York",
+    "is_developer": True
+}
 
-# Reuse with different inputs
-print(greet("Bob"))    # Hello, Bob!
-print(greet("Charlie")) # Hello, Charlie!`,
-        language: 'python',
-        tips: ['Function names should be verbs', 'Use docstrings to document', 'Keep functions small and focused']
+# Accessing values by key
+print(person["name"])     # "Alice"
+print(person["age"])      # 30
+
+# Using .get() - safer, returns None if key missing
+print(person.get("name"))      # "Alice"
+print(person.get("country"))   # None (no error!)
+print(person.get("country", "Unknown"))  # "Unknown" (default)`,
+        language: 'python'
       },
       {
-        title: 'Parameters and Arguments',
-        content: `Parameters are variables in the function definition (placeholders). Arguments are actual values you pass when calling the function.`,
-        code: `def add(a, b):  # a, b are parameters
-    """Add two numbers."""
-    return a + b
+        title: 'Modifying Dictionaries',
+        content: `Dictionaries are mutable - you can add, change, and remove key-value pairs.`,
+        code: `person = {"name": "Alice", "age": 30}
 
-result = add(5, 3)  # 5, 3 are arguments
-print(result)  # 8
+# Add or update
+person["email"] = "alice@example.com"  # Add new key
+person["age"] = 31                      # Update existing
 
-# Default parameters
-def greet(name, greeting="Hello"):
-    return f"{greeting}, {name}!"
+# Remove
+del person["email"]                     # Delete by key
+age = person.pop("age")                 # Remove and return value
+person.clear()                          # Remove all items
 
-print(greet("Alice"))           # Hello, Alice!
-print(greet("Bob", "Hi"))       # Hi, Bob!
-print(greet("Eve", greeting="Hey"))  # Hey, Eve!
+# Useful methods
+person = {"name": "Alice", "age": 30, "city": "NYC"}
+print(person.keys())    # dict_keys(['name', 'age', 'city'])
+print(person.values())  # dict_values(['Alice', 30, 'NYC'])
+print(person.items())   # dict_items([('name', 'Alice'), ...])
 
-# Multiple return values
+# Check if key exists
+if "name" in person:
+    print("Name found!")`,
+        language: 'python'
+      },
+      {
+        title: 'Iterating Dictionaries',
+        content: `There are several ways to loop through dictionary contents.`,
+        code: `person = {"name": "Alice", "age": 30, "city": "NYC"}
+
+# Loop through keys (default)
+for key in person:
+    print(key)
+
+# Loop through values
+for value in person.values():
+    print(value)
+
+# Loop through both (most common)
+for key, value in person.items():
+    print(f"{key}: {value}")
+
+# Dictionary comprehension
+numbers = [1, 2, 3, 4, 5]
+squares = {n: n**2 for n in numbers}
+print(squares)  # {1: 1, 2: 4, 3: 9, 4: 16, 5: 25}`,
+        language: 'python'
+      },
+      {
+        title: 'Nested Data Structures',
+        content: `Real-world data is often complex. You can nest lists in dictionaries, dictionaries in lists, and so on.`,
+        code: `# List of dictionaries
+users = [
+    {"name": "Alice", "age": 30},
+    {"name": "Bob", "age": 25},
+    {"name": "Charlie", "age": 35}
+]
+
+for user in users:
+    print(f"{user['name']} is {user['age']} years old")
+
+# Dictionary with lists
+student = {
+    "name": "Alice",
+    "grades": [85, 90, 78, 92],
+    "courses": ["Python", "Math", "Physics"]
+}
+
+average = sum(student["grades"]) / len(student["grades"])
+print(f"{student['name']}'s average: {average:.1f}")
+
+# Deeply nested
+company = {
+    "departments": {
+        "engineering": {
+            "employees": ["Alice", "Bob"],
+            "budget": 100000
+        },
+        "sales": {
+            "employees": ["Charlie"],
+            "budget": 50000
+        }
+    }
+}
+
+eng_budget = company["departments"]["engineering"]["budget"]`,
+        language: 'python'
+      }
+    ]
+  },
+  {
+    id: 'week8',
+    day: 50,
+    tier: 'beginner',
+    title: 'The Function',
+    subtitle: 'Building Reusable Code',
+    icon: 'cube',
+    color: '#F97316',
+    unlocked: true,
+    estimatedTime: '65 min',
+    sections: [
+      {
+        title: 'Why Functions?',
+        content: `Functions are named blocks of reusable code. They are one of the most important concepts in programming.
+
+Benefits of functions:
+• Reusability - write once, use many times
+• Organization - break complex problems into pieces
+• Abstraction - hide complexity behind simple names
+• Testing - easier to test small, focused functions`,
+        code: `# Without functions - repetitive!
+print("=" * 30)
+print("WELCOME")
+print("=" * 30)
+
+# ... later in code ...
+print("=" * 30)
+print("GOODBYE")
+print("=" * 30)
+
+# With a function - elegant!
+def print_banner(message):
+    print("=" * 30)
+    print(message)
+    print("=" * 30)
+
+print_banner("WELCOME")
+print_banner("GOODBYE")
+print_banner("ANYTHING YOU WANT")`,
+        language: 'python'
+      },
+      {
+        title: 'Defining and Calling Functions',
+        content: `Use def to define a function. Call it by using its name followed by parentheses.`,
+        code: `# Basic function definition
+def greet():
+    print("Hello!")
+    print("Nice to meet you!")
+
+# Calling the function
+greet()  # Runs the code inside
+
+# Function with parameters
+def greet_person(name):
+    print(f"Hello, {name}!")
+    print("Nice to meet you!")
+
+greet_person("Alice")   # Hello, Alice!
+greet_person("Bob")     # Hello, Bob!
+
+# Multiple parameters
+def introduce(name, age, city):
+    print(f"I am {name}, {age} years old, from {city}")
+
+introduce("Alice", 30, "New York")`,
+        language: 'python'
+      },
+      {
+        title: 'Return Values',
+        content: `Functions can send values back using return. This makes them much more useful.`,
+        code: `# Function that returns a value
+def add(a, b):
+    result = a + b
+    return result
+
+# Using the returned value
+sum_result = add(5, 3)
+print(sum_result)  # 8
+
+# Return ends the function immediately
+def divide(a, b):
+    if b == 0:
+        return None  # Exit early
+    return a / b
+
+print(divide(10, 2))  # 5.0
+print(divide(10, 0))  # None
+
+# Returning multiple values
 def get_stats(numbers):
     return min(numbers), max(numbers), sum(numbers)
 
@@ -365,532 +857,164 @@ print(f"Min: {low}, Max: {high}, Sum: {total}")`,
         language: 'python'
       },
       {
-        title: 'Return Values',
-        content: `Functions can return values using the return statement. Without return, they return None. A function stops executing when it hits return.`,
-        code: `def square(n):
-    """Return the square of n."""
-    return n * n
+        title: 'Default Parameters and Keyword Arguments',
+        content: `Make functions more flexible with default values and keyword arguments.`,
+        code: `# Default parameter values
+def greet(name, greeting="Hello"):
+    print(f"{greeting}, {name}!")
 
-def print_square(n):
-    """Print the square (no return)."""
-    print(n * n)
+greet("Alice")              # Hello, Alice!
+greet("Bob", "Hi")          # Hi, Bob!
+greet("Charlie", "Hey")     # Hey, Charlie!
 
-result1 = square(4)        # result1 = 16
-result2 = print_square(4)  # Prints 16, result2 = None
+# Keyword arguments (specify by name)
+def describe_pet(name, animal="dog", age=1):
+    print(f"{name} is a {age}-year-old {animal}")
 
-print(f"square returned: {result1}")
-print(f"print_square returned: {result2}")
-
-# Early return pattern
-def is_adult(age):
-    if age < 0:
-        return False  # Invalid age
-    return age >= 18`,
+describe_pet("Max")                    # Max is a 1-year-old dog
+describe_pet("Whiskers", animal="cat") # Whiskers is a 1-year-old cat
+describe_pet("Buddy", age=5)           # Buddy is a 5-year-old dog
+describe_pet(animal="bird", name="Tweet", age=2)  # Order does not matter!`,
         language: 'python'
-      },
-      {
-        title: 'Scope: Local vs Global',
-        content: `Variables inside functions are local - they only exist inside that function. Global variables exist everywhere but should be used sparingly.`,
-        code: `x = 10  # Global variable
-
-def my_func():
-    y = 5   # Local variable
-    print(f"Inside function: x={x}, y={y}")
-
-my_func()
-print(f"Outside function: x={x}")
-# print(y)  # ERROR! y does not exist here
-
-# Modifying global (avoid if possible)
-counter = 0
-
-def increment():
-    global counter
-    counter += 1
-
-increment()
-print(counter)  # 1`,
-        language: 'python',
-        tips: ['Avoid global variables when possible', 'Pass values as parameters instead', 'Local scope is safer']
       }
     ]
   },
+  // ═══════════════════════════════════════════════════════════════════════════
+  // MONTH 3-4: FOUNDATION - Building Your Skills
+  // ═══════════════════════════════════════════════════════════════════════════
   {
-    id: 'day5',
-    day: 5,
+    id: 'week9',
+    day: 57,
     tier: 'foundation',
-    title: 'The Collection',
-    subtitle: 'Lists, Dicts, and More',
-    icon: 'layers',
-    color: '#EC4899',
-    unlocked: true,
-    estimatedTime: '60 min',
-    sections: [
-      {
-        title: 'Lists: Ordered Collections',
-        content: `Lists store multiple items in order. They can be modified (mutable) and can contain any data type, including other lists.`,
-        code: `# Creating lists
-numbers = [1, 2, 3, 4, 5]
-mixed = ["hello", 42, True, 3.14]
-empty = []
-
-# Accessing items (0-indexed)
-print(numbers[0])   # 1 (first)
-print(numbers[-1])  # 5 (last)
-print(numbers[1:3]) # [2, 3] (slice)
-
-# Modifying lists
-numbers.append(6)       # Add to end: [1,2,3,4,5,6]
-numbers.insert(0, 0)    # Insert at index: [0,1,2,3,4,5,6]
-numbers.remove(3)       # Remove value 3
-del numbers[0]          # Delete by index
-popped = numbers.pop()  # Remove and return last
-
-print(numbers)`,
-        language: 'python'
-      },
-      {
-        title: 'List Operations',
-        content: `Python provides powerful built-in operations for lists. Master these and you will be much more productive.`,
-        code: `nums = [3, 1, 4, 1, 5, 9, 2, 6]
-
-# Sorting
-nums.sort()              # Sort in place: [1,1,2,3,4,5,6,9]
-sorted_nums = sorted([3,1,2])  # Return new sorted list
-
-# Reversing
-nums.reverse()           # Reverse in place
-reversed_nums = nums[::-1]  # Return reversed copy
-
-# Useful functions
-print(len(nums))    # Length: 8
-print(sum(nums))    # Sum: 31
-print(min(nums))    # Minimum: 1
-print(max(nums))    # Maximum: 9
-
-# List comprehension (powerful!)
-squares = [x**2 for x in range(5)]
-print(squares)  # [0, 1, 4, 9, 16]
-
-evens = [x for x in range(10) if x % 2 == 0]
-print(evens)  # [0, 2, 4, 6, 8]`,
-        language: 'python'
-      },
-      {
-        title: 'Dictionaries: Key-Value Pairs',
-        content: `Dictionaries store key-value pairs. Think of them as real dictionaries: word -> definition. They provide O(1) lookup time.`,
-        code: `# Creating a dictionary
-person = {
-    "name": "Alice",
-    "age": 30,
-    "city": "NYC",
-    "skills": ["Python", "JavaScript"]
-}
-
-# Accessing values
-print(person["name"])      # Alice
-print(person.get("age"))   # 30
-print(person.get("job", "Unknown"))  # Unknown (default)
-
-# Modifying
-person["email"] = "alice@example.com"  # Add new
-person["age"] = 31                      # Update existing
-del person["city"]                      # Delete
-
-# Iterating
-for key in person:
-    print(f"{key}: {person[key]}")
-
-for key, value in person.items():
-    print(f"{key} = {value}")`,
-        language: 'python'
-      },
-      {
-        title: 'Sets and Tuples',
-        content: `Sets: Unordered collections of unique items. Great for removing duplicates and set operations.
-Tuples: Ordered but immutable (cannot be changed after creation).`,
-        code: `# Sets - unique values only
-numbers = {1, 2, 2, 3, 3, 3}
-print(numbers)  # {1, 2, 3}
-
-# Set operations
-a = {1, 2, 3, 4}
-b = {3, 4, 5, 6}
-print(a | b)  # Union: {1, 2, 3, 4, 5, 6}
-print(a & b)  # Intersection: {3, 4}
-print(a - b)  # Difference: {1, 2}
-
-# Remove duplicates from list
-names = ["Alice", "Bob", "Alice", "Charlie", "Bob"]
-unique = list(set(names))
-print(unique)  # ['Alice', 'Bob', 'Charlie']
-
-# Tuples - immutable
-point = (10, 20)
-x, y = point  # Unpacking
-print(f"x={x}, y={y}")
-
-# Tuples are great for returning multiple values
-def get_dimensions():
-    return (1920, 1080)
-
-width, height = get_dimensions()`,
-        language: 'python'
-      }
-    ]
-  },
-  {
-    id: 'day6',
-    day: 6,
-    tier: 'foundation',
-    title: 'The String',
-    subtitle: 'Text Manipulation Mastery',
-    icon: 'text',
-    color: '#14B8A6',
-    unlocked: true,
-    estimatedTime: '40 min',
-    sections: [
-      {
-        title: 'String Basics',
-        content: `Strings are sequences of characters. They are immutable - you cannot change them in place, only create new strings.`,
-        code: `# Creating strings
-single = 'Hello'
-double = "World"
-multi = """This is a
-multi-line string"""
-
-# String concatenation
-full = single + " " + double
-print(full)  # Hello World
-
-# String repetition
-line = "-" * 20
-print(line)  # --------------------
-
-# Length
-print(len(full))  # 11`,
-        language: 'python'
-      },
-      {
-        title: 'String Methods',
-        content: `Python strings have many useful built-in methods. These return new strings (strings are immutable).`,
-        code: `text = "  Hello, World!  "
-
-# Case methods
-print(text.upper())       # "  HELLO, WORLD!  "
-print(text.lower())       # "  hello, world!  "
-print(text.title())       # "  Hello, World!  "
-
-# Whitespace
-print(text.strip())       # "Hello, World!"
-print(text.lstrip())      # "Hello, World!  "
-
-# Finding and replacing
-print(text.find("World")) # 9 (index)
-print(text.replace("World", "Python"))
-
-# Splitting and joining
-words = "apple,banana,cherry".split(",")
-print(words)  # ['apple', 'banana', 'cherry']
-
-joined = " - ".join(words)
-print(joined)  # "apple - banana - cherry"`,
-        language: 'python'
-      },
-      {
-        title: 'String Formatting',
-        content: `Modern Python uses f-strings (formatted string literals) for easy and readable string formatting.`,
-        code: `name = "Alice"
-age = 30
-score = 95.5
-
-# f-strings (recommended)
-print(f"Name: {name}, Age: {age}")
-print(f"Score: {score:.1f}%")  # 1 decimal place
-print(f"Name: {name:>10}")     # Right align, 10 chars
-
-# Expressions in f-strings
-print(f"In 5 years: {age + 5}")
-print(f"Uppercase: {name.upper()}")
-
-# Multi-line f-string
-message = f"""
-Dear {name},
-Your score is {score}%.
-{"Congratulations!" if score >= 90 else "Keep trying!"}
-"""
-print(message)`,
-        language: 'python'
-      }
-    ]
-  },
-  // ========== INTERMEDIATE TIER ==========
-  {
-    id: 'day7',
-    day: 7,
-    tier: 'intermediate',
-    title: 'The Class',
-    subtitle: 'Object-Oriented Programming',
-    icon: 'construct',
+    title: 'The Scope',
+    subtitle: 'Understanding Variable Visibility',
+    icon: 'eye',
     color: '#06B6D4',
     unlocked: true,
-    estimatedTime: '60 min',
+    estimatedTime: '45 min',
     sections: [
       {
-        title: 'What is OOP?',
-        content: `Object-Oriented Programming (OOP) organizes code into "objects" that contain data (attributes) and behavior (methods). A class is a blueprint for creating objects.
+        title: 'Local vs Global Scope',
+        content: `Where you define a variable determines where you can use it. This is called scope.
 
-OOP helps model real-world entities and makes code reusable and maintainable.`,
-        code: `# A class is a blueprint
-class Dog:
-    # Class attribute (shared by all instances)
-    species = "Canis familiaris"
-    
-    # Constructor - runs when creating object
-    def __init__(self, name, breed, age):
-        # Instance attributes (unique to each instance)
-        self.name = name
-        self.breed = breed
-        self.age = age
-    
-    # Method - function inside class
-    def bark(self):
-        return f"{self.name} says Woof!"
-    
-    def describe(self):
-        return f"{self.name} is a {self.age} year old {self.breed}"
+Local scope: Variables inside functions - only visible inside that function.
+Global scope: Variables outside functions - visible everywhere.`,
+        code: `# Global variable
+message = "Hello, Global!"
 
-# Creating objects (instances)
-my_dog = Dog("Max", "Labrador", 3)
-your_dog = Dog("Bella", "Poodle", 5)
+def my_function():
+    # Local variable
+    local_msg = "Hello, Local!"
+    print(message)      # Can access global
+    print(local_msg)    # Can access local
 
-print(my_dog.bark())      # Max says Woof!
-print(your_dog.describe())  # Bella is a 5 year old Poodle`,
+my_function()
+print(message)          # Works - global
+# print(local_msg)      # ERROR! local_msg does not exist here`,
         language: 'python'
       },
       {
-        title: 'Inheritance',
-        content: `Classes can inherit from other classes, gaining their attributes and methods. This promotes code reuse and creates logical hierarchies.`,
-        code: `class Animal:
-    def __init__(self, name, age):
-        self.name = name
-        self.age = age
-    
-    def speak(self):
-        raise NotImplementedError("Subclass must implement")
-    
-    def describe(self):
-        return f"{self.name} is {self.age} years old"
+        title: 'The Global Keyword',
+        content: `To modify a global variable from inside a function, use the global keyword. But use this sparingly!`,
+        code: `counter = 0
 
-class Dog(Animal):  # Inherits from Animal
-    def speak(self):
-        return f"{self.name} barks: Woof!"
+def increment():
+    global counter  # Tell Python we mean the global one
+    counter += 1
 
-class Cat(Animal):
-    def speak(self):
-        return f"{self.name} meows: Meow!"
-    
-    def purr(self):  # Cat-specific method
-        return f"{self.name} purrs..."
+def bad_increment():
+    counter = counter + 1  # ERROR! Python thinks it is local
 
-# Usage
-dog = Dog("Rex", 3)
-cat = Cat("Whiskers", 5)
+increment()
+increment()
+print(counter)  # 2
 
-print(dog.speak())      # Rex barks: Woof!
-print(cat.speak())      # Whiskers meows: Meow!
-print(dog.describe())   # Rex is 3 years old (inherited)
-print(cat.purr())       # Whiskers purrs...`,
-        language: 'python'
-      },
-      {
-        title: 'Encapsulation',
-        content: `Encapsulation hides internal details and exposes only what is necessary. Use _ prefix for "protected" and __ for "private" attributes.`,
-        code: `class BankAccount:
-    def __init__(self, owner, balance=0):
-        self.owner = owner
-        self._balance = balance  # Protected (convention)
-        self.__pin = "1234"      # Private (name mangled)
-    
-    def deposit(self, amount):
-        if amount > 0:
-            self._balance += amount
-            return True
-        return False
-    
-    def withdraw(self, amount):
-        if 0 < amount <= self._balance:
-            self._balance -= amount
-            return True
-        return False
-    
-    def get_balance(self):
-        return self._balance
-    
-    @property
-    def balance(self):
-        """Property for controlled access."""
-        return self._balance
+# Better approach: pass and return
+def better_increment(count):
+    return count + 1
 
-# Usage
-account = BankAccount("Alice", 100)
-account.deposit(50)
-print(account.balance)     # 150
-print(account.get_balance())  # 150`,
-        language: 'python'
+counter = 0
+counter = better_increment(counter)
+counter = better_increment(counter)
+print(counter)  # 2`,
+        language: 'python',
+        tips: ['Avoid global variables when possible', 'Pass values as parameters', 'Return values instead of modifying globals']
       }
     ]
   },
   {
-    id: 'day8',
-    day: 8,
-    tier: 'intermediate',
-    title: 'The File',
-    subtitle: 'Reading and Writing Data',
-    icon: 'document',
-    color: '#F97316',
-    unlocked: true,
-    estimatedTime: '40 min',
-    sections: [
-      {
-        title: 'Reading Files',
-        content: `Python makes file handling easy. Always use the 'with' statement to ensure files are properly closed.`,
-        code: `# Reading entire file
-with open("example.txt", "r") as file:
-    content = file.read()
-    print(content)
-
-# Reading line by line (memory efficient)
-with open("example.txt", "r") as file:
-    for line in file:
-        print(line.strip())
-
-# Reading into a list
-with open("example.txt", "r") as file:
-    lines = file.readlines()
-    print(lines)`,
-        language: 'python'
-      },
-      {
-        title: 'Writing Files',
-        content: `Write data to files using 'w' (overwrite) or 'a' (append) mode.`,
-        code: `# Writing (overwrites existing content)
-with open("output.txt", "w") as file:
-    file.write("Hello, World!\\n")
-    file.write("Line 2\\n")
-
-# Appending (adds to existing content)
-with open("output.txt", "a") as file:
-    file.write("New line appended\\n")
-
-# Writing multiple lines
-lines = ["Line 1", "Line 2", "Line 3"]
-with open("output.txt", "w") as file:
-    file.writelines(line + "\\n" for line in lines)`,
-        language: 'python'
-      },
-      {
-        title: 'Working with JSON',
-        content: `JSON is a popular format for storing and transmitting data. Python has built-in support.`,
-        code: `import json
-
-# Python dict to JSON string
-data = {
-    "name": "Alice",
-    "age": 30,
-    "skills": ["Python", "JavaScript"]
-}
-
-json_string = json.dumps(data, indent=2)
-print(json_string)
-
-# JSON string to Python dict
-parsed = json.loads(json_string)
-print(parsed["name"])  # Alice
-
-# Save to file
-with open("data.json", "w") as file:
-    json.dump(data, file, indent=2)
-
-# Load from file
-with open("data.json", "r") as file:
-    loaded = json.load(file)
-    print(loaded)`,
-        language: 'python'
-      }
-    ]
-  },
-  {
-    id: 'day10',
-    day: 10,
-    tier: 'intermediate',
+    id: 'week10',
+    day: 64,
+    tier: 'foundation',
     title: 'The Error',
     subtitle: 'Exception Handling',
     icon: 'bug',
     color: '#EF4444',
     unlocked: true,
-    estimatedTime: '45 min',
+    estimatedTime: '55 min',
     sections: [
       {
         title: 'Why Handle Errors?',
-        content: `Programs encounter errors. Without handling, they crash. With proper exception handling, they recover gracefully and provide useful feedback.`,
-        code: `# Without handling - CRASH!
-# result = 10 / 0  # ZeroDivisionError
+        content: `Programs encounter errors. Without handling, they crash. With proper exception handling, they recover gracefully.
 
-# With handling - SAFE
+Common errors:
+• ZeroDivisionError - dividing by zero
+• ValueError - wrong value type
+• TypeError - wrong data type
+• FileNotFoundError - file does not exist
+• KeyError - dictionary key not found`,
+        code: `# Without handling - program crashes!
+# result = 10 / 0  # ZeroDivisionError: division by zero
+
+# With handling - program continues
 try:
     result = 10 / 0
 except ZeroDivisionError:
     print("Cannot divide by zero!")
     result = 0
 
-print(f"Result: {result}")
-
-# Catching the error object
-try:
-    x = int("not a number")
-except ValueError as e:
-    print(f"Error occurred: {e}")`,
+print(f"Result: {result}")  # Program continues!`,
         language: 'python'
       },
       {
         title: 'Try-Except-Else-Finally',
-        content: `The complete error handling structure gives you fine-grained control.`,
+        content: `The complete error handling structure:
+• try - code that might fail
+• except - what to do if it fails
+• else - runs only if try succeeded
+• finally - always runs, no matter what`,
         code: `def safe_divide(a, b):
     try:
         result = a / b
     except ZeroDivisionError:
-        print("Error: Division by zero!")
+        print("Error: Cannot divide by zero!")
         return None
     except TypeError:
-        print("Error: Invalid types!")
+        print("Error: Invalid types for division!")
         return None
     else:
-        # Runs only if no exception occurred
         print("Division successful!")
         return result
     finally:
-        # Always runs, regardless of exception
-        print("Cleanup completed")
+        print("Division attempt complete.")
 
-print(safe_divide(10, 2))   # Success!
-print(safe_divide(10, 0))   # Division by zero!
-print(safe_divide("a", 2))  # Invalid types!`,
+print(safe_divide(10, 2))   # Success
+print(safe_divide(10, 0))   # Zero error
+print(safe_divide("a", 2))  # Type error`,
         language: 'python'
       },
       {
         title: 'Raising Exceptions',
-        content: `Create your own exceptions when validation fails or something goes wrong in your code.`,
+        content: `You can raise your own exceptions when something goes wrong in your code.`,
         code: `def set_age(age):
     if not isinstance(age, int):
         raise TypeError("Age must be an integer!")
     if age < 0:
         raise ValueError("Age cannot be negative!")
     if age > 150:
-        raise ValueError("Age seems unrealistic!")
+        raise ValueError("Age is unrealistically high!")
     return age
 
-# Using the function
 try:
     user_age = set_age(-5)
 except ValueError as e:
@@ -898,25 +1022,114 @@ except ValueError as e:
 except TypeError as e:
     print(f"Type error: {e}")
 
-# Custom exception class
-class InsufficientFundsError(Exception):
-    def __init__(self, balance, amount):
-        self.balance = balance
-        self.amount = amount
-        super().__init__(f"Cannot withdraw {amount}. Balance: {balance}")`,
+# Creating custom exceptions
+class InvalidEmailError(Exception):
+    pass
+
+def validate_email(email):
+    if "@" not in email:
+        raise InvalidEmailError(f"Invalid email: {email}")`,
         language: 'python'
       }
     ]
   },
-  // ========== ADVANCED TIER ==========
+  // ═══════════════════════════════════════════════════════════════════════════
+  // MONTH 5-6: EXPANSION - Growing Your Skills
+  // ═══════════════════════════════════════════════════════════════════════════
   {
-    id: 'day14',
-    day: 14,
+    id: 'week17',
+    day: 113,
+    tier: 'intermediate',
+    title: 'The Class',
+    subtitle: 'Object-Oriented Programming',
+    icon: 'construct',
+    color: '#8B5CF6',
+    unlocked: true,
+    estimatedTime: '75 min',
+    sections: [
+      {
+        title: 'What is OOP?',
+        content: `Object-Oriented Programming organizes code into "objects" that combine data (attributes) and behavior (methods).
+
+Think of a class as a blueprint. Each object created from that class is an instance.
+
+OOP helps model real-world entities and makes code reusable and maintainable.`,
+        code: `# A class is a blueprint
+class Dog:
+    # Class attribute (shared by all dogs)
+    species = "Canis familiaris"
+    
+    # Constructor - runs when creating a new dog
+    def __init__(self, name, breed, age):
+        # Instance attributes (unique to each dog)
+        self.name = name
+        self.breed = breed
+        self.age = age
+    
+    # Method - a function that belongs to the class
+    def bark(self):
+        return f"{self.name} says Woof!"
+    
+    def describe(self):
+        return f"{self.name} is a {self.age}-year-old {self.breed}"
+
+# Creating objects (instances)
+my_dog = Dog("Max", "Labrador", 3)
+your_dog = Dog("Bella", "Poodle", 5)
+
+print(my_dog.bark())        # Max says Woof!
+print(your_dog.describe())  # Bella is a 5-year-old Poodle
+print(Dog.species)          # Canis familiaris`,
+        language: 'python'
+      },
+      {
+        title: 'Inheritance',
+        content: `Classes can inherit from other classes, gaining their attributes and methods. This promotes code reuse.`,
+        code: `class Animal:
+    def __init__(self, name, age):
+        self.name = name
+        self.age = age
+    
+    def speak(self):
+        raise NotImplementedError("Subclass must implement")
+
+class Dog(Animal):  # Inherits from Animal
+    def speak(self):
+        return f"{self.name} says Woof!"
+    
+    def fetch(self):
+        return f"{self.name} fetches the ball!"
+
+class Cat(Animal):
+    def speak(self):
+        return f"{self.name} says Meow!"
+    
+    def purr(self):
+        return f"{self.name} purrs contentedly..."
+
+# Usage
+dog = Dog("Rex", 3)
+cat = Cat("Whiskers", 5)
+
+print(dog.speak())   # Rex says Woof!
+print(cat.speak())   # Whiskers says Meow!
+print(dog.fetch())   # Rex fetches the ball!
+print(dog.age)       # 3 (inherited from Animal)`,
+        language: 'python'
+      }
+    ]
+  },
+  // ═══════════════════════════════════════════════════════════════════════════
+  // MONTH 7-8: DEPTH - Going Deeper
+  // ═══════════════════════════════════════════════════════════════════════════
+  {
+    id: 'week25',
+    day: 169,
     tier: 'advanced',
     title: 'The Algorithm',
     subtitle: 'Problem Solving Patterns',
     icon: 'analytics',
-    color: '#8B5CF6',
+    color: '#F59E0B',
     unlocked: true,
     estimatedTime: '90 min',
     sections: [
@@ -925,36 +1138,36 @@ class InsufficientFundsError(Exception):
         content: `Big O describes how code performance scales with input size. Understanding this helps you write efficient code.
 
 Common complexities (best to worst):
-- O(1) - Constant: Same time regardless of size
-- O(log n) - Logarithmic: Time grows slowly (binary search)
-- O(n) - Linear: Time grows proportionally
-- O(n log n) - Linearithmic: Good sorting algorithms
-- O(n^2) - Quadratic: Nested loops, avoid for large data`,
+• O(1) - Constant: Same time regardless of input size
+• O(log n) - Logarithmic: Halving the problem each step
+• O(n) - Linear: Time grows proportionally with input
+• O(n log n) - Linearithmic: Good sorting algorithms
+• O(n²) - Quadratic: Nested loops over input`,
         code: `# O(1) - Constant time
 def get_first(arr):
-    return arr[0] if arr else None
+    return arr[0] if arr else None  # Always one operation
 
 # O(n) - Linear time
 def find_max(arr):
     max_val = arr[0]
-    for num in arr:  # Loops through all elements
+    for num in arr:  # Visits every element once
         if num > max_val:
             max_val = num
     return max_val
 
-# O(n^2) - Quadratic time (nested loops)
-def has_duplicate(arr):
+# O(n²) - Quadratic time
+def has_duplicate_slow(arr):
     for i in range(len(arr)):
-        for j in range(i + 1, len(arr)):
+        for j in range(i + 1, len(arr)):  # Nested loop!
             if arr[i] == arr[j]:
                 return True
     return False
 
-# O(n) - Better duplicate check with set
+# O(n) - Better approach with hash set
 def has_duplicate_fast(arr):
     seen = set()
     for item in arr:
-        if item in seen:
+        if item in seen:  # set lookup is O(1)
             return True
         seen.add(item)
     return False`,
@@ -962,8 +1175,8 @@ def has_duplicate_fast(arr):
       },
       {
         title: 'Two Pointers Pattern',
-        content: `Use two pointers moving through data to solve problems efficiently. Common for array and string problems.`,
-        code: `# Check if string is palindrome
+        content: `Use two pointers moving through data to solve problems efficiently. Common for arrays and strings.`,
+        code: `# Palindrome check
 def is_palindrome(s):
     s = s.lower().replace(" ", "")
     left, right = 0, len(s) - 1
@@ -977,200 +1190,93 @@ def is_palindrome(s):
 
 print(is_palindrome("A man a plan a canal Panama"))  # True
 
-# Two Sum (sorted array)
+# Two Sum in sorted array
 def two_sum_sorted(nums, target):
     left, right = 0, len(nums) - 1
     
     while left < right:
-        current_sum = nums[left] + nums[right]
-        if current_sum == target:
+        current = nums[left] + nums[right]
+        if current == target:
             return [left, right]
-        elif current_sum < target:
+        elif current < target:
             left += 1
         else:
             right -= 1
-    return []
-
-print(two_sum_sorted([1, 2, 3, 4, 6], 6))  # [1, 3]`,
-        language: 'python'
-      },
-      {
-        title: 'Sliding Window Pattern',
-        content: `Maintain a "window" over data that slides through. Efficient for subarray/substring problems.`,
-        code: `# Maximum sum of k consecutive elements
-def max_sum_subarray(arr, k):
-    if len(arr) < k:
-        return None
-    
-    # Calculate first window
-    window_sum = sum(arr[:k])
-    max_sum = window_sum
-    
-    # Slide the window
-    for i in range(k, len(arr)):
-        window_sum += arr[i] - arr[i - k]  # Add new, remove old
-        max_sum = max(max_sum, window_sum)
-    
-    return max_sum
-
-print(max_sum_subarray([1, 4, 2, 10, 2, 3, 1, 0, 20], 4))  # 24
-
-# Longest substring without repeating characters
-def longest_unique_substring(s):
-    char_set = set()
-    left = 0
-    max_length = 0
-    
-    for right in range(len(s)):
-        while s[right] in char_set:
-            char_set.remove(s[left])
-            left += 1
-        char_set.add(s[right])
-        max_length = max(max_length, right - left + 1)
-    
-    return max_length
-
-print(longest_unique_substring("abcabcbb"))  # 3`,
-        language: 'python'
-      },
-      {
-        title: 'Hash Map Pattern',
-        content: `Use hash maps (dictionaries) for O(1) lookup. Transforms many O(n^2) problems to O(n).`,
-        code: `# Two Sum (unsorted) - Classic interview question
-def two_sum(nums, target):
-    seen = {}  # value -> index
-    
-    for i, num in enumerate(nums):
-        complement = target - num
-        if complement in seen:
-            return [seen[complement], i]
-        seen[num] = i
-    
-    return []
-
-print(two_sum([2, 7, 11, 15], 9))  # [0, 1]
-
-# Group anagrams
-def group_anagrams(words):
-    groups = {}
-    
-    for word in words:
-        key = "".join(sorted(word))
-        if key not in groups:
-            groups[key] = []
-        groups[key].append(word)
-    
-    return list(groups.values())
-
-words = ["eat", "tea", "tan", "ate", "nat", "bat"]
-print(group_anagrams(words))
-# [['eat', 'tea', 'ate'], ['tan', 'nat'], ['bat']]`,
+    return []`,
         language: 'python'
       }
     ]
   },
+  // ═══════════════════════════════════════════════════════════════════════════
+  // MONTH 9-10: MASTERY - Advanced Concepts
+  // ═══════════════════════════════════════════════════════════════════════════
   {
-    id: 'day21',
-    day: 21,
+    id: 'week33',
+    day: 225,
     tier: 'advanced',
     title: 'The Async',
     subtitle: 'Concurrent Programming',
     icon: 'flash',
-    color: '#F59E0B',
+    color: '#EC4899',
     unlocked: true,
-    estimatedTime: '75 min',
+    estimatedTime: '80 min',
     sections: [
       {
-        title: 'Understanding Async',
-        content: `Asynchronous programming allows code to run without blocking while waiting for I/O operations. Perfect for API calls, file operations, and network requests.`,
+        title: 'Understanding Asynchronous Code',
+        content: `Synchronous code waits for each operation to complete before moving on. Asynchronous code can start an operation and continue with other work while waiting.
+
+This is crucial for I/O operations like network requests, file operations, and database queries.`,
         code: `import asyncio
 
-# Synchronous (blocking) - slow!
-def sync_fetch():
+# Synchronous - blocks while waiting
+def sync_task():
     import time
-    time.sleep(1)  # Blocks everything
-    return "data"
+    time.sleep(1)  # Blocks everything for 1 second
+    return "Done"
 
-# Asynchronous (non-blocking) - fast!
-async def async_fetch():
-    await asyncio.sleep(1)  # Does not block
-    return "data"
+# Asynchronous - does not block
+async def async_task():
+    await asyncio.sleep(1)  # Yields control while waiting
+    return "Done"
 
-# The difference: async allows other code to run while waiting`,
+# The difference: async lets other code run during the wait`,
         language: 'python'
       },
       {
         title: 'Async/Await in Python',
-        content: `Use async def to define coroutines and await to call them. asyncio.gather() runs multiple coroutines concurrently.`,
+        content: `Use async def to define coroutines and await to call them.`,
         code: `import asyncio
 
 async def fetch_data(url, delay):
-    print(f"Fetching {url}...")
+    print(f"Starting fetch from {url}...")
     await asyncio.sleep(delay)  # Simulate network delay
-    print(f"Got data from {url}")
+    print(f"Finished fetch from {url}")
     return f"Data from {url}"
 
 async def main():
-    # Sequential - takes 3 seconds
-    # result1 = await fetch_data("api/users", 1)
-    # result2 = await fetch_data("api/posts", 1)
-    # result3 = await fetch_data("api/comments", 1)
-    
-    # Concurrent - takes 1 second!
+    # Run concurrently - much faster!
     results = await asyncio.gather(
-        fetch_data("api/users", 1),
-        fetch_data("api/posts", 1),
-        fetch_data("api/comments", 1)
+        fetch_data("api/users", 2),
+        fetch_data("api/posts", 2),
+        fetch_data("api/comments", 2)
     )
+    # Takes ~2 seconds total, not 6!
     
     for result in results:
         print(result)
 
-# Run the async main function
+# Run the async main
 # asyncio.run(main())`,
         language: 'python'
-      },
-      {
-        title: 'JavaScript Async',
-        content: `JavaScript is built for async programming with Promises and async/await. Almost all I/O is async by default.`,
-        code: `// Async function returns a Promise
-async function fetchUser(id) {
-  const response = await fetch(\`/api/users/\${id}\`);
-  if (!response.ok) {
-    throw new Error('User not found');
-  }
-  const data = await response.json();
-  return data;
-}
-
-// Using with .then/.catch
-fetchUser(1)
-  .then(user => console.log(user))
-  .catch(err => console.error(err));
-
-// Using with async/await (cleaner)
-async function main() {
-  try {
-    const user = await fetchUser(1);
-    console.log(user);
-    
-    // Parallel requests
-    const [users, posts] = await Promise.all([
-      fetch('/api/users').then(r => r.json()),
-      fetch('/api/posts').then(r => r.json())
-    ]);
-  } catch (err) {
-    console.error('Error:', err.message);
-  }
-}`,
-        language: 'javascript'
       }
     ]
   },
-  // ========== EXPERT TIER ==========
+  // ═══════════════════════════════════════════════════════════════════════════
+  // MONTH 11-12: TRANSCENDENCE - Expert Level
+  // ═══════════════════════════════════════════════════════════════════════════
   {
-    id: 'day30',
-    day: 30,
+    id: 'week41',
+    day: 281,
     tier: 'expert',
     title: 'The Pattern',
     subtitle: 'Design Patterns',
@@ -1187,252 +1293,124 @@ async function main() {
     
     def __new__(cls):
         if cls._instance is None:
-            print("Creating new database connection")
+            print("Creating database connection...")
             cls._instance = super().__new__(cls)
-            cls._instance.connection = "Connected to DB"
+            cls._instance.connection = "Connected"
         return cls._instance
-    
-    def query(self, sql):
-        return f"Executing: {sql}"
 
-# Both variables point to the SAME instance
+# Both point to the SAME instance
 db1 = Database()
 db2 = Database()
-
-print(db1 is db2)  # True
-print(db1.query("SELECT * FROM users"))`,
+print(db1 is db2)  # True`,
         language: 'python'
       },
       {
         title: 'Factory Pattern',
-        content: `Create objects without specifying the exact class. Provides flexibility and loose coupling.`,
+        content: `Create objects without specifying exact classes. Provides flexibility and loose coupling.`,
         code: `from abc import ABC, abstractmethod
 
 class Animal(ABC):
     @abstractmethod
-    def speak(self):
-        pass
+    def speak(self): pass
 
 class Dog(Animal):
-    def speak(self):
-        return "Woof!"
+    def speak(self): return "Woof!"
 
 class Cat(Animal):
-    def speak(self):
-        return "Meow!"
-
-class Bird(Animal):
-    def speak(self):
-        return "Tweet!"
+    def speak(self): return "Meow!"
 
 class AnimalFactory:
     @staticmethod
-    def create(animal_type: str) -> Animal:
-        animals = {
-            "dog": Dog,
-            "cat": Cat,
-            "bird": Bird
-        }
-        if animal_type.lower() not in animals:
-            raise ValueError(f"Unknown animal: {animal_type}")
-        return animals[animal_type.lower()]()
-
-# Usage - no need to know specific classes
-pet1 = AnimalFactory.create("dog")
-pet2 = AnimalFactory.create("cat")
-
-print(pet1.speak())  # Woof!
-print(pet2.speak())  # Meow!`,
-        language: 'python'
-      },
-      {
-        title: 'Observer Pattern',
-        content: `Objects subscribe to events and get notified when they occur. Foundation of event-driven programming.`,
-        code: `class EventEmitter:
-    def __init__(self):
-        self._listeners = {}
-    
-    def on(self, event: str, callback):
-        if event not in self._listeners:
-            self._listeners[event] = []
-        self._listeners[event].append(callback)
-        return self  # Allow chaining
-    
-    def off(self, event: str, callback):
-        if event in self._listeners:
-            self._listeners[event].remove(callback)
-    
-    def emit(self, event: str, data=None):
-        for callback in self._listeners.get(event, []):
-            callback(data)
+    def create(animal_type):
+        animals = {"dog": Dog, "cat": Cat}
+        return animals.get(animal_type.lower(), Dog)()
 
 # Usage
-emitter = EventEmitter()
-
-def on_login(user):
-    print(f"User {user} logged in")
-
-def send_welcome(user):
-    print(f"Welcome email sent to {user}")
-
-emitter.on("login", on_login)
-emitter.on("login", send_welcome)
-
-emitter.emit("login", "Alice")
-# Output:
-# User Alice logged in
-# Welcome email sent to Alice`,
-        language: 'python'
-      },
-      {
-        title: 'Strategy Pattern',
-        content: `Define a family of algorithms, encapsulate each one, and make them interchangeable. Great for varying behavior.`,
-        code: `from abc import ABC, abstractmethod
-
-class PaymentStrategy(ABC):
-    @abstractmethod
-    def pay(self, amount: float) -> str:
-        pass
-
-class CreditCardPayment(PaymentStrategy):
-    def __init__(self, card_number: str):
-        self.card_number = card_number
-    
-    def pay(self, amount: float) -> str:
-        return f"Paid ${amount} with card ending in {self.card_number[-4:]}"
-
-class PayPalPayment(PaymentStrategy):
-    def __init__(self, email: str):
-        self.email = email
-    
-    def pay(self, amount: float) -> str:
-        return f"Paid ${amount} via PayPal ({self.email})"
-
-class ShoppingCart:
-    def __init__(self):
-        self.items = []
-        self.payment_strategy = None
-    
-    def set_payment_strategy(self, strategy: PaymentStrategy):
-        self.payment_strategy = strategy
-    
-    def checkout(self):
-        total = sum(item["price"] for item in self.items)
-        return self.payment_strategy.pay(total)
-
-# Usage
-cart = ShoppingCart()
-cart.items = [{"name": "Book", "price": 20}, {"name": "Pen", "price": 5}]
-
-cart.set_payment_strategy(CreditCardPayment("1234567890123456"))
-print(cart.checkout())  # Paid $25 with card ending in 3456`,
+pet = AnimalFactory.create("cat")
+print(pet.speak())  # Meow!`,
         language: 'python'
       }
     ]
   },
-  // ========== GODTIER ==========
+  // ═══════════════════════════════════════════════════════════════════════════
+  // THE SUMMIT: GODTIER
+  // ═══════════════════════════════════════════════════════════════════════════
   {
     id: 'godtier',
-    day: 100,
+    day: 365,
     tier: 'godtier',
     title: 'The Mastery',
     subtitle: 'Principles of Excellence',
     icon: 'trophy',
     color: '#FFD700',
     unlocked: true,
-    estimatedTime: '120 min',
+    estimatedTime: '∞',
     sections: [
       {
         title: 'SOLID Principles',
-        content: `The foundation of maintainable, scalable code. These five principles guide object-oriented design.
+        content: `The foundation of maintainable, scalable code:
 
 S - Single Responsibility: One class, one job
 O - Open/Closed: Open for extension, closed for modification
-L - Liskov Substitution: Subtypes must be substitutable for their base types
-I - Interface Segregation: Many specific interfaces are better than one general interface
-D - Dependency Inversion: Depend on abstractions, not concretions`,
-        tips: ['These take years to master', 'Apply gradually, not all at once', 'Prioritize readability over rigid adherence']
+L - Liskov Substitution: Subtypes must be substitutable
+I - Interface Segregation: Many specific interfaces over one general
+D - Dependency Inversion: Depend on abstractions, not concretions
+
+These principles take years to master. Apply gradually.`,
+        tips: ['Start with Single Responsibility', 'Refactor toward these principles', 'Do not over-engineer']
       },
       {
-        title: 'Clean Code Commandments',
-        content: `The principles that separate good code from great code:
-
-1. Names should reveal intent
+        title: 'The Clean Code Commandments',
+        content: `1. Names should reveal intent
 2. Functions should do one thing
 3. Comments explain WHY, not WHAT
 4. Handle errors gracefully
-5. Write tests before code (TDD)
+5. Write tests first (TDD)
 6. Refactor continuously
 7. Keep it simple (KISS)
 8. Do not repeat yourself (DRY)
 9. You are not gonna need it (YAGNI)
 10. Leave code better than you found it`,
-        code: `# BAD - unclear names, does too much
+        code: `# BAD
 def calc(a, b, t):
-    if t == 1:
-        return a + b
-    elif t == 2:
-        return a - b
-    elif t == 3:
-        r = a + b
-        print(r)
-        save_to_db(r)
-        send_email(r)
-        return r
+    if t == 1: return a + b
+    elif t == 2: return a - b
 
-# GOOD - clear names, single responsibility
-def add(first_number: int, second_number: int) -> int:
-    """Add two numbers and return the result."""
-    return first_number + second_number
+# GOOD
+def add(first: int, second: int) -> int:
+    """Add two numbers."""
+    return first + second
 
-def subtract(first_number: int, second_number: int) -> int:
-    """Subtract second number from first."""
-    return first_number - second_number
-
-def process_calculation(result: int) -> None:
-    """Handle side effects of a calculation."""
-    save_to_db(result)
-    send_email(result)`,
+def subtract(first: int, second: int) -> int:
+    """Subtract second from first."""
+    return first - second`,
         language: 'python'
       },
       {
-        title: 'The Godtier Mindset',
-        content: `Technical skills get you hired. These principles make you exceptional:
+        title: 'The Journey Never Ends',
+        content: `Congratulations. You have traveled far.
 
-- Read more code than you write
-- Teach others to deepen your understanding
-- Embrace failure as feedback
-- Build projects that solve real problems
-- Contribute to open source
-- Stay curious - technologies change constantly
-- Code is communication - write for humans first
-- Premature optimization is the root of all evil
-- Simple is better than complex
-- Done is better than perfect
+You have learned:
+• The fundamentals of programming
+• Data structures and algorithms
+• Object-oriented design
+• Error handling and best practices
+• Asynchronous programming
+• Design patterns
+• Clean code principles
 
-"First, solve the problem. Then, write the code." - John Johnson`,
+But mastery is not a destination. It is a lifelong journey.
+
+"First, solve the problem. Then, write the code." - John Johnson
+
+Keep building. Keep learning. Keep growing.
+
+Welcome to Godtier. 🏆`,
         tips: [
-          'The best code is code you do not have to write',
-          'Debugging is twice as hard as writing code',
-          'If you are not embarrassed by v1, you launched too late'
+          'The best code is code you do not write',
+          'Debugging is twice as hard as writing',
+          'Teach others to master concepts yourself'
         ]
-      },
-      {
-        title: 'Your Journey Continues',
-        content: `Congratulations on reaching this point. You have learned:
-
-- Fundamentals: Variables, Types, Control Flow
-- Functions and Data Structures
-- Object-Oriented Programming
-- Error Handling and File I/O
-- Algorithms and Patterns
-- Async Programming
-- Design Patterns
-- Clean Code Principles
-
-But remember - mastery is a journey, not a destination. The field evolves constantly. Keep building. Keep learning. Keep shipping.
-
-Welcome to Godtier.`,
       }
     ]
   }

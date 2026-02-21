@@ -154,7 +154,7 @@ export default function CodeDockApp() {
       // Handle JS/TS preview in WebView
       if (selectedLanguage.key === 'javascript' || selectedLanguage.key === 'typescript') {
         const result = await apiExecuteCode(code, selectedLanguage.key);
-        const wrappedCode = result.result?.stdout || result.result?.output;
+        const wrappedCode = result.result?.stdout || (result as any).output;
         setHtmlPreview(`
           <html><head><meta name="viewport" content="width=device-width, initial-scale=1">
           <style>body{font-family:monospace;padding:16px;background:${colors.codeBackground};color:${colors.text};font-size:14px;margin:0;}</style></head>
@@ -170,7 +170,7 @@ export default function CodeDockApp() {
       const result = await apiExecuteCode(code, selectedLanguage.key);
       setExecutionTime(result.result?.execution_time || 0);
       
-      const stdout = result.result?.stdout || result.result?.output;
+      const stdout = result.result?.stdout || (result as any).output;
       const stderr = result.result?.stderr;
       
       if (stderr) {

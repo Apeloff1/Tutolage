@@ -1,6 +1,6 @@
 // ============================================================================
 // CODEDOCK QUANTUM NEXUS - Main Application
-// Version: 5.0.0 | Complete Refactored Architecture
+// Version: 6.0.0 | Quantum Compiler Suite Edition
 // Designed for First-Time User Experience
 // ============================================================================
 
@@ -21,6 +21,7 @@ import { useAPI } from '../hooks/useAPI';
 
 // Features
 import { BibleModal } from '../features/Bible/BibleModal';
+import { CompilerModal } from '../features/Compiler/CompilerModal';
 
 // Types
 import { Language, Template, AIMode } from '../types';

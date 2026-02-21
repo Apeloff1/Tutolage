@@ -1006,6 +1006,15 @@ export default function CodeDockQuantumNexus() {
   const [showWebPreview, setShowWebPreview] = useState(false);
   const [htmlPreview, setHtmlPreview] = useState('');
   
+  // ============================================================================
+  // CODING BIBLE STATE - Offline Knowledge Base
+  // ============================================================================
+  const [showBibleModal, setShowBibleModal] = useState(false);
+  const [selectedChapter, setSelectedChapter] = useState<BibleChapter | null>(null);
+  const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
+  const [bibleProgress, setBibleProgress] = useState<Record<string, boolean>>({});
+  const [bibleBookmarks, setBibleBookmarks] = useState<string[]>([]);
+  
   // Teaching Mode State
   const [showTutorial, setShowTutorial] = useState(false);
   const [tutorialSteps, setTutorialSteps] = useState<TutorialStep[]>([]);

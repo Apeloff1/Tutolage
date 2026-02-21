@@ -456,6 +456,29 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '700',
   },
+  musicControl: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    marginHorizontal: 16,
+    marginTop: 8,
+    borderRadius: 12,
+  },
+  musicInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  musicTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  musicSubtitle: {
+    fontSize: 11,
+    marginTop: 1,
+  },
   chapterList: {
     flex: 1,
     padding: 16,

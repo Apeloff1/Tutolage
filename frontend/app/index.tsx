@@ -1047,10 +1047,12 @@ const styles = StyleSheet.create({
 
   // AI Bar
   aiBar: {
+    paddingVertical: 10,
+  },
+  aiBarContent: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 16,
-    paddingVertical: 10,
     gap: 10,
   },
   aiButton: {

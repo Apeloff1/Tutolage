@@ -1,13 +1,13 @@
 // ============================================================================
 // CODEDOCK QUANTUM NEXUS - CONFIGURATION
-// Version: 4.2.0 | Refactored Architecture
+// Version: 6.0.0 | Quantum Compiler Suite Edition
 // ============================================================================
 
 import { AppConfig } from '../types';
 
-export const VERSION = '4.2.0';
-export const CODENAME = 'Nexus Refactored';
-export const BUILD = '2026.02.21-REFACTOR';
+export const VERSION = '6.0.0';
+export const CODENAME = 'Quantum Compiler';
+export const BUILD = '2026.02.21-COMPILER';
 
 export const CONFIG: AppConfig = {
   API_TIMEOUT: 15000,
@@ -21,6 +21,15 @@ export const CONFIG: AppConfig = {
 export const FEATURES = [
   'teaching_mode',
   'coding_bible',
+  'quantum_compiler_suite',
+  'agentic_compilation',
+  'sanitizer_suite',
+  'optimization_pipeline',
+  'heterogeneous_computing',
+  'energy_aware_optimization',
+  'memory_safety_analysis',
+  'ir_viewer',
+  'llm_api_modules',
   'tooltips_engine',
   'hidden_advanced_panel',
   'language_dock_system',

@@ -5,9 +5,9 @@
 
 import { AppConfig } from '../types';
 
-export const VERSION = '6.0.0';
-export const CODENAME = 'Quantum Compiler';
-export const BUILD = '2026.02.21-COMPILER';
+export const VERSION = '7.0.0';
+export const CODENAME = 'Ultimate Galaxy';
+export const BUILD = '2026.02.22-GALAXY';
 
 export const CONFIG: AppConfig = {
   API_TIMEOUT: 15000,

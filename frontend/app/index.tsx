@@ -1146,6 +1146,13 @@ export default function CodeDockQuantumNexus() {
       const advUnlocked = await AsyncStorage.getItem('advanced_unlocked');
       setAdvancedUnlocked(advUnlocked === 'true');
 
+      // Load Bible progress (offline)
+      const savedBibleProgress = await AsyncStorage.getItem('bible_progress');
+      if (savedBibleProgress) setBibleProgress(JSON.parse(savedBibleProgress));
+
+      const savedBookmarks = await AsyncStorage.getItem('bible_bookmarks');
+      if (savedBookmarks) setBibleBookmarks(JSON.parse(savedBookmarks));
+
       // Load languages with retry
       const langResponse = await retryWithBackoff(() => 
         axios.get(`${API_URL}/api/languages`, { timeout: CONFIG.API_TIMEOUT })

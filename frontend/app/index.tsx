@@ -1419,6 +1419,73 @@ export default function CodeDockQuantumNexus() {
     setShowTutorial(true);
   };
 
+  // ============================================================================
+  // CODING BIBLE FUNCTIONS - Offline Knowledge Management
+  // ============================================================================
+  const openChapter = (chapter: BibleChapter) => {
+    setSelectedChapter(chapter);
+    setCurrentSectionIndex(0);
+  };
+
+  const nextSection = () => {
+    if (selectedChapter && currentSectionIndex < selectedChapter.sections.length - 1) {
+      setCurrentSectionIndex(prev => prev + 1);
+    }
+  };
+
+  const prevSection = () => {
+    if (currentSectionIndex > 0) {
+      setCurrentSectionIndex(prev => prev - 1);
+    }
+  };
+
+  const markChapterComplete = async (chapterId: string) => {
+    const newProgress = { ...bibleProgress, [chapterId]: true };
+    setBibleProgress(newProgress);
+    await AsyncStorage.setItem('bible_progress', JSON.stringify(newProgress));
+    if (Platform.OS !== 'web') Vibration.vibrate([50, 50]);
+  };
+
+  const toggleBookmark = async (chapterId: string) => {
+    let newBookmarks: string[];
+    if (bibleBookmarks.includes(chapterId)) {
+      newBookmarks = bibleBookmarks.filter(b => b !== chapterId);
+    } else {
+      newBookmarks = [...bibleBookmarks, chapterId];
+    }
+    setBibleBookmarks(newBookmarks);
+    await AsyncStorage.setItem('bible_bookmarks', JSON.stringify(newBookmarks));
+  };
+
+  const loadCodeFromBible = (code: string, language: string) => {
+    const lang = languages.find(l => l.key === language || l.name.toLowerCase() === language);
+    if (lang) {
+      setSelectedLanguage(lang);
+      setCode(code);
+      setShowBibleModal(false);
+      loadTemplates(lang.key);
+    }
+  };
+
+  const getBibleStats = () => {
+    const completedCount = Object.values(bibleProgress).filter(Boolean).length;
+    const totalChapters = CODING_BIBLE.length;
+    const percentage = Math.round((completedCount / totalChapters) * 100);
+    return { completedCount, totalChapters, percentage };
+  };
+
+  const getTierColor = (tier: string) => {
+    switch (tier) {
+      case 'beginner': return '#22C55E';
+      case 'foundation': return '#3B82F6';
+      case 'intermediate': return '#8B5CF6';
+      case 'advanced': return '#F59E0B';
+      case 'expert': return '#EC4899';
+      case 'godtier': return '#FFD700';
+      default: return colors.primary;
+    }
+  };
+
   // Advanced Panel unlock
   const handleVersionTap = async () => {
     const newCount = versionTapCount + 1;

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   View,
   Text,
@@ -15,6 +15,8 @@ import {
   Modal,
   FlatList,
   Alert,
+  Animated,
+  Vibration,
 } from 'react-native';
 import { WebView } from 'react-native-webview';
 import { Ionicons } from '@expo/vector-icons';
@@ -33,19 +35,35 @@ interface Language {
   color: string;
   executable: boolean;
   description?: string;
+  version?: string;
   type: 'builtin' | 'addon';
+  templates_available?: boolean;
 }
 
 interface ExecutionResult {
-  status: 'success' | 'error' | 'timeout' | 'pending';
+  status: 'success' | 'error' | 'timeout' | 'pending' | 'security_violation';
   output: string;
   error: string;
-  execution_time_ms: number;
+  metrics?: {
+    execution_time_ms: number;
+  };
+  analysis?: CodeAnalysis;
+}
+
+interface CodeAnalysis {
+  complexity: string;
+  cyclomatic_complexity: number;
+  lines_of_code: number;
+  functions_count: number;
+  classes_count: number;
 }
 
 interface Template {
+  key: string;
   name: string;
   code: string;
+  description?: string;
+  complexity?: string;
 }
 
 interface SavedFile {
@@ -54,62 +72,127 @@ interface SavedFile {
   language: string;
   code: string;
   updated_at: string;
+  is_favorite?: boolean;
+  execution_count?: number;
 }
 
-// Theme configuration
+interface AIMode {
+  key: string;
+  name: string;
+  description: string;
+}
+
+// Theme configuration - 2026 Design System
 const themes = {
   dark: {
-    background: '#0D1117',
-    surface: '#161B22',
-    surfaceAlt: '#21262D',
-    primary: '#58A6FF',
-    secondary: '#8B949E',
-    text: '#E6EDF3',
-    textSecondary: '#8B949E',
-    border: '#30363D',
-    success: '#3FB950',
-    error: '#F85149',
-    warning: '#D29922',
-    codeBackground: '#0D1117',
+    background: '#09090B',
+    surface: '#18181B',
+    surfaceAlt: '#27272A',
+    surfaceHover: '#3F3F46',
+    primary: '#6366F1',
+    primaryGlow: 'rgba(99, 102, 241, 0.3)',
+    secondary: '#A1A1AA',
+    accent: '#22D3EE',
+    text: '#FAFAFA',
+    textSecondary: '#A1A1AA',
+    textMuted: '#71717A',
+    border: '#3F3F46',
+    borderSubtle: '#27272A',
+    success: '#22C55E',
+    successGlow: 'rgba(34, 197, 94, 0.2)',
+    error: '#EF4444',
+    errorGlow: 'rgba(239, 68, 68, 0.2)',
+    warning: '#F59E0B',
+    warningGlow: 'rgba(245, 158, 11, 0.2)',
+    codeBackground: '#0A0A0B',
+    codeLine: '#18181B',
+    aiGlow: 'rgba(139, 92, 246, 0.3)',
   },
   light: {
-    background: '#FFFFFF',
-    surface: '#F6F8FA',
-    surfaceAlt: '#EAEEF2',
-    primary: '#0969DA',
-    secondary: '#57606A',
-    text: '#24292F',
-    textSecondary: '#57606A',
-    border: '#D0D7DE',
-    success: '#1A7F37',
-    error: '#CF222E',
-    warning: '#9A6700',
-    codeBackground: '#F6F8FA',
+    background: '#FAFAFA',
+    surface: '#FFFFFF',
+    surfaceAlt: '#F4F4F5',
+    surfaceHover: '#E4E4E7',
+    primary: '#4F46E5',
+    primaryGlow: 'rgba(79, 70, 229, 0.15)',
+    secondary: '#71717A',
+    accent: '#0891B2',
+    text: '#18181B',
+    textSecondary: '#52525B',
+    textMuted: '#A1A1AA',
+    border: '#E4E4E7',
+    borderSubtle: '#F4F4F5',
+    success: '#16A34A',
+    successGlow: 'rgba(22, 163, 74, 0.1)',
+    error: '#DC2626',
+    errorGlow: 'rgba(220, 38, 38, 0.1)',
+    warning: '#D97706',
+    warningGlow: 'rgba(217, 119, 6, 0.1)',
+    codeBackground: '#FAFAFA',
+    codeLine: '#F4F4F5',
+    aiGlow: 'rgba(124, 58, 237, 0.15)',
   },
 };
 
-export default function CodeDock() {
-  // State
+export default function CodeDockQuantum() {
+  // Core State
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
   const [languages, setLanguages] = useState<Language[]>([]);
   const [selectedLanguage, setSelectedLanguage] = useState<Language | null>(null);
   const [code, setCode] = useState('');
   const [output, setOutput] = useState('');
   const [isExecuting, setIsExecuting] = useState(false);
+  const [currentFileName, setCurrentFileName] = useState('untitled');
+  
+  // Modal State
   const [showLanguageModal, setShowLanguageModal] = useState(false);
   const [showTemplateModal, setShowTemplateModal] = useState(false);
   const [showFilesModal, setShowFilesModal] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [showAddonModal, setShowAddonModal] = useState(false);
+  const [showAIModal, setShowAIModal] = useState(false);
+  const [showAnalysisModal, setShowAnalysisModal] = useState(false);
+  
+  // Data State
   const [templates, setTemplates] = useState<Template[]>([]);
   const [savedFiles, setSavedFiles] = useState<SavedFile[]>([]);
-  const [currentFileName, setCurrentFileName] = useState('untitled');
+  const [aiModes, setAIModes] = useState<AIMode[]>([]);
+  const [selectedAIMode, setSelectedAIMode] = useState<AIMode | null>(null);
+  const [aiResponse, setAIResponse] = useState('');
+  const [isAILoading, setIsAILoading] = useState(false);
+  const [codeAnalysis, setCodeAnalysis] = useState<CodeAnalysis | null>(null);
+  
+  // UI State
   const [showOutput, setShowOutput] = useState(false);
   const [showWebPreview, setShowWebPreview] = useState(false);
   const [htmlPreview, setHtmlPreview] = useState('');
   const [loading, setLoading] = useState(true);
+  const [executionTime, setExecutionTime] = useState<number | null>(null);
+
+  // Animation refs
+  const pulseAnim = useRef(new Animated.Value(1)).current;
 
   const colors = themes[theme];
+
+  // Pulse animation for AI button
+  useEffect(() => {
+    const pulse = Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulseAnim, {
+          toValue: 1.05,
+          duration: 1500,
+          useNativeDriver: true,
+        }),
+        Animated.timing(pulseAnim, {
+          toValue: 1,
+          duration: 1500,
+          useNativeDriver: true,
+        }),
+      ])
+    );
+    pulse.start();
+    return () => pulse.stop();
+  }, []);
 
   // Load initial data
   useEffect(() => {
@@ -118,32 +201,38 @@ export default function CodeDock() {
 
   const loadData = async () => {
     try {
-      // Load theme from storage
-      const savedTheme = await AsyncStorage.getItem('theme');
+      // Load theme
+      const savedTheme = await AsyncStorage.getItem('codedock_theme');
       if (savedTheme) setTheme(savedTheme as 'dark' | 'light');
 
-      // Load languages from API
+      // Load languages
       const langResponse = await axios.get(`${API_URL}/api/languages`);
       const langs = langResponse.data.languages || [];
       setLanguages(langs);
 
-      // Set default language (Python)
+      // Set default language
       const defaultLang = langs.find((l: Language) => l.key === 'python');
       if (defaultLang) {
         setSelectedLanguage(defaultLang);
         loadTemplates('python');
       }
 
-      // Load saved files
+      // Load AI modes
+      const aiResponse = await axios.get(`${API_URL}/api/ai/modes`);
+      setAIModes(aiResponse.data.modes || []);
+
+      // Load files
       loadFiles();
     } catch (error) {
       console.error('Failed to load data:', error);
-      // Set fallback languages
+      // Fallback languages
       setLanguages([
-        { key: 'python', name: 'Python', extension: '.py', icon: 'logo-python', color: '#3776AB', executable: true, type: 'builtin' },
-        { key: 'html', name: 'HTML', extension: '.html', icon: 'logo-html5', color: '#E34F26', executable: true, type: 'builtin' },
-        { key: 'javascript', name: 'JavaScript', extension: '.js', icon: 'logo-javascript', color: '#F7DF1E', executable: true, type: 'builtin' },
-        { key: 'cpp', name: 'C++', extension: '.cpp', icon: 'code-slash', color: '#00599C', executable: true, type: 'builtin' },
+        { key: 'python', name: 'Python', extension: '.py', icon: 'logo-python', color: '#3776AB', executable: true, type: 'builtin', version: '3.12+' },
+        { key: 'html', name: 'HTML', extension: '.html', icon: 'logo-html5', color: '#E34F26', executable: true, type: 'builtin', version: '5.3' },
+        { key: 'javascript', name: 'JavaScript', extension: '.js', icon: 'logo-javascript', color: '#F7DF1E', executable: true, type: 'builtin', version: 'ES2026' },
+        { key: 'typescript', name: 'TypeScript', extension: '.ts', icon: 'logo-javascript', color: '#3178C6', executable: true, type: 'builtin', version: '5.6+' },
+        { key: 'cpp', name: 'C++', extension: '.cpp', icon: 'code-slash', color: '#00599C', executable: true, type: 'builtin', version: 'C++23' },
+        { key: 'c', name: 'C', extension: '.c', icon: 'code-slash', color: '#A8B9CC', executable: true, type: 'builtin', version: 'C23' },
       ]);
     } finally {
       setLoading(false);
@@ -171,7 +260,8 @@ export default function CodeDock() {
   const toggleTheme = async () => {
     const newTheme = theme === 'dark' ? 'light' : 'dark';
     setTheme(newTheme);
-    await AsyncStorage.setItem('theme', newTheme);
+    await AsyncStorage.setItem('codedock_theme', newTheme);
+    if (Platform.OS !== 'web') Vibration.vibrate(10);
   };
 
   const selectLanguage = (lang: Language) => {
@@ -181,6 +271,7 @@ export default function CodeDock() {
     setOutput('');
     setShowOutput(false);
     setShowWebPreview(false);
+    setCodeAnalysis(null);
     loadTemplates(lang.key);
   };
 
@@ -191,6 +282,7 @@ export default function CodeDock() {
     setOutput('');
     setShowOutput(true);
     setShowWebPreview(false);
+    setExecutionTime(null);
 
     try {
       // For HTML, show preview directly
@@ -202,32 +294,50 @@ export default function CodeDock() {
         return;
       }
 
-      // For JavaScript, execute in WebView
-      if (selectedLanguage.key === 'javascript') {
+      // For JavaScript/TypeScript, execute in WebView
+      if (selectedLanguage.key === 'javascript' || selectedLanguage.key === 'typescript') {
         const response = await axios.post(`${API_URL}/api/execute`, {
           code,
           language: selectedLanguage.key,
         });
         
-        // Execute the wrapped JS code in a hidden WebView context
         const wrappedCode = response.data.result.output;
         setHtmlPreview(`
           <html>
-          <head><style>body { font-family: monospace; padding: 20px; background: ${colors.codeBackground}; color: ${colors.text}; }</style></head>
+          <head>
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+            <style>
+              body { 
+                font-family: 'SF Mono', Menlo, monospace; 
+                padding: 16px; 
+                background: ${colors.codeBackground}; 
+                color: ${colors.text};
+                font-size: 14px;
+                line-height: 1.6;
+              }
+              pre { white-space: pre-wrap; word-wrap: break-word; margin: 0; }
+              .success { color: ${colors.success}; }
+              .error { color: ${colors.error}; }
+            </style>
+          </head>
           <body>
           <pre id="output"></pre>
           <script>
             try {
               var result = ${wrappedCode};
-              document.getElementById('output').textContent = result.status === 'success' ? result.output : 'Error: ' + result.error;
+              document.getElementById('output').innerHTML = 
+                '<span class="' + result.status + '">' + 
+                (result.status === 'success' ? result.output : 'Error: ' + result.error) + 
+                '</span>';
             } catch(e) {
-              document.getElementById('output').textContent = 'Error: ' + e.message;
+              document.getElementById('output').innerHTML = '<span class="error">Error: ' + e.message + '</span>';
             }
           </script>
           </body>
           </html>
         `);
         setShowWebPreview(true);
+        setExecutionTime(response.data.result.metrics?.execution_time_ms || 0);
         return;
       }
 
@@ -235,22 +345,70 @@ export default function CodeDock() {
       const response = await axios.post(`${API_URL}/api/execute`, {
         code,
         language: selectedLanguage.key,
-        timeout_seconds: 10,
+        timeout_seconds: 15,
+        include_analysis: true,
       });
 
       const result: ExecutionResult = response.data.result;
+      setExecutionTime(result.metrics?.execution_time_ms || 0);
+      
+      if (result.analysis) {
+        setCodeAnalysis(result.analysis);
+      }
       
       if (result.status === 'success') {
         setOutput(result.output || 'Program executed successfully (no output)');
       } else if (result.status === 'timeout') {
-        setOutput(`Timeout: ${result.error}`);
+        setOutput(`⏱ Timeout: ${result.error}`);
+      } else if (result.status === 'security_violation') {
+        setOutput(`🛡 Security: ${result.error}`);
       } else {
-        setOutput(`Error: ${result.error || 'Unknown error'}`);
+        setOutput(`❌ Error: ${result.error || 'Unknown error'}`);
       }
     } catch (error: any) {
       setOutput(`Execution failed: ${error.response?.data?.detail || error.message}`);
     } finally {
       setIsExecuting(false);
+    }
+  };
+
+  const analyzeCode = async () => {
+    if (!code.trim() || !selectedLanguage) return;
+    
+    try {
+      const response = await axios.post(`${API_URL}/api/analyze`, {
+        code,
+        language: selectedLanguage.key,
+      });
+      setCodeAnalysis(response.data.analysis);
+      setShowAnalysisModal(true);
+    } catch (error) {
+      Alert.alert('Error', 'Failed to analyze code');
+    }
+  };
+
+  const askAI = async (mode: AIMode) => {
+    if (!code.trim() || !selectedLanguage) {
+      Alert.alert('No Code', 'Please write some code first');
+      return;
+    }
+
+    setSelectedAIMode(mode);
+    setIsAILoading(true);
+    setAIResponse('');
+
+    try {
+      const response = await axios.post(`${API_URL}/api/ai/assist`, {
+        code,
+        language: selectedLanguage.key,
+        mode: mode.key,
+      });
+      
+      setAIResponse(response.data.suggestion);
+    } catch (error: any) {
+      setAIResponse(`AI Error: ${error.response?.data?.detail || error.message}`);
+    } finally {
+      setIsAILoading(false);
     }
   };
 
@@ -263,9 +421,9 @@ export default function CodeDock() {
         language: selectedLanguage.key,
         code,
       });
-      Alert.alert('Success', 'File saved successfully');
+      Alert.alert('Saved', 'File saved successfully');
       loadFiles();
-    } catch (error: any) {
+    } catch (error) {
       Alert.alert('Error', 'Failed to save file');
     }
   };
@@ -278,6 +436,7 @@ export default function CodeDock() {
       setCurrentFileName(file.name.replace(/\.[^/.]+$/, ''));
       setShowFilesModal(false);
       setShowOutput(false);
+      loadTemplates(lang.key);
     }
   };
 
@@ -294,6 +453,7 @@ export default function CodeDock() {
     setCode(template.code);
     setShowTemplateModal(false);
     setShowOutput(false);
+    setCodeAnalysis(null);
   };
 
   const clearCode = () => {
@@ -301,10 +461,12 @@ export default function CodeDock() {
     setOutput('');
     setShowOutput(false);
     setShowWebPreview(false);
+    setCodeAnalysis(null);
+    setExecutionTime(null);
   };
 
-  const getIconName = (icon: string): any => {
-    const iconMap: { [key: string]: string } = {
+  const getIconName = (icon: string): keyof typeof Ionicons.glyphMap => {
+    const iconMap: { [key: string]: keyof typeof Ionicons.glyphMap } = {
       'logo-python': 'logo-python',
       'logo-html5': 'logo-html5',
       'logo-javascript': 'logo-javascript',
@@ -313,15 +475,31 @@ export default function CodeDock() {
       'code-working': 'code-working',
       'document-text': 'document-text',
       'server': 'server',
+      'hardware-chip': 'hardware-chip',
+      'terminal': 'terminal',
     };
     return iconMap[icon] || 'code-slash';
+  };
+
+  const getComplexityColor = (complexity: string) => {
+    switch (complexity) {
+      case 'trivial': return colors.success;
+      case 'simple': return colors.accent;
+      case 'moderate': return colors.warning;
+      case 'complex': return colors.error;
+      case 'very_complex': return '#DC2626';
+      default: return colors.secondary;
+    }
   };
 
   if (loading) {
     return (
       <View style={[styles.loadingContainer, { backgroundColor: colors.background }]}>
-        <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={[styles.loadingText, { color: colors.text }]}>Loading CodeDock...</Text>
+        <View style={styles.loadingContent}>
+          <ActivityIndicator size="large" color={colors.primary} />
+          <Text style={[styles.loadingTitle, { color: colors.text }]}>CodeDock Quantum</Text>
+          <Text style={[styles.loadingSubtitle, { color: colors.textSecondary }]}>2026+ Edition</Text>
+        </View>
       </View>
     );
   }
@@ -338,24 +516,28 @@ export default function CodeDock() {
         >
           {selectedLanguage && (
             <>
-              <Ionicons
-                name={getIconName(selectedLanguage.icon)}
-                size={20}
-                color={selectedLanguage.color}
-              />
-              <Text style={[styles.languageName, { color: colors.text }]}>
-                {selectedLanguage.name}
-              </Text>
+              <View style={[styles.langIconBg, { backgroundColor: selectedLanguage.color + '20' }]}>
+                <Ionicons
+                  name={getIconName(selectedLanguage.icon)}
+                  size={18}
+                  color={selectedLanguage.color}
+                />
+              </View>
+              <View>
+                <Text style={[styles.languageName, { color: colors.text }]}>
+                  {selectedLanguage.name}
+                </Text>
+                <Text style={[styles.languageVersion, { color: colors.textMuted }]}>
+                  {selectedLanguage.version || selectedLanguage.extension}
+                </Text>
+              </View>
               <Ionicons name="chevron-down" size={16} color={colors.secondary} />
             </>
           )}
         </TouchableOpacity>
         
         <View style={styles.headerActions}>
-          <TouchableOpacity
-            style={styles.headerButton}
-            onPress={toggleTheme}
-          >
+          <TouchableOpacity style={styles.headerButton} onPress={toggleTheme}>
             <Ionicons
               name={theme === 'dark' ? 'sunny' : 'moon'}
               size={20}
@@ -363,49 +545,81 @@ export default function CodeDock() {
             />
           </TouchableOpacity>
           
-          <TouchableOpacity
-            style={styles.headerButton}
-            onPress={() => setShowSettingsModal(true)}
-          >
+          <TouchableOpacity style={styles.headerButton} onPress={() => setShowSettingsModal(true)}>
             <Ionicons name="settings-outline" size={20} color={colors.secondary} />
           </TouchableOpacity>
         </View>
       </View>
 
       {/* Toolbar */}
-      <View style={[styles.toolbar, { backgroundColor: colors.surfaceAlt, borderBottomColor: colors.border }]}>
-        <TouchableOpacity
-          style={[styles.toolButton, { backgroundColor: colors.surface }]}
-          onPress={() => setShowTemplateModal(true)}
-        >
-          <Ionicons name="flash" size={16} color={colors.primary} />
-          <Text style={[styles.toolButtonText, { color: colors.text }]}>Templates</Text>
-        </TouchableOpacity>
-        
-        <TouchableOpacity
-          style={[styles.toolButton, { backgroundColor: colors.surface }]}
-          onPress={() => setShowFilesModal(true)}
-        >
-          <Ionicons name="folder" size={16} color={colors.warning} />
-          <Text style={[styles.toolButtonText, { color: colors.text }]}>Files</Text>
-        </TouchableOpacity>
-        
-        <TouchableOpacity
-          style={[styles.toolButton, { backgroundColor: colors.surface }]}
-          onPress={saveFile}
-        >
-          <Ionicons name="save" size={16} color={colors.success} />
-          <Text style={[styles.toolButtonText, { color: colors.text }]}>Save</Text>
-        </TouchableOpacity>
-        
-        <TouchableOpacity
-          style={[styles.toolButton, { backgroundColor: colors.surface }]}
-          onPress={clearCode}
-        >
-          <Ionicons name="trash" size={16} color={colors.error} />
-          <Text style={[styles.toolButtonText, { color: colors.text }]}>Clear</Text>
-        </TouchableOpacity>
+      <View style={[styles.toolbar, { backgroundColor: colors.surfaceAlt }]}>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.toolbarContent}>
+          <TouchableOpacity
+            style={[styles.toolButton, { backgroundColor: colors.surface }]}
+            onPress={() => setShowTemplateModal(true)}
+          >
+            <Ionicons name="flash" size={15} color={colors.warning} />
+            <Text style={[styles.toolButtonText, { color: colors.text }]}>Templates</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity
+            style={[styles.toolButton, { backgroundColor: colors.surface }]}
+            onPress={() => setShowFilesModal(true)}
+          >
+            <Ionicons name="folder" size={15} color={colors.accent} />
+            <Text style={[styles.toolButtonText, { color: colors.text }]}>Files</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity
+            style={[styles.toolButton, { backgroundColor: colors.surface }]}
+            onPress={saveFile}
+          >
+            <Ionicons name="save" size={15} color={colors.success} />
+            <Text style={[styles.toolButtonText, { color: colors.text }]}>Save</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity
+            style={[styles.toolButton, { backgroundColor: colors.surface }]}
+            onPress={analyzeCode}
+          >
+            <Ionicons name="analytics" size={15} color={colors.primary} />
+            <Text style={[styles.toolButtonText, { color: colors.text }]}>Analyze</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity
+            style={[styles.toolButton, { backgroundColor: colors.surface }]}
+            onPress={clearCode}
+          >
+            <Ionicons name="trash" size={15} color={colors.error} />
+            <Text style={[styles.toolButtonText, { color: colors.text }]}>Clear</Text>
+          </TouchableOpacity>
+        </ScrollView>
       </View>
+
+      {/* AI Assistant Bar */}
+      <Animated.View style={[
+        styles.aiBar, 
+        { backgroundColor: colors.surface, borderBottomColor: colors.border, transform: [{ scale: pulseAnim }] }
+      ]}>
+        <TouchableOpacity
+          style={[styles.aiButton, { backgroundColor: colors.primary + '15', borderColor: colors.primary + '40' }]}
+          onPress={() => setShowAIModal(true)}
+        >
+          <Ionicons name="sparkles" size={18} color={colors.primary} />
+          <Text style={[styles.aiButtonText, { color: colors.primary }]}>AI Assist</Text>
+          <View style={[styles.aiBadge, { backgroundColor: colors.primary }]}>
+            <Text style={styles.aiBadgeText}>GPT-4o</Text>
+          </View>
+        </TouchableOpacity>
+        
+        {codeAnalysis && (
+          <View style={[styles.analysisChip, { backgroundColor: getComplexityColor(codeAnalysis.complexity) + '20' }]}>
+            <Text style={[styles.analysisChipText, { color: getComplexityColor(codeAnalysis.complexity) }]}>
+              {codeAnalysis.complexity.toUpperCase()}
+            </Text>
+          </View>
+        )}
+      </Animated.View>
 
       {/* Main Content */}
       <KeyboardAvoidingView
@@ -415,40 +629,52 @@ export default function CodeDock() {
       >
         {/* Code Editor */}
         <View style={[styles.editorContainer, { backgroundColor: colors.codeBackground }]}>
-          <View style={[styles.editorHeader, { borderBottomColor: colors.border }]}>
-            <TextInput
-              style={[styles.fileNameInput, { color: colors.text }]}
-              value={currentFileName}
-              onChangeText={setCurrentFileName}
-              placeholder="filename"
-              placeholderTextColor={colors.secondary}
-            />
-            <Text style={[styles.extensionText, { color: colors.secondary }]}>
-              {selectedLanguage?.extension || ''}
-            </Text>
+          <View style={[styles.editorHeader, { borderBottomColor: colors.borderSubtle }]}>
+            <View style={styles.editorTabs}>
+              <View style={[styles.editorTab, { backgroundColor: colors.primary + '20', borderBottomColor: colors.primary }]}>
+                <TextInput
+                  style={[styles.fileNameInput, { color: colors.text }]}
+                  value={currentFileName}
+                  onChangeText={setCurrentFileName}
+                  placeholder="filename"
+                  placeholderTextColor={colors.textMuted}
+                />
+                <Text style={[styles.extensionText, { color: colors.textMuted }]}>
+                  {selectedLanguage?.extension || ''}
+                </Text>
+              </View>
+            </View>
+            {executionTime !== null && (
+              <Text style={[styles.execTimeText, { color: colors.success }]}>
+                {executionTime.toFixed(1)}ms
+              </Text>
+            )}
           </View>
           
           <ScrollView style={styles.editorScroll} keyboardShouldPersistTaps="handled">
             <View style={styles.editorContent}>
-              <View style={styles.lineNumbers}>
+              <View style={[styles.lineNumbers, { backgroundColor: colors.codeLine }]}>
                 {code.split('\n').map((_, index) => (
-                  <Text key={index} style={[styles.lineNumber, { color: colors.secondary }]}>
+                  <Text key={index} style={[styles.lineNumber, { color: colors.textMuted }]}>
                     {index + 1}
                   </Text>
                 ))}
-                {code === '' && <Text style={[styles.lineNumber, { color: colors.secondary }]}>1</Text>}
+                {code === '' && <Text style={[styles.lineNumber, { color: colors.textMuted }]}>1</Text>}
               </View>
               
               <TextInput
                 style={[styles.codeInput, { color: colors.text }]}
                 value={code}
-                onChangeText={setCode}
+                onChangeText={(text) => {
+                  setCode(text);
+                  setCodeAnalysis(null);
+                }}
                 multiline
                 autoCapitalize="none"
                 autoCorrect={false}
                 spellCheck={false}
-                placeholder="Start coding here..."
-                placeholderTextColor={colors.secondary}
+                placeholder="// Start coding here..."
+                placeholderTextColor={colors.textMuted}
                 textAlignVertical="top"
               />
             </View>
@@ -458,15 +684,23 @@ export default function CodeDock() {
         {/* Output/Preview Section */}
         {(showOutput || showWebPreview) && (
           <View style={[styles.outputContainer, { backgroundColor: colors.surface, borderTopColor: colors.border }]}>
-            <View style={[styles.outputHeader, { borderBottomColor: colors.border }]}>
-              <Text style={[styles.outputTitle, { color: colors.text }]}>
-                {showWebPreview ? 'Preview' : 'Output'}
-              </Text>
+            <View style={[styles.outputHeader, { borderBottomColor: colors.borderSubtle }]}>
+              <View style={styles.outputTitleRow}>
+                <Ionicons 
+                  name={showWebPreview ? "globe" : "terminal"} 
+                  size={16} 
+                  color={colors.accent} 
+                />
+                <Text style={[styles.outputTitle, { color: colors.text }]}>
+                  {showWebPreview ? 'Preview' : 'Output'}
+                </Text>
+              </View>
               <TouchableOpacity
                 onPress={() => {
                   setShowOutput(false);
                   setShowWebPreview(false);
                 }}
+                style={styles.closeButton}
               >
                 <Ionicons name="close" size={20} color={colors.secondary} />
               </TouchableOpacity>
@@ -495,7 +729,10 @@ export default function CodeDock() {
         <TouchableOpacity
           style={[
             styles.runButton,
-            { backgroundColor: selectedLanguage?.executable ? colors.success : colors.secondary },
+            { 
+              backgroundColor: selectedLanguage?.executable ? colors.success : colors.surfaceAlt,
+              shadowColor: selectedLanguage?.executable ? colors.success : 'transparent',
+            },
             isExecuting && styles.runButtonDisabled,
           ]}
           onPress={executeCode}
@@ -505,7 +742,11 @@ export default function CodeDock() {
             <ActivityIndicator size="small" color="#FFFFFF" />
           ) : (
             <>
-              <Ionicons name="play" size={20} color="#FFFFFF" />
+              <Ionicons 
+                name={selectedLanguage?.key === 'html' ? 'eye' : 'play'} 
+                size={22} 
+                color="#FFFFFF" 
+              />
               <Text style={styles.runButtonText}>
                 {selectedLanguage?.key === 'html' ? 'Preview' : 'Run'}
               </Text>
@@ -515,12 +756,7 @@ export default function CodeDock() {
       </View>
 
       {/* Language Selection Modal */}
-      <Modal
-        visible={showLanguageModal}
-        transparent
-        animationType="slide"
-        onRequestClose={() => setShowLanguageModal(false)}
-      >
+      <Modal visible={showLanguageModal} transparent animationType="slide" onRequestClose={() => setShowLanguageModal(false)}>
         <View style={styles.modalOverlay}>
           <View style={[styles.modalContent, { backgroundColor: colors.surface }]}>
             <View style={[styles.modalHeader, { borderBottomColor: colors.border }]}>
@@ -537,25 +773,28 @@ export default function CodeDock() {
                 <TouchableOpacity
                   style={[
                     styles.languageItem,
-                    { borderBottomColor: colors.border },
-                    selectedLanguage?.key === item.key && { backgroundColor: colors.surfaceAlt }
+                    { borderBottomColor: colors.borderSubtle },
+                    selectedLanguage?.key === item.key && { backgroundColor: colors.primary + '10' }
                   ]}
                   onPress={() => selectLanguage(item)}
                 >
                   <View style={styles.languageItemLeft}>
-                    <Ionicons name={getIconName(item.icon)} size={24} color={item.color} />
+                    <View style={[styles.langItemIcon, { backgroundColor: item.color + '20' }]}>
+                      <Ionicons name={getIconName(item.icon)} size={22} color={item.color} />
+                    </View>
                     <View style={styles.languageItemInfo}>
                       <Text style={[styles.languageItemName, { color: colors.text }]}>
                         {item.name}
                       </Text>
-                      <Text style={[styles.languageItemDesc, { color: colors.secondary }]}>
-                        {item.extension} {item.type === 'addon' ? '(Addon)' : ''}
+                      <Text style={[styles.languageItemVersion, { color: colors.textMuted }]}>
+                        {item.version || item.extension} {item.type === 'addon' ? '• Addon' : ''}
                       </Text>
                     </View>
                   </View>
                   {item.executable && (
                     <View style={[styles.executableBadge, { backgroundColor: colors.success + '20' }]}>
-                      <Text style={[styles.executableText, { color: colors.success }]}>Executable</Text>
+                      <Ionicons name="checkmark-circle" size={12} color={colors.success} />
+                      <Text style={[styles.executableText, { color: colors.success }]}>Run</Text>
                     </View>
                   )}
                 </TouchableOpacity>
@@ -568,7 +807,7 @@ export default function CodeDock() {
                     setShowAddonModal(true);
                   }}
                 >
-                  <Ionicons name="add-circle-outline" size={24} color={colors.primary} />
+                  <Ionicons name="add-circle-outline" size={22} color={colors.primary} />
                   <Text style={[styles.addAddonText, { color: colors.primary }]}>Add Language Addon</Text>
                 </TouchableOpacity>
               }
@@ -578,12 +817,7 @@ export default function CodeDock() {
       </Modal>
 
       {/* Templates Modal */}
-      <Modal
-        visible={showTemplateModal}
-        transparent
-        animationType="slide"
-        onRequestClose={() => setShowTemplateModal(false)}
-      >
+      <Modal visible={showTemplateModal} transparent animationType="slide" onRequestClose={() => setShowTemplateModal(false)}>
         <View style={styles.modalOverlay}>
           <View style={[styles.modalContent, { backgroundColor: colors.surface }]}>
             <View style={[styles.modalHeader, { borderBottomColor: colors.border }]}>
@@ -597,20 +831,36 @@ export default function CodeDock() {
             
             <FlatList
               data={templates}
-              keyExtractor={(item) => item.name}
+              keyExtractor={(item) => item.key}
               renderItem={({ item }) => (
                 <TouchableOpacity
-                  style={[styles.templateItem, { borderBottomColor: colors.border }]}
+                  style={[styles.templateItem, { borderBottomColor: colors.borderSubtle }]}
                   onPress={() => applyTemplate(item)}
                 >
-                  <Ionicons name="document-text" size={20} color={colors.primary} />
-                  <Text style={[styles.templateName, { color: colors.text }]}>
-                    {item.name.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                  </Text>
+                  <View style={styles.templateItemLeft}>
+                    <Ionicons name="document-text" size={20} color={colors.primary} />
+                    <View style={styles.templateInfo}>
+                      <Text style={[styles.templateName, { color: colors.text }]}>
+                        {item.name}
+                      </Text>
+                      {item.description && (
+                        <Text style={[styles.templateDesc, { color: colors.textMuted }]} numberOfLines={1}>
+                          {item.description}
+                        </Text>
+                      )}
+                    </View>
+                  </View>
+                  {item.complexity && (
+                    <View style={[styles.complexityBadge, { backgroundColor: getComplexityColor(item.complexity) + '20' }]}>
+                      <Text style={[styles.complexityText, { color: getComplexityColor(item.complexity) }]}>
+                        {item.complexity}
+                      </Text>
+                    </View>
+                  )}
                 </TouchableOpacity>
               )}
               ListEmptyComponent={
-                <Text style={[styles.emptyText, { color: colors.secondary }]}>
+                <Text style={[styles.emptyText, { color: colors.textMuted }]}>
                   No templates available
                 </Text>
               }
@@ -620,12 +870,7 @@ export default function CodeDock() {
       </Modal>
 
       {/* Files Modal */}
-      <Modal
-        visible={showFilesModal}
-        transparent
-        animationType="slide"
-        onRequestClose={() => setShowFilesModal(false)}
-      >
+      <Modal visible={showFilesModal} transparent animationType="slide" onRequestClose={() => setShowFilesModal(false)}>
         <View style={styles.modalOverlay}>
           <View style={[styles.modalContent, { backgroundColor: colors.surface }]}>
             <View style={[styles.modalHeader, { borderBottomColor: colors.border }]}>
@@ -640,14 +885,14 @@ export default function CodeDock() {
               keyExtractor={(item) => item.id}
               renderItem={({ item }) => (
                 <TouchableOpacity
-                  style={[styles.fileItem, { borderBottomColor: colors.border }]}
+                  style={[styles.fileItem, { borderBottomColor: colors.borderSubtle }]}
                   onPress={() => loadFile(item)}
                 >
                   <View style={styles.fileItemLeft}>
-                    <Ionicons name="document" size={20} color={colors.primary} />
+                    <Ionicons name="document" size={20} color={colors.accent} />
                     <View style={styles.fileItemInfo}>
                       <Text style={[styles.fileName, { color: colors.text }]}>{item.name}</Text>
-                      <Text style={[styles.fileDate, { color: colors.secondary }]}>
+                      <Text style={[styles.fileDate, { color: colors.textMuted }]}>
                         {new Date(item.updated_at).toLocaleDateString()}
                       </Text>
                     </View>
@@ -661,7 +906,7 @@ export default function CodeDock() {
                 </TouchableOpacity>
               )}
               ListEmptyComponent={
-                <Text style={[styles.emptyText, { color: colors.secondary }]}>
+                <Text style={[styles.emptyText, { color: colors.textMuted }]}>
                   No saved files yet
                 </Text>
               }
@@ -670,13 +915,137 @@ export default function CodeDock() {
         </View>
       </Modal>
 
+      {/* AI Modal */}
+      <Modal visible={showAIModal} transparent animationType="slide" onRequestClose={() => setShowAIModal(false)}>
+        <View style={styles.modalOverlay}>
+          <View style={[styles.modalContent, styles.aiModalContent, { backgroundColor: colors.surface }]}>
+            <View style={[styles.modalHeader, { borderBottomColor: colors.border }]}>
+              <View style={styles.aiModalTitle}>
+                <Ionicons name="sparkles" size={22} color={colors.primary} />
+                <Text style={[styles.modalTitle, { color: colors.text }]}>AI Assistant</Text>
+              </View>
+              <TouchableOpacity onPress={() => setShowAIModal(false)}>
+                <Ionicons name="close" size={24} color={colors.secondary} />
+              </TouchableOpacity>
+            </View>
+            
+            {!selectedAIMode ? (
+              <FlatList
+                data={aiModes}
+                keyExtractor={(item) => item.key}
+                numColumns={2}
+                contentContainerStyle={styles.aiModeGrid}
+                renderItem={({ item }) => (
+                  <TouchableOpacity
+                    style={[styles.aiModeCard, { backgroundColor: colors.surfaceAlt, borderColor: colors.border }]}
+                    onPress={() => askAI(item)}
+                  >
+                    <Ionicons 
+                      name={
+                        item.key === 'explain' ? 'bulb' :
+                        item.key === 'debug' ? 'bug' :
+                        item.key === 'optimize' ? 'rocket' :
+                        item.key === 'complete' ? 'create' :
+                        item.key === 'refactor' ? 'construct' :
+                        item.key === 'document' ? 'document-text' :
+                        item.key === 'test_gen' ? 'flask' :
+                        item.key === 'security_audit' ? 'shield-checkmark' :
+                        'swap-horizontal'
+                      } 
+                      size={28} 
+                      color={colors.primary} 
+                    />
+                    <Text style={[styles.aiModeName, { color: colors.text }]}>{item.name}</Text>
+                    <Text style={[styles.aiModeDesc, { color: colors.textMuted }]} numberOfLines={2}>
+                      {item.description}
+                    </Text>
+                  </TouchableOpacity>
+                )}
+              />
+            ) : (
+              <View style={styles.aiResponseContainer}>
+                <View style={styles.aiResponseHeader}>
+                  <TouchableOpacity 
+                    style={styles.aiBackButton}
+                    onPress={() => {
+                      setSelectedAIMode(null);
+                      setAIResponse('');
+                    }}
+                  >
+                    <Ionicons name="arrow-back" size={20} color={colors.primary} />
+                    <Text style={[styles.aiBackText, { color: colors.primary }]}>Back</Text>
+                  </TouchableOpacity>
+                  <Text style={[styles.aiModeTitle, { color: colors.text }]}>{selectedAIMode.name}</Text>
+                </View>
+                
+                {isAILoading ? (
+                  <View style={styles.aiLoadingContainer}>
+                    <ActivityIndicator size="large" color={colors.primary} />
+                    <Text style={[styles.aiLoadingText, { color: colors.textSecondary }]}>
+                      Analyzing code with GPT-4o...
+                    </Text>
+                  </View>
+                ) : (
+                  <ScrollView style={styles.aiResponseScroll}>
+                    <Text style={[styles.aiResponseText, { color: colors.text }]}>
+                      {aiResponse}
+                    </Text>
+                  </ScrollView>
+                )}
+              </View>
+            )}
+          </View>
+        </View>
+      </Modal>
+
+      {/* Analysis Modal */}
+      <Modal visible={showAnalysisModal} transparent animationType="slide" onRequestClose={() => setShowAnalysisModal(false)}>
+        <View style={styles.modalOverlay}>
+          <View style={[styles.modalContent, styles.analysisModalContent, { backgroundColor: colors.surface }]}>
+            <View style={[styles.modalHeader, { borderBottomColor: colors.border }]}>
+              <Text style={[styles.modalTitle, { color: colors.text }]}>Code Analysis</Text>
+              <TouchableOpacity onPress={() => setShowAnalysisModal(false)}>
+                <Ionicons name="close" size={24} color={colors.secondary} />
+              </TouchableOpacity>
+            </View>
+            
+            {codeAnalysis && (
+              <ScrollView style={styles.analysisContent}>
+                <View style={[styles.analysisCard, { backgroundColor: colors.surfaceAlt }]}>
+                  <Text style={[styles.analysisLabel, { color: colors.textSecondary }]}>Complexity</Text>
+                  <View style={[styles.complexityDisplay, { backgroundColor: getComplexityColor(codeAnalysis.complexity) + '20' }]}>
+                    <Text style={[styles.complexityValue, { color: getComplexityColor(codeAnalysis.complexity) }]}>
+                      {codeAnalysis.complexity.toUpperCase()}
+                    </Text>
+                  </View>
+                </View>
+                
+                <View style={styles.analysisGrid}>
+                  <View style={[styles.analysisGridItem, { backgroundColor: colors.surfaceAlt }]}>
+                    <Text style={[styles.analysisGridValue, { color: colors.text }]}>{codeAnalysis.lines_of_code}</Text>
+                    <Text style={[styles.analysisGridLabel, { color: colors.textMuted }]}>Lines</Text>
+                  </View>
+                  <View style={[styles.analysisGridItem, { backgroundColor: colors.surfaceAlt }]}>
+                    <Text style={[styles.analysisGridValue, { color: colors.text }]}>{codeAnalysis.cyclomatic_complexity}</Text>
+                    <Text style={[styles.analysisGridLabel, { color: colors.textMuted }]}>Cyclomatic</Text>
+                  </View>
+                  <View style={[styles.analysisGridItem, { backgroundColor: colors.surfaceAlt }]}>
+                    <Text style={[styles.analysisGridValue, { color: colors.text }]}>{codeAnalysis.functions_count}</Text>
+                    <Text style={[styles.analysisGridLabel, { color: colors.textMuted }]}>Functions</Text>
+                  </View>
+                  <View style={[styles.analysisGridItem, { backgroundColor: colors.surfaceAlt }]}>
+                    <Text style={[styles.analysisGridValue, { color: colors.text }]}>{codeAnalysis.classes_count}</Text>
+                    <Text style={[styles.analysisGridLabel, { color: colors.textMuted }]}>Classes</Text>
+                  </View>
+                </View>
+              </ScrollView>
+            )}
+          </View>
+        </View>
+      </Modal>
+
       {/* Settings Modal */}
-      <Modal
-        visible={showSettingsModal}
-        transparent
-        animationType="slide"
-        onRequestClose={() => setShowSettingsModal(false)}
-      >
+      <Modal visible={showSettingsModal} transparent animationType="slide" onRequestClose={() => setShowSettingsModal(false)}>
         <View style={styles.modalOverlay}>
           <View style={[styles.modalContent, { backgroundColor: colors.surface }]}>
             <View style={[styles.modalHeader, { borderBottomColor: colors.border }]}>
@@ -686,46 +1055,58 @@ export default function CodeDock() {
               </TouchableOpacity>
             </View>
             
-            <View style={styles.settingsContent}>
+            <ScrollView style={styles.settingsContent}>
               <TouchableOpacity
-                style={[styles.settingItem, { borderBottomColor: colors.border }]}
+                style={[styles.settingItem, { borderBottomColor: colors.borderSubtle }]}
                 onPress={toggleTheme}
               >
                 <View style={styles.settingItemLeft}>
-                  <Ionicons
-                    name={theme === 'dark' ? 'moon' : 'sunny'}
-                    size={24}
-                    color={colors.primary}
-                  />
+                  <View style={[styles.settingIcon, { backgroundColor: colors.warning + '20' }]}>
+                    <Ionicons name={theme === 'dark' ? 'moon' : 'sunny'} size={20} color={colors.warning} />
+                  </View>
                   <Text style={[styles.settingItemText, { color: colors.text }]}>Theme</Text>
                 </View>
-                <Text style={[styles.settingItemValue, { color: colors.secondary }]}>
+                <Text style={[styles.settingItemValue, { color: colors.textSecondary }]}>
                   {theme === 'dark' ? 'Dark' : 'Light'}
                 </Text>
               </TouchableOpacity>
               
               <TouchableOpacity
-                style={[styles.settingItem, { borderBottomColor: colors.border }]}
+                style={[styles.settingItem, { borderBottomColor: colors.borderSubtle }]}
                 onPress={() => {
                   setShowSettingsModal(false);
                   setShowAddonModal(true);
                 }}
               >
                 <View style={styles.settingItemLeft}>
-                  <Ionicons name="extension-puzzle" size={24} color={colors.warning} />
+                  <View style={[styles.settingIcon, { backgroundColor: colors.primary + '20' }]}>
+                    <Ionicons name="extension-puzzle" size={20} color={colors.primary} />
+                  </View>
                   <Text style={[styles.settingItemText, { color: colors.text }]}>Language Addons</Text>
                 </View>
                 <Ionicons name="chevron-forward" size={20} color={colors.secondary} />
               </TouchableOpacity>
               
-              <View style={[styles.settingItem, { borderBottomColor: colors.border }]}>
+              <View style={[styles.settingItem, { borderBottomColor: colors.borderSubtle }]}>
                 <View style={styles.settingItemLeft}>
-                  <Ionicons name="information-circle" size={24} color={colors.secondary} />
+                  <View style={[styles.settingIcon, { backgroundColor: colors.accent + '20' }]}>
+                    <Ionicons name="information-circle" size={20} color={colors.accent} />
+                  </View>
                   <Text style={[styles.settingItemText, { color: colors.text }]}>Version</Text>
                 </View>
-                <Text style={[styles.settingItemValue, { color: colors.secondary }]}>2.0.0</Text>
+                <Text style={[styles.settingItemValue, { color: colors.textSecondary }]}>3.0.0 Quantum</Text>
               </View>
-            </View>
+              
+              <View style={[styles.settingItem, { borderBottomColor: colors.borderSubtle }]}>
+                <View style={styles.settingItemLeft}>
+                  <View style={[styles.settingIcon, { backgroundColor: colors.success + '20' }]}>
+                    <Ionicons name="sparkles" size={20} color={colors.success} />
+                  </View>
+                  <Text style={[styles.settingItemText, { color: colors.text }]}>AI Model</Text>
+                </View>
+                <Text style={[styles.settingItemValue, { color: colors.textSecondary }]}>GPT-4o</Text>
+              </View>
+            </ScrollView>
           </View>
         </View>
       </Modal>
@@ -756,6 +1137,7 @@ function AddAddonModal({
   const [name, setName] = useState('');
   const [extension, setExtension] = useState('');
   const [description, setDescription] = useState('');
+  const [version, setVersion] = useState('1.0');
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async () => {
@@ -772,15 +1154,17 @@ function AddAddonModal({
         name: name.trim(),
         extension: extension.startsWith('.') ? extension : `.${extension}`,
         description: description.trim(),
+        version: version.trim(),
         icon: 'code-slash',
         color: '#6B7280',
         executable: false,
       });
       
-      Alert.alert('Success', 'Language addon added successfully');
+      Alert.alert('Success', 'Language addon added');
       setName('');
       setExtension('');
       setDescription('');
+      setVersion('1.0');
       onAddonAdded();
       onClose();
     } catch (error: any) {
@@ -809,7 +1193,7 @@ function AddAddonModal({
                 value={name}
                 onChangeText={setName}
                 placeholder="e.g., Rust, Go, Ruby"
-                placeholderTextColor={colors.secondary}
+                placeholderTextColor={colors.textMuted}
               />
               
               <Text style={[styles.inputLabel, { color: colors.text }]}>File Extension *</Text>
@@ -818,7 +1202,16 @@ function AddAddonModal({
                 value={extension}
                 onChangeText={setExtension}
                 placeholder="e.g., .rs, .go, .rb"
-                placeholderTextColor={colors.secondary}
+                placeholderTextColor={colors.textMuted}
+              />
+              
+              <Text style={[styles.inputLabel, { color: colors.text }]}>Version</Text>
+              <TextInput
+                style={[styles.textInput, { backgroundColor: colors.surfaceAlt, color: colors.text, borderColor: colors.border }]}
+                value={version}
+                onChangeText={setVersion}
+                placeholder="e.g., 1.0, 2024"
+                placeholderTextColor={colors.textMuted}
               />
               
               <Text style={[styles.inputLabel, { color: colors.text }]}>Description</Text>
@@ -826,8 +1219,8 @@ function AddAddonModal({
                 style={[styles.textInput, styles.textArea, { backgroundColor: colors.surfaceAlt, color: colors.text, borderColor: colors.border }]}
                 value={description}
                 onChangeText={setDescription}
-                placeholder="Brief description of the language"
-                placeholderTextColor={colors.secondary}
+                placeholder="Brief description"
+                placeholderTextColor={colors.textMuted}
                 multiline
                 numberOfLines={3}
               />
@@ -860,9 +1253,17 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  loadingText: {
-    marginTop: 16,
-    fontSize: 16,
+  loadingContent: {
+    alignItems: 'center',
+  },
+  loadingTitle: {
+    marginTop: 20,
+    fontSize: 24,
+    fontWeight: '700',
+  },
+  loadingSubtitle: {
+    marginTop: 4,
+    fontSize: 14,
   },
   header: {
     flexDirection: 'row',
@@ -875,37 +1276,89 @@ const styles = StyleSheet.create({
   languageSelector: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: 10,
+  },
+  langIconBg: {
+    width: 36,
+    height: 36,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   languageName: {
     fontSize: 16,
     fontWeight: '600',
   },
+  languageVersion: {
+    fontSize: 11,
+  },
   headerActions: {
     flexDirection: 'row',
-    gap: 8,
+    gap: 4,
   },
   headerButton: {
     padding: 8,
+    borderRadius: 8,
   },
   toolbar: {
-    flexDirection: 'row',
-    paddingHorizontal: 12,
     paddingVertical: 8,
+    borderBottomWidth: 0,
+  },
+  toolbarContent: {
+    paddingHorizontal: 12,
     gap: 8,
-    borderBottomWidth: 1,
   },
   toolButton: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 6,
+    paddingVertical: 8,
+    borderRadius: 8,
     gap: 6,
   },
   toolButtonText: {
     fontSize: 13,
     fontWeight: '500',
+  },
+  aiBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    gap: 10,
+    borderBottomWidth: 1,
+  },
+  aiButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 20,
+    gap: 8,
+    borderWidth: 1,
+  },
+  aiButtonText: {
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  aiBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 10,
+  },
+  aiBadgeText: {
+    color: '#FFFFFF',
+    fontSize: 10,
+    fontWeight: '700',
+  },
+  analysisChip: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  analysisChipText: {
+    fontSize: 11,
+    fontWeight: '700',
   },
   mainContent: {
     flex: 1,
@@ -916,17 +1369,33 @@ const styles = StyleSheet.create({
   editorHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 16,
+    justifyContent: 'space-between',
+    paddingHorizontal: 12,
     paddingVertical: 8,
     borderBottomWidth: 1,
   },
+  editorTabs: {
+    flexDirection: 'row',
+  },
+  editorTab: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 6,
+    borderBottomWidth: 2,
+  },
   fileNameInput: {
-    fontSize: 14,
+    fontSize: 13,
     fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
   },
   extensionText: {
-    fontSize: 14,
+    fontSize: 13,
     fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
+  },
+  execTimeText: {
+    fontSize: 12,
+    fontWeight: '600',
   },
   editorScroll: {
     flex: 1,
@@ -936,43 +1405,53 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
   },
   lineNumbers: {
-    paddingHorizontal: 12,
+    paddingHorizontal: 10,
     paddingRight: 8,
     alignItems: 'flex-end',
-    minWidth: 40,
+    minWidth: 44,
+    borderRightWidth: 1,
+    borderRightColor: 'rgba(255,255,255,0.05)',
   },
   lineNumber: {
-    fontSize: 14,
+    fontSize: 13,
     lineHeight: 22,
     fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
   },
   codeInput: {
     flex: 1,
-    fontSize: 14,
+    fontSize: 13,
     lineHeight: 22,
     fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
-    paddingRight: 16,
+    paddingHorizontal: 12,
     textAlignVertical: 'top',
   },
   outputContainer: {
-    height: SCREEN_HEIGHT * 0.3,
+    height: SCREEN_HEIGHT * 0.28,
     borderTopWidth: 1,
   },
   outputHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 16,
+    paddingHorizontal: 14,
     paddingVertical: 10,
     borderBottomWidth: 1,
+  },
+  outputTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
   },
   outputTitle: {
     fontSize: 14,
     fontWeight: '600',
   },
+  closeButton: {
+    padding: 4,
+  },
   outputScroll: {
     flex: 1,
-    padding: 16,
+    padding: 14,
   },
   outputText: {
     fontSize: 13,
@@ -992,26 +1471,36 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 14,
-    borderRadius: 10,
-    gap: 8,
+    borderRadius: 12,
+    gap: 10,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
   },
   runButtonDisabled: {
     opacity: 0.6,
   },
   runButtonText: {
     color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: '600',
+    fontSize: 17,
+    fontWeight: '700',
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
     justifyContent: 'flex-end',
   },
   modalContent: {
-    maxHeight: SCREEN_HEIGHT * 0.7,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
+    maxHeight: SCREEN_HEIGHT * 0.75,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+  },
+  aiModalContent: {
+    maxHeight: SCREEN_HEIGHT * 0.85,
+  },
+  analysisModalContent: {
+    maxHeight: SCREEN_HEIGHT * 0.5,
   },
   modalHeader: {
     flexDirection: 'row',
@@ -1023,7 +1512,12 @@ const styles = StyleSheet.create({
   },
   modalTitle: {
     fontSize: 18,
-    fontWeight: '600',
+    fontWeight: '700',
+  },
+  aiModalTitle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
   },
   languageItem: {
     flexDirection: 'row',
@@ -1038,50 +1532,84 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 12,
   },
+  langItemIcon: {
+    width: 44,
+    height: 44,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   languageItemInfo: {
     gap: 2,
   },
   languageItemName: {
     fontSize: 16,
-    fontWeight: '500',
+    fontWeight: '600',
   },
-  languageItemDesc: {
+  languageItemVersion: {
     fontSize: 12,
   },
   executableBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 4,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 12,
+    gap: 4,
   },
   executableText: {
-    fontSize: 11,
-    fontWeight: '500',
+    fontSize: 12,
+    fontWeight: '600',
   },
   addAddonButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 8,
-    paddingVertical: 16,
+    gap: 10,
+    paddingVertical: 18,
     margin: 16,
-    borderWidth: 1,
+    borderWidth: 1.5,
     borderStyle: 'dashed',
-    borderRadius: 10,
+    borderRadius: 12,
   },
   addAddonText: {
     fontSize: 15,
-    fontWeight: '500',
+    fontWeight: '600',
   },
   templateItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
+    justifyContent: 'space-between',
     paddingHorizontal: 20,
     paddingVertical: 14,
     borderBottomWidth: 1,
   },
+  templateItemLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    flex: 1,
+  },
+  templateInfo: {
+    flex: 1,
+    gap: 2,
+  },
   templateName: {
     fontSize: 15,
+    fontWeight: '500',
+  },
+  templateDesc: {
+    fontSize: 12,
+  },
+  complexityBadge: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 10,
+  },
+  complexityText: {
+    fontSize: 10,
+    fontWeight: '700',
+    textTransform: 'uppercase',
   },
   fileItem: {
     flexDirection: 'row',
@@ -1108,8 +1636,113 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     textAlign: 'center',
-    paddingVertical: 32,
+    paddingVertical: 40,
     fontSize: 14,
+  },
+  aiModeGrid: {
+    padding: 16,
+  },
+  aiModeCard: {
+    flex: 1,
+    margin: 6,
+    padding: 16,
+    borderRadius: 14,
+    borderWidth: 1,
+    alignItems: 'center',
+    minHeight: 130,
+  },
+  aiModeName: {
+    fontSize: 14,
+    fontWeight: '600',
+    marginTop: 10,
+  },
+  aiModeDesc: {
+    fontSize: 11,
+    textAlign: 'center',
+    marginTop: 4,
+    lineHeight: 15,
+  },
+  aiResponseContainer: {
+    flex: 1,
+  },
+  aiResponseHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    gap: 12,
+  },
+  aiBackButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  aiBackText: {
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  aiModeTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  aiLoadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 40,
+  },
+  aiLoadingText: {
+    marginTop: 16,
+    fontSize: 14,
+  },
+  aiResponseScroll: {
+    flex: 1,
+    padding: 16,
+  },
+  aiResponseText: {
+    fontSize: 14,
+    lineHeight: 22,
+  },
+  analysisContent: {
+    padding: 16,
+  },
+  analysisCard: {
+    padding: 16,
+    borderRadius: 12,
+    marginBottom: 16,
+    alignItems: 'center',
+  },
+  analysisLabel: {
+    fontSize: 12,
+    marginBottom: 8,
+  },
+  complexityDisplay: {
+    paddingHorizontal: 20,
+    paddingVertical: 8,
+    borderRadius: 20,
+  },
+  complexityValue: {
+    fontSize: 16,
+    fontWeight: '700',
+  },
+  analysisGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+  },
+  analysisGridItem: {
+    width: '47%',
+    padding: 16,
+    borderRadius: 12,
+    alignItems: 'center',
+  },
+  analysisGridValue: {
+    fontSize: 28,
+    fontWeight: '700',
+  },
+  analysisGridLabel: {
+    fontSize: 12,
+    marginTop: 4,
   },
   settingsContent: {
     paddingBottom: 20,
@@ -1125,7 +1758,14 @@ const styles = StyleSheet.create({
   settingItemLeft: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
+    gap: 14,
+  },
+  settingIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   settingItemText: {
     fontSize: 16,
@@ -1138,13 +1778,13 @@ const styles = StyleSheet.create({
   },
   inputLabel: {
     fontSize: 14,
-    fontWeight: '500',
+    fontWeight: '600',
     marginBottom: 8,
     marginTop: 16,
   },
   textInput: {
     borderWidth: 1,
-    borderRadius: 8,
+    borderRadius: 10,
     paddingHorizontal: 14,
     paddingVertical: 12,
     fontSize: 15,
@@ -1157,13 +1797,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 14,
-    borderRadius: 10,
+    borderRadius: 12,
     marginTop: 24,
     marginBottom: 20,
   },
   submitButtonText: {
     color: '#FFFFFF',
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: '700',
   },
 });

@@ -386,7 +386,7 @@ export const CODING_BIBLE: BibleChapter[] = [
     id: 'week44', day: 302, tier: 'expert', title: 'The Pattern: Strategy', subtitle: 'Interchangeable Algorithms',
     icon: 'options', color: '#8B5CF6', unlocked: true, estimatedTime: '50 min',
     sections: [
-      { title: 'Strategy Pattern', content: `Define a family of algorithms and make them interchangeable.`, code: `class PaymentStrategy:\n    def pay(self, amount): pass\n\nclass CreditCard(PaymentStrategy):\n    def pay(self, amount):\n        return f"Paid ${amount} with credit card"\n\nclass PayPal(PaymentStrategy):\n    def pay(self, amount):\n        return f"Paid ${amount} via PayPal"\n\nclass Cart:\n    def __init__(self):\n        self.strategy = None\n    \n    def checkout(self, amount):\n        return self.strategy.pay(amount)\n\ncart = Cart()\ncart.strategy = PayPal()\nprint(cart.checkout(100))`, language: 'python' }
+      { title: 'Strategy Pattern', content: `Define a family of algorithms and make them interchangeable.`, code: "class PaymentStrategy:\n    def pay(self, amount): pass\n\nclass CreditCard(PaymentStrategy):\n    def pay(self, amount):\n        return f\"Paid ${amount} with credit card\"\n\nclass PayPal(PaymentStrategy):\n    def pay(self, amount):\n        return f\"Paid ${amount} via PayPal\"\n\nclass Cart:\n    def __init__(self):\n        self.strategy = None\n    \n    def checkout(self, amount):\n        return self.strategy.pay(amount)\n\ncart = Cart()\ncart.strategy = PayPal()\nprint(cart.checkout(100))", language: 'python' }
     ]
   },
   {

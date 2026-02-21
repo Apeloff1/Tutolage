@@ -403,6 +403,15 @@ export default function CodeDockApp() {
           </View>
         </Pressable>
         
+        {/* Compiler Suite Button */}
+        <TouchableOpacity 
+          style={[styles.featureChip, { backgroundColor: '#8B5CF620' }]} 
+          onPress={() => setShowCompilerModal(true)}
+        >
+          <Ionicons name="construct" size={14} color="#8B5CF6" />
+          <Text style={[styles.featureChipText, { color: '#8B5CF6' }]}>Compiler</Text>
+        </TouchableOpacity>
+        
         {/* Bible Button */}
         <TouchableOpacity 
           style={[styles.featureChip, { backgroundColor: '#FFD70020' }]} 

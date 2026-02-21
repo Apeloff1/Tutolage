@@ -201,12 +201,60 @@ export default function CodeDockQuantumNexus() {
   const [selectedAIMode, setSelectedAIMode] = useState<AIMode | null>(null);
   const [aiResponse, setAIResponse] = useState('');
   const [isAILoading, setIsAILoading] = useState(false);
+  
+  // ============================================================================
+  // HOTFIX: Enhanced Error & Connection State
+  // ============================================================================
+  const [connectionStatus, setConnectionStatus] = useState<'connected' | 'disconnected' | 'reconnecting'>('connected');
+  const [lastError, setLastError] = useState<AppError | null>(null);
+  const [retryCount, setRetryCount] = useState(0);
 
   // Animation
   const pulseAnim = useRef(new Animated.Value(1)).current;
   const tutorialHighlightAnim = useRef(new Animated.Value(0)).current;
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const slideAnim = useRef(new Animated.Value(50)).current;
 
   const colors = themes[theme];
+  
+  // ============================================================================
+  // HOTFIX: Retry Utility with Exponential Backoff
+  // ============================================================================
+  const retryWithBackoff = async <T,>(
+    fn: () => Promise<T>,
+    maxRetries: number = CONFIG.MAX_RETRIES,
+    delay: number = CONFIG.RETRY_DELAY
+  ): Promise<T> => {
+    let lastError: any;
+    for (let i = 0; i < maxRetries; i++) {
+      try {
+        return await fn();
+      } catch (error) {
+        lastError = error;
+        if (i < maxRetries - 1) {
+          await new Promise(r => setTimeout(r, delay * Math.pow(2, i)));
+        }
+      }
+    }
+    throw lastError;
+  };
+
+  // Parse and classify errors for better UX
+  const parseError = (error: any): AppError => {
+    if (error.code === 'ECONNABORTED' || error.message?.includes('timeout')) {
+      return { type: 'timeout', message: 'Request timed out. Check your connection.', retry: true };
+    }
+    if (error.response?.status === 500) {
+      return { type: 'server', message: 'Server error. Please try again.', code: 500, retry: true };
+    }
+    if (error.response?.status === 404) {
+      return { type: 'validation', message: 'Resource not found.', code: 404, retry: false };
+    }
+    if (!error.response && error.message?.includes('Network')) {
+      return { type: 'network', message: 'Network error. Check your internet connection.', retry: true };
+    }
+    return { type: 'unknown', message: error.message || 'An unexpected error occurred.', retry: true };
+  };
 
   // Animations
   useEffect(() => {

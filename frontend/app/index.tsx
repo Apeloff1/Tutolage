@@ -884,6 +884,20 @@ export default function CodeDockApp() {
         language={selectedLanguage?.key || 'python'}
         onApplyFix={(fixedCode) => setCode(fixedCode)}
       />
+
+      {/* Pipeline Visualizer Modal */}
+      <PipelineVisualizer
+        visible={showPipelineModal}
+        onClose={() => setShowPipelineModal(false)}
+        colors={colors}
+      />
+
+      {/* Learning Dashboard Modal */}
+      <LearningDashboard
+        visible={showLearningModal}
+        onClose={() => setShowLearningModal(false)}
+        colors={colors}
+      />
     </SafeAreaView>
   );
 }

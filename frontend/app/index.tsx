@@ -2281,6 +2281,213 @@ export default function CodeDockQuantumNexus() {
           </View>
         </View>
       </Modal>
+
+      {/* ========================================================================
+          CODING BIBLE MODAL - Day 1 to Godtier Teaching Manual
+          ======================================================================== */}
+      <Modal visible={showBibleModal} transparent animationType="slide" onRequestClose={() => { setShowBibleModal(false); setSelectedChapter(null); }}>
+        <View style={styles.modalOverlay}>
+          <View style={[styles.modalContent, styles.bibleModalContent, { backgroundColor: colors.surface }]}>
+            {!selectedChapter ? (
+              <>
+                {/* Bible Index / Table of Contents */}
+                <View style={[styles.modalHeader, { borderBottomColor: colors.border }]}>
+                  <View style={styles.modalTitleRow}>
+                    <Ionicons name="book" size={22} color="#FFD700" />
+                    <Text style={[styles.modalTitle, { color: colors.text }]}>Coding Bible</Text>
+                  </View>
+                  <TouchableOpacity onPress={() => setShowBibleModal(false)}>
+                    <Ionicons name="close" size={24} color={colors.secondary} />
+                  </TouchableOpacity>
+                </View>
+                
+                {/* Progress Banner */}
+                <View style={[styles.bibleProgressBanner, { backgroundColor: colors.surfaceAlt }]}>
+                  <View style={styles.bibleProgressInfo}>
+                    <Text style={[styles.bibleProgressTitle, { color: colors.text }]}>Your Journey</Text>
+                    <Text style={[styles.bibleProgressSubtitle, { color: colors.textMuted }]}>
+                      {getBibleStats().completedCount}/{getBibleStats().totalChapters} chapters completed
+                    </Text>
+                  </View>
+                  <View style={[styles.bibleProgressCircle, { borderColor: '#FFD700' }]}>
+                    <Text style={[styles.bibleProgressPercent, { color: '#FFD700' }]}>{getBibleStats().percentage}%</Text>
+                  </View>
+                </View>
+
+                <ScrollView style={styles.bibleChapterList}>
+                  {CODING_BIBLE.map((chapter, index) => (
+                    <TouchableOpacity 
+                      key={chapter.id} 
+                      style={[styles.bibleChapterCard, { backgroundColor: colors.surfaceAlt, borderLeftColor: getTierColor(chapter.tier) }]}
+                      onPress={() => openChapter(chapter)}
+                    >
+                      <View style={[styles.bibleChapterIcon, { backgroundColor: getTierColor(chapter.tier) + '20' }]}>
+                        <Ionicons name={chapter.icon as any} size={24} color={getTierColor(chapter.tier)} />
+                      </View>
+                      <View style={styles.bibleChapterInfo}>
+                        <View style={styles.bibleChapterHeader}>
+                          <Text style={[styles.bibleChapterDay, { color: getTierColor(chapter.tier) }]}>
+                            {chapter.day === 100 ? 'MASTERY' : `Day ${chapter.day}`}
+                          </Text>
+                          <Text style={[styles.bibleChapterTier, { color: colors.textMuted }]}>
+                            {chapter.tier.toUpperCase()}
+                          </Text>
+                        </View>
+                        <Text style={[styles.bibleChapterTitle, { color: colors.text }]}>{chapter.title}</Text>
+                        <Text style={[styles.bibleChapterSubtitle, { color: colors.textMuted }]}>{chapter.subtitle}</Text>
+                        <Text style={[styles.bibleChapterSections, { color: colors.textMuted }]}>
+                          {chapter.sections.length} sections • {chapter.exercises?.length || 0} exercises
+                        </Text>
+                      </View>
+                      <View style={styles.bibleChapterStatus}>
+                        {bibleProgress[chapter.id] && (
+                          <Ionicons name="checkmark-circle" size={22} color={colors.success} />
+                        )}
+                        {bibleBookmarks.includes(chapter.id) && (
+                          <Ionicons name="bookmark" size={18} color="#FFD700" />
+                        )}
+                      </View>
+                    </TouchableOpacity>
+                  ))}
+                </ScrollView>
+              </>
+            ) : (
+              <>
+                {/* Chapter Reading View */}
+                <View style={[styles.modalHeader, { borderBottomColor: colors.border }]}>
+                  <TouchableOpacity style={styles.bibleBackButton} onPress={() => setSelectedChapter(null)}>
+                    <Ionicons name="arrow-back" size={20} color={colors.primary} />
+                    <Text style={[styles.bibleBackText, { color: colors.primary }]}>Back</Text>
+                  </TouchableOpacity>
+                  <View style={styles.bibleChapterActions}>
+                    <TouchableOpacity onPress={() => toggleBookmark(selectedChapter.id)}>
+                      <Ionicons 
+                        name={bibleBookmarks.includes(selectedChapter.id) ? 'bookmark' : 'bookmark-outline'} 
+                        size={22} 
+                        color={bibleBookmarks.includes(selectedChapter.id) ? '#FFD700' : colors.secondary} 
+                      />
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => { setShowBibleModal(false); setSelectedChapter(null); }}>
+                      <Ionicons name="close" size={24} color={colors.secondary} />
+                    </TouchableOpacity>
+                  </View>
+                </View>
+
+                {/* Chapter Header */}
+                <View style={[styles.bibleReadingHeader, { backgroundColor: getTierColor(selectedChapter.tier) + '15' }]}>
+                  <Text style={[styles.bibleReadingDay, { color: getTierColor(selectedChapter.tier) }]}>
+                    {selectedChapter.day === 100 ? '🏆 MASTERY LEVEL' : `📖 Day ${selectedChapter.day}`}
+                  </Text>
+                  <Text style={[styles.bibleReadingTitle, { color: colors.text }]}>{selectedChapter.title}</Text>
+                  <Text style={[styles.bibleReadingSubtitle, { color: colors.textSecondary }]}>{selectedChapter.subtitle}</Text>
+                  <View style={styles.bibleReadingProgress}>
+                    <Text style={[styles.bibleReadingProgressText, { color: colors.textMuted }]}>
+                      Section {currentSectionIndex + 1} of {selectedChapter.sections.length}
+                    </Text>
+                    <View style={[styles.bibleProgressBar, { backgroundColor: colors.surfaceAlt }]}>
+                      <View style={[styles.bibleProgressFill, { 
+                        backgroundColor: getTierColor(selectedChapter.tier),
+                        width: `${((currentSectionIndex + 1) / selectedChapter.sections.length) * 100}%`
+                      }]} />
+                    </View>
+                  </View>
+                </View>
+
+                {/* Section Content */}
+                <ScrollView style={styles.bibleReadingContent}>
+                  {selectedChapter.sections[currentSectionIndex] && (
+                    <View style={styles.bibleSectionContainer}>
+                      <Text style={[styles.bibleSectionTitle, { color: colors.text }]}>
+                        {selectedChapter.sections[currentSectionIndex].title}
+                      </Text>
+                      
+                      <Text style={[styles.bibleSectionContent, { color: colors.textSecondary }]}>
+                        {selectedChapter.sections[currentSectionIndex].content}
+                      </Text>
+
+                      {selectedChapter.sections[currentSectionIndex].warning && (
+                        <View style={[styles.bibleSectionWarning, { backgroundColor: colors.error + '15', borderColor: colors.error }]}>
+                          <Ionicons name="warning" size={18} color={colors.error} />
+                          <Text style={[styles.bibleSectionWarningText, { color: colors.error }]}>
+                            {selectedChapter.sections[currentSectionIndex].warning}
+                          </Text>
+                        </View>
+                      )}
+
+                      {selectedChapter.sections[currentSectionIndex].code && (
+                        <View style={styles.bibleCodeContainer}>
+                          <View style={[styles.bibleCodeHeader, { backgroundColor: colors.surfaceAlt }]}>
+                            <Text style={[styles.bibleCodeLang, { color: colors.textMuted }]}>
+                              {selectedChapter.sections[currentSectionIndex].language || 'python'}
+                            </Text>
+                            <TouchableOpacity 
+                              style={[styles.bibleCodeTryBtn, { backgroundColor: colors.primary }]}
+                              onPress={() => loadCodeFromBible(
+                                selectedChapter.sections[currentSectionIndex].code!,
+                                selectedChapter.sections[currentSectionIndex].language || 'python'
+                              )}
+                            >
+                              <Ionicons name="play" size={12} color="#FFF" />
+                              <Text style={styles.bibleCodeTryText}>Try it</Text>
+                            </TouchableOpacity>
+                          </View>
+                          <ScrollView horizontal>
+                            <Text style={[styles.bibleCodeText, { color: colors.text, backgroundColor: colors.codeBackground }]}>
+                              {selectedChapter.sections[currentSectionIndex].code}
+                            </Text>
+                          </ScrollView>
+                        </View>
+                      )}
+
+                      {selectedChapter.sections[currentSectionIndex].tips && (
+                        <View style={[styles.bibleTipsContainer, { backgroundColor: colors.primary + '10' }]}>
+                          <Text style={[styles.bibleTipsTitle, { color: colors.primary }]}>💡 Tips</Text>
+                          {selectedChapter.sections[currentSectionIndex].tips!.map((tip, i) => (
+                            <Text key={i} style={[styles.bibleTipText, { color: colors.textSecondary }]}>• {tip}</Text>
+                          ))}
+                        </View>
+                      )}
+                    </View>
+                  )}
+                </ScrollView>
+
+                {/* Navigation Footer */}
+                <View style={[styles.bibleNavFooter, { backgroundColor: colors.surfaceAlt, borderTopColor: colors.border }]}>
+                  <TouchableOpacity 
+                    style={[styles.bibleNavBtn, currentSectionIndex === 0 && styles.bibleNavBtnDisabled]}
+                    onPress={prevSection}
+                    disabled={currentSectionIndex === 0}
+                  >
+                    <Ionicons name="chevron-back" size={20} color={currentSectionIndex === 0 ? colors.textMuted : colors.primary} />
+                    <Text style={[styles.bibleNavBtnText, { color: currentSectionIndex === 0 ? colors.textMuted : colors.primary }]}>Previous</Text>
+                  </TouchableOpacity>
+
+                  {currentSectionIndex === selectedChapter.sections.length - 1 ? (
+                    <TouchableOpacity 
+                      style={[styles.bibleCompleteBtn, { backgroundColor: colors.success }]}
+                      onPress={() => {
+                        markChapterComplete(selectedChapter.id);
+                        Alert.alert('🎉 Chapter Complete!', `You've finished "${selectedChapter.title}"`);
+                      }}
+                    >
+                      <Ionicons name="checkmark-circle" size={18} color="#FFF" />
+                      <Text style={styles.bibleCompleteBtnText}>Complete Chapter</Text>
+                    </TouchableOpacity>
+                  ) : (
+                    <TouchableOpacity 
+                      style={[styles.bibleNavBtn, styles.bibleNavBtnNext, { backgroundColor: colors.primary }]}
+                      onPress={nextSection}
+                    >
+                      <Text style={[styles.bibleNavBtnText, { color: '#FFF' }]}>Next</Text>
+                      <Ionicons name="chevron-forward" size={20} color="#FFF" />
+                    </TouchableOpacity>
+                  )}
+                </View>
+              </>
+            )}
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }

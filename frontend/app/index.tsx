@@ -1667,6 +1667,12 @@ export default function CodeDockQuantumNexus() {
           <Ionicons name="grid" size={14} color={colors.accent} />
           <Text style={[styles.dockChipText, { color: colors.accent }]}>Dock</Text>
         </TouchableOpacity>
+        
+        {/* CODING BIBLE BUTTON */}
+        <TouchableOpacity style={[styles.dockChip, { backgroundColor: '#FFD70020' }]} onPress={() => setShowBibleModal(true)}>
+          <Ionicons name="book" size={14} color="#FFD700" />
+          <Text style={[styles.dockChipText, { color: '#FFD700' }]}>Bible</Text>
+        </TouchableOpacity>
       </Animated.View>
 
       {/* Code Editor */}

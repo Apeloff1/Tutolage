@@ -457,6 +457,35 @@ export default function CodeDockApp() {
           <Ionicons name="book" size={14} color="#FFD700" />
           <Text style={[styles.featureChipText, { color: '#FFD700' }]}>Bible</Text>
         </TouchableOpacity>
+        
+        {/* Pipeline Visualizer Button */}
+        <TouchableOpacity 
+          style={[styles.featureChip, { backgroundColor: '#06B6D420' }]} 
+          onPress={() => setShowPipelineModal(true)}
+        >
+          <Ionicons name="git-network" size={14} color="#06B6D4" />
+          <Text style={[styles.featureChipText, { color: '#06B6D4' }]}>Pipeline</Text>
+        </TouchableOpacity>
+        
+        {/* Learning Dashboard Button */}
+        <TouchableOpacity 
+          style={[styles.featureChip, { backgroundColor: '#10B98120' }]} 
+          onPress={() => setShowLearningModal(true)}
+        >
+          <Ionicons name="analytics" size={14} color="#10B981" />
+          <Text style={[styles.featureChipText, { color: '#10B981' }]}>Learn</Text>
+        </TouchableOpacity>
+        
+        {/* Voice Command Button */}
+        {voice.isSupported && (
+          <TouchableOpacity 
+            style={[styles.featureChip, { backgroundColor: voice.isListening ? '#EF444440' : '#EF444420' }]} 
+            onPress={voice.toggleListening}
+          >
+            <Ionicons name={voice.isListening ? 'mic' : 'mic-outline'} size={14} color="#EF4444" />
+            <Text style={[styles.featureChipText, { color: '#EF4444' }]}>{voice.isListening ? 'Listening...' : 'Voice'}</Text>
+          </TouchableOpacity>
+        )}
       </Animated.View>
 
       {/* ============ EDITOR ============ */}

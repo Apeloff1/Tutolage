@@ -74,6 +74,7 @@ export default function CodeDockApp() {
   const [showCompilerModal, setShowCompilerModal] = useState(false);
   const [showPipelineModal, setShowPipelineModal] = useState(false);
   const [showLearningModal, setShowLearningModal] = useState(false);
+  const [showCollaborationModal, setShowCollaborationModal] = useState(false);
   const [showTutorial, setShowTutorial] = useState(false);
   const [showOutput, setShowOutput] = useState(false);
   const [showWebPreview, setShowWebPreview] = useState(false);

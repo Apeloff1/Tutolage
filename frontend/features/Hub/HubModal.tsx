@@ -285,7 +285,7 @@ export const HubModal: React.FC<HubModalProps> = ({ visible, onClose, colors }) 
             </View>
             <Text style={[styles.expansionDesc, { color: colors.textMuted }]}>{exp.description}</Text>
             <View style={styles.featureTags}>
-              {exp.features?.slice(0, 3).map((f, i) => (
+              {exp.features?.slice(0, 3).map((f: string, i: number) => (
                 <View key={i} style={[styles.featureTag, { backgroundColor: colors.surfaceAlt }]}>
                   <Text style={[styles.featureTagText, { color: colors.text }]}>{f}</Text>
                 </View>

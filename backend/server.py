@@ -2730,7 +2730,7 @@ async def clear_history():
     await db.execution_history.delete_many({})
     return {"success": True}
 
-app.include_router(api_router)
+# Routes will be included after all definitions at the end of file
 
 #====================================================================================================
 # QUANTUM COMPILER SUITE API - Real Compilation Backend

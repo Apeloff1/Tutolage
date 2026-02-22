@@ -233,10 +233,10 @@ def test_compiler_routes(result: TestResult):
         result.failure("GET /api/compiler/sanitizers - Available sanitizers", response["error"])
     elif response["status_code"] == 200:
         data = response["data"]
-        if isinstance(data, list) and len(data) > 0:
-            sanitizer_names = [s.get('name', 'Unknown') for s in data if isinstance(s, dict)]
+        if isinstance(data, dict) and "sanitizers" in data and len(data["sanitizers"]) > 0:
+            sanitizers = data["sanitizers"]
             result.success("GET /api/compiler/sanitizers - Available sanitizers", 
-                         f"Found {len(data)} sanitizers")
+                         f"Found {len(sanitizers)} sanitizers")
         else:
             result.failure("GET /api/compiler/sanitizers - Available sanitizers", "No sanitizers found")
     else:
@@ -248,10 +248,10 @@ def test_compiler_routes(result: TestResult):
         result.failure("GET /api/compiler/optimizers - Available optimizers", response["error"])
     elif response["status_code"] == 200:
         data = response["data"]
-        if isinstance(data, list) and len(data) > 0:
-            optimizer_names = [o.get('name', 'Unknown') for o in data if isinstance(o, dict)]
+        if isinstance(data, dict) and "optimizers" in data and len(data["optimizers"]) > 0:
+            optimizers = data["optimizers"]
             result.success("GET /api/compiler/optimizers - Available optimizers", 
-                         f"Found {len(data)} optimizers")
+                         f"Found {len(optimizers)} optimizers")
         else:
             result.failure("GET /api/compiler/optimizers - Available optimizers", "No optimizers found")
     else:

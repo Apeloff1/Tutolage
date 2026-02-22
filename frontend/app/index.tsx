@@ -1,7 +1,7 @@
 // ============================================================================
 // CODEDOCK QUANTUM NEXUS - Main Application
-// Version: 7.0.0 | Ultimate Compiler Galaxy Edition
-// Voice Commands • Pipeline Visualizer • Learning Intelligence
+// Version: 8.0.0 | Ultimate Multiplayer Galaxy Edition
+// Voice • Pipeline • Learning • Collaboration • WASM Compiler
 // ============================================================================
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
@@ -24,8 +24,10 @@ import { BibleModal } from '../features/Bible/BibleModal';
 import { CompilerModal } from '../features/Compiler/CompilerModal';
 import { PipelineVisualizer } from '../features/Pipeline/PipelineVisualizer';
 import { LearningDashboard } from '../features/Learning/LearningDashboard';
+import { CollaborationModal } from '../features/Collaboration/CollaborationModal';
 import { useVoiceCommands, speak } from '../features/Voice/useVoiceCommands';
 import { starlog } from '../features/VersionControl/Starlog';
+import { wasmCompiler } from '../features/WasmCompiler/WasmCompiler';
 
 // Types
 import { Language, Template, AIMode } from '../types';

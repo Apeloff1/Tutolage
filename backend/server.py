@@ -6331,5 +6331,9 @@ async def get_algorithms_by_category(category: str):
 # Include all routes at the end after all definitions
 app.include_router(api_router)
 
-# Include modular Bible routes
+# Include modular routes
+app.include_router(health_router, prefix="/api")
 app.include_router(bible_router, prefix="/api")
+app.include_router(compiler_router, prefix="/api")
+app.include_router(hub_router, prefix="/api")
+app.include_router(ai_router, prefix="/api")

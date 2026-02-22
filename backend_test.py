@@ -269,11 +269,11 @@ def test_compiler_routes(result: TestResult):
         result.failure("POST /api/compiler/compile - Compile code", response["error"])
     elif response["status_code"] == 200:
         data = response["data"]
-        if isinstance(data, dict) and "status" in data:
+        if isinstance(data, dict) and "success" in data and data.get("success"):
             result.success("POST /api/compiler/compile - Compile code", 
-                         f"Compilation status: {data.get('status')}")
+                         f"Compilation successful, {len(data.get('stages', []))} stages completed")
         else:
-            result.failure("POST /api/compiler/compile - Compile code", "Invalid response format")
+            result.failure("POST /api/compiler/compile - Compile code", "Compilation failed or invalid response")
     else:
         result.failure("POST /api/compiler/compile - Compile code", f"HTTP {response['status_code']}")
 

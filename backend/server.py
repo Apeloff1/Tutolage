@@ -45,6 +45,9 @@ from io import StringIO
 # AI Integration
 from emergentintegrations.llm.chat import LlmChat, UserMessage
 
+# Import the 15-Year CS Bible Curriculum
+from cs_bible import CS_BIBLE, get_year_info, get_course, get_all_courses, get_curriculum_stats
+
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 

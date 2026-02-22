@@ -918,6 +918,16 @@ export default function CodeDockApp() {
         onClose={() => setShowLearningModal(false)}
         colors={colors}
       />
+
+      {/* Collaboration Modal */}
+      <CollaborationModal
+        visible={showCollaborationModal}
+        onClose={() => setShowCollaborationModal(false)}
+        colors={colors}
+        code={code}
+        language={selectedLanguage?.key || 'python'}
+        onCodeChange={setCode}
+      />
     </SafeAreaView>
   );
 }

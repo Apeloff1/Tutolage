@@ -6158,7 +6158,7 @@ async def get_v9_info():
         "algorithms": sum(len(v) for v in ALGORITHM_REGISTRY.values())
     }
 
-@api_router.get("/languages/packs")
+@api_router.get("/language-packs")
 async def get_language_packs():
     """Get all language packs"""
     packs = []
@@ -6173,7 +6173,7 @@ async def get_language_packs():
         "categories": list(set(p["category"] for p in LANGUAGE_PACK_REGISTRY.values()))
     }
 
-@api_router.get("/languages/packs/{category}")
+@api_router.get("/language-packs/{category}")
 async def get_language_packs_by_category(category: str):
     """Get language packs by category"""
     packs = [

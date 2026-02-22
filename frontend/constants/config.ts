@@ -1,13 +1,13 @@
 // ============================================================================
 // CODEDOCK QUANTUM NEXUS - CONFIGURATION
-// Version: 6.0.0 | Quantum Compiler Suite Edition
+// Version: 8.0.0 | Multiplayer Galaxy Edition
 // ============================================================================
 
 import { AppConfig } from '../types';
 
-export const VERSION = '7.0.0';
-export const CODENAME = 'Ultimate Galaxy';
-export const BUILD = '2026.02.22-GALAXY';
+export const VERSION = '8.0.0';
+export const CODENAME = 'Multiplayer Galaxy';
+export const BUILD = '2026.02.22-COLLAB';
 
 export const CONFIG: AppConfig = {
   API_TIMEOUT: 15000,

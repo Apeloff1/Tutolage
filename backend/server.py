@@ -4019,6 +4019,2330 @@ async def leave_collaboration_session(session_id: str, data: dict):
     return {"success": True}
 
 
+#====================================================================================================
+# CODEDOCK v9.0.0 ULTIMATE HUB - Self-Evolving AI-Powered Expansion System
+#====================================================================================================
+
+class LLMProvider(str, Enum):
+    OPENAI = "openai"
+    ANTHROPIC = "anthropic"
+    GOOGLE = "google"
+    GROK = "grok"  # Future support
+
+class ExpansionCategory(str, Enum):
+    LANGUAGE = "language"
+    COMPILER = "compiler"
+    TOOL = "tool"
+    THEME = "theme"
+    AI = "ai"
+    INTEGRATION = "integration"
+    ALGORITHM = "algorithm"
+
+class ExpansionStatus(str, Enum):
+    AVAILABLE = "available"
+    INSTALLED = "installed"
+    INSTALLING = "installing"
+    UPDATE_AVAILABLE = "update_available"
+    DEPRECATED = "deprecated"
+
+# ============================================================================
+# COMPREHENSIVE LANGUAGE PACK REGISTRY - 50+ Languages
+# ============================================================================
+LANGUAGE_PACK_REGISTRY = {
+    # === SYSTEMS PROGRAMMING ===
+    "rust": {
+        "name": "Rust",
+        "version": "1.75+",
+        "category": "systems",
+        "icon": "cog",
+        "color": "#DEA584",
+        "features": ["memory_safety", "zero_cost_abstractions", "ownership", "lifetimes", "cargo"],
+        "file_extensions": [".rs"],
+        "compiler": "rustc",
+        "package_manager": "cargo",
+        "paradigms": ["imperative", "functional", "concurrent"],
+        "tier": 1,
+        "description": "Memory-safe systems programming with zero-cost abstractions"
+    },
+    "go": {
+        "name": "Go",
+        "version": "1.22+",
+        "category": "systems",
+        "icon": "flash",
+        "color": "#00ADD8",
+        "features": ["goroutines", "channels", "garbage_collection", "fast_compilation"],
+        "file_extensions": [".go"],
+        "compiler": "go",
+        "paradigms": ["imperative", "concurrent"],
+        "tier": 1,
+        "description": "Fast, simple, concurrent programming language"
+    },
+    "zig": {
+        "name": "Zig",
+        "version": "0.12+",
+        "category": "systems",
+        "icon": "flash-outline",
+        "color": "#F7A41D",
+        "features": ["comptime", "no_hidden_control_flow", "c_interop", "manual_memory"],
+        "file_extensions": [".zig"],
+        "compiler": "zig",
+        "paradigms": ["imperative"],
+        "tier": 2,
+        "description": "Modern systems language focused on simplicity"
+    },
+    "nim": {
+        "name": "Nim",
+        "version": "2.0+",
+        "category": "systems",
+        "icon": "diamond",
+        "color": "#FFE953",
+        "features": ["metaprogramming", "garbage_collection", "c_backend", "python_like_syntax"],
+        "file_extensions": [".nim"],
+        "compiler": "nim",
+        "paradigms": ["imperative", "functional", "oop", "metaprogramming"],
+        "tier": 2,
+        "description": "Efficient, expressive, elegant"
+    },
+    "crystal": {
+        "name": "Crystal",
+        "version": "1.10+",
+        "category": "systems",
+        "icon": "prism",
+        "color": "#000000",
+        "features": ["type_inference", "ruby_syntax", "c_bindings", "concurrency"],
+        "file_extensions": [".cr"],
+        "compiler": "crystal",
+        "paradigms": ["oop", "concurrent"],
+        "tier": 2,
+        "description": "Ruby-like syntax with C-like performance"
+    },
+    "d": {
+        "name": "D",
+        "version": "2.106+",
+        "category": "systems",
+        "icon": "code-slash",
+        "color": "#B03931",
+        "features": ["templates", "mixins", "ctfe", "garbage_collection"],
+        "file_extensions": [".d"],
+        "compiler": "dmd",
+        "paradigms": ["imperative", "oop", "functional", "metaprogramming"],
+        "tier": 2,
+        "description": "Systems programming with high-level constructs"
+    },
+    "v": {
+        "name": "V",
+        "version": "0.4+",
+        "category": "systems",
+        "icon": "checkmark",
+        "color": "#5D87BF",
+        "features": ["fast_compilation", "simple_syntax", "c_interop", "no_gc_option"],
+        "file_extensions": [".v"],
+        "compiler": "v",
+        "paradigms": ["imperative", "functional"],
+        "tier": 3,
+        "description": "Simple, fast, safe language"
+    },
+    "odin": {
+        "name": "Odin",
+        "version": "dev-2024",
+        "category": "systems",
+        "icon": "flame",
+        "color": "#3882D6",
+        "features": ["manual_memory", "array_programming", "context_system"],
+        "file_extensions": [".odin"],
+        "compiler": "odin",
+        "paradigms": ["imperative", "data_oriented"],
+        "tier": 3,
+        "description": "Data-oriented programming language"
+    },
+    
+    # === DATA SCIENCE & SCIENTIFIC ===
+    "julia": {
+        "name": "Julia",
+        "version": "1.10+",
+        "category": "scientific",
+        "icon": "analytics",
+        "color": "#9558B2",
+        "features": ["multiple_dispatch", "jit_compilation", "parallelism", "metaprogramming"],
+        "file_extensions": [".jl"],
+        "compiler": "julia",
+        "paradigms": ["functional", "imperative", "metaprogramming"],
+        "tier": 1,
+        "description": "High-performance scientific computing"
+    },
+    "r": {
+        "name": "R",
+        "version": "4.3+",
+        "category": "scientific",
+        "icon": "stats-chart",
+        "color": "#276DC3",
+        "features": ["statistical_computing", "data_visualization", "cran_packages"],
+        "file_extensions": [".r", ".R"],
+        "compiler": "r",
+        "paradigms": ["functional", "oop"],
+        "tier": 1,
+        "description": "Statistical computing and graphics"
+    },
+    "octave": {
+        "name": "GNU Octave",
+        "version": "8.4+",
+        "category": "scientific",
+        "icon": "calculator",
+        "color": "#0790C0",
+        "features": ["matlab_compatible", "numerical_computing", "plotting"],
+        "file_extensions": [".m", ".octave"],
+        "compiler": "octave",
+        "paradigms": ["imperative", "array"],
+        "tier": 2,
+        "description": "MATLAB-compatible scientific programming"
+    },
+    "fortran": {
+        "name": "Fortran",
+        "version": "2023",
+        "category": "scientific",
+        "icon": "grid",
+        "color": "#4D41BE",
+        "features": ["array_operations", "coarrays", "high_performance"],
+        "file_extensions": [".f90", ".f95", ".f03", ".f08"],
+        "compiler": "gfortran",
+        "paradigms": ["imperative", "array", "oop"],
+        "tier": 2,
+        "description": "High-performance scientific computing legacy"
+    },
+    "wolfram": {
+        "name": "Wolfram",
+        "version": "14.0",
+        "category": "scientific",
+        "icon": "planet",
+        "color": "#DD1100",
+        "features": ["symbolic_computation", "knowledge_base", "notebook_interface"],
+        "file_extensions": [".wl", ".nb"],
+        "paradigms": ["functional", "symbolic"],
+        "tier": 2,
+        "description": "Computational intelligence"
+    },
+    
+    # === WEB & MOBILE ===
+    "swift": {
+        "name": "Swift",
+        "version": "5.9+",
+        "category": "mobile",
+        "icon": "logo-apple",
+        "color": "#F05138",
+        "features": ["optionals", "protocols", "generics", "async_await", "actors"],
+        "file_extensions": [".swift"],
+        "compiler": "swiftc",
+        "paradigms": ["oop", "functional", "protocol_oriented"],
+        "tier": 1,
+        "description": "Apple platforms development"
+    },
+    "kotlin": {
+        "name": "Kotlin",
+        "version": "1.9+",
+        "category": "mobile",
+        "icon": "logo-android",
+        "color": "#7F52FF",
+        "features": ["null_safety", "coroutines", "extension_functions", "data_classes"],
+        "file_extensions": [".kt", ".kts"],
+        "compiler": "kotlinc",
+        "paradigms": ["oop", "functional"],
+        "tier": 1,
+        "description": "Modern JVM & Android development"
+    },
+    "dart": {
+        "name": "Dart",
+        "version": "3.2+",
+        "category": "mobile",
+        "icon": "logo-flutter",
+        "color": "#0175C2",
+        "features": ["null_safety", "async_await", "isolates", "flutter"],
+        "file_extensions": [".dart"],
+        "compiler": "dart",
+        "paradigms": ["oop", "functional"],
+        "tier": 1,
+        "description": "Flutter & cross-platform development"
+    },
+    "objective_c": {
+        "name": "Objective-C",
+        "version": "2.0",
+        "category": "mobile",
+        "icon": "logo-apple",
+        "color": "#438EFF",
+        "features": ["message_passing", "dynamic_typing", "categories"],
+        "file_extensions": [".m", ".mm", ".h"],
+        "compiler": "clang",
+        "paradigms": ["oop", "reflective"],
+        "tier": 2,
+        "description": "Legacy Apple development"
+    },
+    
+    # === FUNCTIONAL PROGRAMMING ===
+    "haskell": {
+        "name": "Haskell",
+        "version": "GHC 9.8",
+        "category": "functional",
+        "icon": "infinite",
+        "color": "#5D4F85",
+        "features": ["pure_functional", "lazy_evaluation", "type_classes", "monads"],
+        "file_extensions": [".hs", ".lhs"],
+        "compiler": "ghc",
+        "paradigms": ["pure_functional", "lazy"],
+        "tier": 1,
+        "description": "Pure functional programming"
+    },
+    "ocaml": {
+        "name": "OCaml",
+        "version": "5.1+",
+        "category": "functional",
+        "icon": "git-branch",
+        "color": "#EC6813",
+        "features": ["type_inference", "pattern_matching", "modules", "multicore"],
+        "file_extensions": [".ml", ".mli"],
+        "compiler": "ocaml",
+        "paradigms": ["functional", "imperative", "oop"],
+        "tier": 1,
+        "description": "Industrial-strength functional programming"
+    },
+    "f_sharp": {
+        "name": "F#",
+        "version": "8.0",
+        "category": "functional",
+        "icon": "logo-microsoft",
+        "color": "#378BBA",
+        "features": ["type_providers", "computation_expressions", "async", "units_of_measure"],
+        "file_extensions": [".fs", ".fsx"],
+        "compiler": "dotnet",
+        "paradigms": ["functional", "oop", "imperative"],
+        "tier": 1,
+        "description": ".NET functional-first language"
+    },
+    "elixir": {
+        "name": "Elixir",
+        "version": "1.16+",
+        "category": "functional",
+        "icon": "water",
+        "color": "#4B275F",
+        "features": ["actor_model", "fault_tolerance", "hot_code_swap", "metaprogramming"],
+        "file_extensions": [".ex", ".exs"],
+        "compiler": "elixir",
+        "paradigms": ["functional", "concurrent"],
+        "tier": 1,
+        "description": "Scalable, fault-tolerant applications"
+    },
+    "erlang": {
+        "name": "Erlang",
+        "version": "OTP 26",
+        "category": "functional",
+        "icon": "pulse",
+        "color": "#A90533",
+        "features": ["actor_model", "hot_code_swap", "distributed", "fault_tolerant"],
+        "file_extensions": [".erl", ".hrl"],
+        "compiler": "erlc",
+        "paradigms": ["functional", "concurrent"],
+        "tier": 2,
+        "description": "Telecom-grade distributed systems"
+    },
+    "clojure": {
+        "name": "Clojure",
+        "version": "1.11+",
+        "category": "functional",
+        "icon": "sync",
+        "color": "#5881D8",
+        "features": ["lisp_syntax", "immutability", "stm", "jvm"],
+        "file_extensions": [".clj", ".cljs", ".cljc"],
+        "compiler": "clojure",
+        "paradigms": ["functional", "lisp"],
+        "tier": 2,
+        "description": "Dynamic, functional Lisp on JVM"
+    },
+    "scheme": {
+        "name": "Scheme",
+        "version": "R7RS",
+        "category": "functional",
+        "icon": "ellipsis-horizontal",
+        "color": "#1E4278",
+        "features": ["minimalist", "continuations", "hygienic_macros"],
+        "file_extensions": [".scm", ".ss"],
+        "compiler": "scheme",
+        "paradigms": ["functional", "lisp"],
+        "tier": 2,
+        "description": "Minimalist Lisp dialect"
+    },
+    "racket": {
+        "name": "Racket",
+        "version": "8.11+",
+        "category": "functional",
+        "icon": "shapes",
+        "color": "#9F1D20",
+        "features": ["language_oriented", "macros", "contracts", "typed_racket"],
+        "file_extensions": [".rkt"],
+        "compiler": "racket",
+        "paradigms": ["functional", "lisp", "metaprogramming"],
+        "tier": 2,
+        "description": "Language-oriented programming"
+    },
+    "common_lisp": {
+        "name": "Common Lisp",
+        "version": "SBCL 2.4",
+        "category": "functional",
+        "icon": "ellipsis-vertical",
+        "color": "#3FB68B",
+        "features": ["clos", "macros", "conditions", "multiple_values"],
+        "file_extensions": [".lisp", ".lsp", ".cl"],
+        "compiler": "sbcl",
+        "paradigms": ["functional", "oop", "metaprogramming"],
+        "tier": 2,
+        "description": "Powerful, standardized Lisp"
+    },
+    "purescript": {
+        "name": "PureScript",
+        "version": "0.15+",
+        "category": "functional",
+        "icon": "cube-outline",
+        "color": "#1D222D",
+        "features": ["strict", "row_polymorphism", "effects", "javascript_ffi"],
+        "file_extensions": [".purs"],
+        "compiler": "purs",
+        "paradigms": ["pure_functional"],
+        "tier": 3,
+        "description": "Strongly-typed functional JS"
+    },
+    "elm": {
+        "name": "Elm",
+        "version": "0.19",
+        "category": "functional",
+        "icon": "leaf",
+        "color": "#1293D8",
+        "features": ["no_runtime_exceptions", "elm_architecture", "friendly_errors"],
+        "file_extensions": [".elm"],
+        "compiler": "elm",
+        "paradigms": ["pure_functional"],
+        "tier": 2,
+        "description": "Delightful language for reliable web apps"
+    },
+    
+    # === SCRIPTING & DYNAMIC ===
+    "lua": {
+        "name": "Lua",
+        "version": "5.4+",
+        "category": "scripting",
+        "icon": "moon",
+        "color": "#000080",
+        "features": ["embeddable", "coroutines", "metatables", "lightweight"],
+        "file_extensions": [".lua"],
+        "compiler": "lua",
+        "paradigms": ["imperative", "functional", "oop"],
+        "tier": 1,
+        "description": "Lightweight embeddable scripting"
+    },
+    "ruby": {
+        "name": "Ruby",
+        "version": "3.3+",
+        "category": "scripting",
+        "icon": "diamond",
+        "color": "#CC342D",
+        "features": ["blocks", "metaprogramming", "duck_typing", "gems"],
+        "file_extensions": [".rb", ".rake"],
+        "compiler": "ruby",
+        "paradigms": ["oop", "functional", "imperative"],
+        "tier": 1,
+        "description": "Programmer happiness language"
+    },
+    "perl": {
+        "name": "Perl",
+        "version": "5.38+",
+        "category": "scripting",
+        "icon": "text",
+        "color": "#39457E",
+        "features": ["regex", "cpan", "text_processing", "one_liners"],
+        "file_extensions": [".pl", ".pm"],
+        "compiler": "perl",
+        "paradigms": ["imperative", "functional", "oop"],
+        "tier": 2,
+        "description": "Practical extraction and reporting"
+    },
+    "raku": {
+        "name": "Raku",
+        "version": "2024.01",
+        "category": "scripting",
+        "icon": "butterfly",
+        "color": "#0098FF",
+        "features": ["grammars", "concurrency", "unicode", "gradual_typing"],
+        "file_extensions": [".raku", ".p6"],
+        "compiler": "rakudo",
+        "paradigms": ["multi_paradigm"],
+        "tier": 3,
+        "description": "Expressive multi-paradigm language"
+    },
+    "php": {
+        "name": "PHP",
+        "version": "8.3+",
+        "category": "scripting",
+        "icon": "server",
+        "color": "#777BB4",
+        "features": ["web_focused", "composer", "type_hints", "attributes"],
+        "file_extensions": [".php"],
+        "compiler": "php",
+        "paradigms": ["oop", "imperative", "functional"],
+        "tier": 1,
+        "description": "Web development powerhouse"
+    },
+    "groovy": {
+        "name": "Groovy",
+        "version": "4.0+",
+        "category": "scripting",
+        "icon": "musical-note",
+        "color": "#4298B8",
+        "features": ["dynamic_typing", "closures", "builders", "grape"],
+        "file_extensions": [".groovy", ".gvy"],
+        "compiler": "groovy",
+        "paradigms": ["oop", "functional"],
+        "tier": 2,
+        "description": "Agile dynamic JVM language"
+    },
+    "tcl": {
+        "name": "Tcl",
+        "version": "8.6+",
+        "category": "scripting",
+        "icon": "terminal",
+        "color": "#E5A736",
+        "features": ["everything_is_string", "embeddable", "tk_gui"],
+        "file_extensions": [".tcl"],
+        "compiler": "tclsh",
+        "paradigms": ["imperative", "functional"],
+        "tier": 3,
+        "description": "Tool Command Language"
+    },
+    
+    # === SPECIALIZED & DOMAIN-SPECIFIC ===
+    "solidity": {
+        "name": "Solidity",
+        "version": "0.8+",
+        "category": "blockchain",
+        "icon": "logo-bitcoin",
+        "color": "#363636",
+        "features": ["smart_contracts", "evm", "inheritance", "modifiers"],
+        "file_extensions": [".sol"],
+        "compiler": "solc",
+        "paradigms": ["oop", "contract"],
+        "tier": 1,
+        "description": "Ethereum smart contracts"
+    },
+    "vyper": {
+        "name": "Vyper",
+        "version": "0.3+",
+        "category": "blockchain",
+        "icon": "shield",
+        "color": "#333333",
+        "features": ["security_focused", "python_like", "evm"],
+        "file_extensions": [".vy"],
+        "compiler": "vyper",
+        "paradigms": ["contract"],
+        "tier": 2,
+        "description": "Secure smart contract language"
+    },
+    "move": {
+        "name": "Move",
+        "version": "1.0",
+        "category": "blockchain",
+        "icon": "swap-horizontal",
+        "color": "#4A90E2",
+        "features": ["resource_safety", "linear_types", "formal_verification"],
+        "file_extensions": [".move"],
+        "compiler": "move",
+        "paradigms": ["resource_oriented"],
+        "tier": 2,
+        "description": "Safe smart contract language"
+    },
+    "sql": {
+        "name": "SQL",
+        "version": "SQL:2023",
+        "category": "database",
+        "icon": "server",
+        "color": "#E38C00",
+        "features": ["declarative", "relational", "transactions", "views"],
+        "file_extensions": [".sql"],
+        "paradigms": ["declarative"],
+        "tier": 1,
+        "description": "Structured Query Language"
+    },
+    "graphql": {
+        "name": "GraphQL",
+        "version": "June 2018",
+        "category": "api",
+        "icon": "git-network",
+        "color": "#E10098",
+        "features": ["type_system", "queries", "mutations", "subscriptions"],
+        "file_extensions": [".graphql", ".gql"],
+        "paradigms": ["declarative"],
+        "tier": 1,
+        "description": "API query language"
+    },
+    "prolog": {
+        "name": "Prolog",
+        "version": "SWI 9.0",
+        "category": "logic",
+        "icon": "help-circle",
+        "color": "#E61E14",
+        "features": ["unification", "backtracking", "pattern_matching", "constraints"],
+        "file_extensions": [".pl", ".pro"],
+        "compiler": "swipl",
+        "paradigms": ["logic", "declarative"],
+        "tier": 2,
+        "description": "Logic programming language"
+    },
+    "coq": {
+        "name": "Coq",
+        "version": "8.18",
+        "category": "proof",
+        "icon": "shield-checkmark",
+        "color": "#D0B68C",
+        "features": ["dependent_types", "proof_assistant", "extraction"],
+        "file_extensions": [".v"],
+        "compiler": "coqc",
+        "paradigms": ["functional", "proof"],
+        "tier": 3,
+        "description": "Interactive theorem prover"
+    },
+    "lean": {
+        "name": "Lean 4",
+        "version": "4.3+",
+        "category": "proof",
+        "icon": "checkmark-done",
+        "color": "#8B5CF6",
+        "features": ["dependent_types", "metaprogramming", "mathlib"],
+        "file_extensions": [".lean"],
+        "compiler": "lean",
+        "paradigms": ["functional", "proof"],
+        "tier": 2,
+        "description": "Theorem prover and programming language"
+    },
+    "idris": {
+        "name": "Idris 2",
+        "version": "0.7+",
+        "category": "proof",
+        "icon": "cube",
+        "color": "#B30000",
+        "features": ["dependent_types", "linear_types", "totality_checking"],
+        "file_extensions": [".idr"],
+        "compiler": "idris2",
+        "paradigms": ["functional", "dependent"],
+        "tier": 3,
+        "description": "General-purpose dependently typed"
+    },
+    "agda": {
+        "name": "Agda",
+        "version": "2.6+",
+        "category": "proof",
+        "icon": "infinite",
+        "color": "#3D5A80",
+        "features": ["dependent_types", "unicode_support", "cubical"],
+        "file_extensions": [".agda"],
+        "compiler": "agda",
+        "paradigms": ["functional", "dependent"],
+        "tier": 3,
+        "description": "Dependently typed proof assistant"
+    },
+    
+    # === SHELL & CONFIG ===
+    "bash": {
+        "name": "Bash",
+        "version": "5.2+",
+        "category": "shell",
+        "icon": "terminal",
+        "color": "#4EAA25",
+        "features": ["scripting", "job_control", "arrays", "functions"],
+        "file_extensions": [".sh", ".bash"],
+        "compiler": "bash",
+        "paradigms": ["imperative"],
+        "tier": 1,
+        "description": "Bourne Again Shell"
+    },
+    "powershell": {
+        "name": "PowerShell",
+        "version": "7.4+",
+        "category": "shell",
+        "icon": "logo-windows",
+        "color": "#012456",
+        "features": ["object_pipeline", "cmdlets", "remoting", "dsc"],
+        "file_extensions": [".ps1", ".psm1"],
+        "compiler": "pwsh",
+        "paradigms": ["imperative", "oop"],
+        "tier": 1,
+        "description": "Task automation and configuration"
+    },
+    "fish": {
+        "name": "Fish",
+        "version": "3.7+",
+        "category": "shell",
+        "icon": "fish",
+        "color": "#6B8E23",
+        "features": ["autosuggestions", "syntax_highlighting", "web_config"],
+        "file_extensions": [".fish"],
+        "compiler": "fish",
+        "paradigms": ["imperative"],
+        "tier": 2,
+        "description": "Friendly interactive shell"
+    },
+    "nushell": {
+        "name": "Nushell",
+        "version": "0.89+",
+        "category": "shell",
+        "icon": "git-merge",
+        "color": "#4E9A06",
+        "features": ["structured_data", "pipelines", "plugins"],
+        "file_extensions": [".nu"],
+        "compiler": "nu",
+        "paradigms": ["functional", "data_oriented"],
+        "tier": 2,
+        "description": "Modern shell with structured data"
+    },
+    
+    # === MARKUP & CONFIG ===
+    "yaml": {
+        "name": "YAML",
+        "version": "1.2",
+        "category": "config",
+        "icon": "document-text",
+        "color": "#CB171E",
+        "features": ["human_readable", "anchors", "multi_document"],
+        "file_extensions": [".yaml", ".yml"],
+        "paradigms": ["declarative"],
+        "tier": 1,
+        "description": "Human-readable data serialization"
+    },
+    "toml": {
+        "name": "TOML",
+        "version": "1.0",
+        "category": "config",
+        "icon": "list",
+        "color": "#9C4121",
+        "features": ["minimal", "unambiguous", "hash_tables"],
+        "file_extensions": [".toml"],
+        "paradigms": ["declarative"],
+        "tier": 1,
+        "description": "Tom's Obvious Minimal Language"
+    },
+    "json": {
+        "name": "JSON",
+        "version": "ECMA-404",
+        "category": "data",
+        "icon": "code-slash",
+        "color": "#000000",
+        "features": ["universal", "lightweight", "self_describing"],
+        "file_extensions": [".json", ".jsonc"],
+        "paradigms": ["declarative"],
+        "tier": 1,
+        "description": "JavaScript Object Notation"
+    },
+    "xml": {
+        "name": "XML",
+        "version": "1.1",
+        "category": "data",
+        "icon": "code",
+        "color": "#F26522",
+        "features": ["hierarchical", "schemas", "namespaces", "xslt"],
+        "file_extensions": [".xml", ".xsd", ".xsl"],
+        "paradigms": ["declarative"],
+        "tier": 1,
+        "description": "eXtensible Markup Language"
+    },
+    "markdown": {
+        "name": "Markdown",
+        "version": "CommonMark",
+        "category": "markup",
+        "icon": "document",
+        "color": "#000000",
+        "features": ["lightweight", "readable", "extensible"],
+        "file_extensions": [".md", ".markdown"],
+        "paradigms": ["declarative"],
+        "tier": 1,
+        "description": "Lightweight markup language"
+    },
+    "latex": {
+        "name": "LaTeX",
+        "version": "2024",
+        "category": "markup",
+        "icon": "document-text",
+        "color": "#008080",
+        "features": ["typesetting", "math", "bibliography", "cross_references"],
+        "file_extensions": [".tex", ".sty", ".cls"],
+        "compiler": "pdflatex",
+        "paradigms": ["declarative"],
+        "tier": 2,
+        "description": "Professional document typesetting"
+    },
+    "typst": {
+        "name": "Typst",
+        "version": "0.10+",
+        "category": "markup",
+        "icon": "document",
+        "color": "#239DAD",
+        "features": ["fast_compilation", "scripting", "modern_syntax"],
+        "file_extensions": [".typ"],
+        "compiler": "typst",
+        "paradigms": ["declarative", "scripting"],
+        "tier": 2,
+        "description": "Modern document preparation"
+    },
+    
+    # === ASSEMBLY & LOW-LEVEL ===
+    "assembly_x86": {
+        "name": "x86 Assembly",
+        "version": "x86-64",
+        "category": "assembly",
+        "icon": "hardware-chip",
+        "color": "#6E6E6E",
+        "features": ["direct_hardware", "simd", "system_calls"],
+        "file_extensions": [".asm", ".s"],
+        "compiler": "nasm",
+        "paradigms": ["imperative"],
+        "tier": 2,
+        "description": "Intel/AMD processor assembly"
+    },
+    "assembly_arm": {
+        "name": "ARM Assembly",
+        "version": "ARMv9",
+        "category": "assembly",
+        "icon": "hardware-chip",
+        "color": "#0091BD",
+        "features": ["risc", "thumb", "neon"],
+        "file_extensions": [".s"],
+        "compiler": "as",
+        "paradigms": ["imperative"],
+        "tier": 2,
+        "description": "ARM processor assembly"
+    },
+    "webassembly": {
+        "name": "WebAssembly",
+        "version": "2.0",
+        "category": "assembly",
+        "icon": "globe",
+        "color": "#654FF0",
+        "features": ["portable", "sandboxed", "fast", "wasi"],
+        "file_extensions": [".wat", ".wasm"],
+        "compiler": "wat2wasm",
+        "paradigms": ["low_level"],
+        "tier": 1,
+        "description": "Portable binary instruction format"
+    },
+    "llvm_ir": {
+        "name": "LLVM IR",
+        "version": "17",
+        "category": "assembly",
+        "icon": "git-branch",
+        "color": "#262D3A",
+        "features": ["ssa", "optimization", "portable"],
+        "file_extensions": [".ll", ".bc"],
+        "compiler": "llc",
+        "paradigms": ["low_level"],
+        "tier": 2,
+        "description": "LLVM Intermediate Representation"
+    },
+    
+    # === HARDWARE DESCRIPTION ===
+    "verilog": {
+        "name": "Verilog",
+        "version": "2005",
+        "category": "hardware",
+        "icon": "hardware-chip",
+        "color": "#4169E1",
+        "features": ["hdl", "synthesis", "simulation"],
+        "file_extensions": [".v", ".sv"],
+        "compiler": "iverilog",
+        "paradigms": ["concurrent", "hardware"],
+        "tier": 2,
+        "description": "Hardware description language"
+    },
+    "vhdl": {
+        "name": "VHDL",
+        "version": "2019",
+        "category": "hardware",
+        "icon": "hardware-chip",
+        "color": "#39A845",
+        "features": ["strongly_typed", "hdl", "synthesis"],
+        "file_extensions": [".vhd", ".vhdl"],
+        "compiler": "ghdl",
+        "paradigms": ["concurrent", "hardware"],
+        "tier": 2,
+        "description": "VHSIC Hardware Description Language"
+    },
+    "chisel": {
+        "name": "Chisel",
+        "version": "6.0",
+        "category": "hardware",
+        "icon": "construct",
+        "color": "#FF6F00",
+        "features": ["scala_embedded", "generators", "firrtl"],
+        "file_extensions": [".scala"],
+        "paradigms": ["functional", "hardware"],
+        "tier": 3,
+        "description": "Constructing Hardware in Scala"
+    },
+    "spinalhdl": {
+        "name": "SpinalHDL",
+        "version": "1.9+",
+        "category": "hardware",
+        "icon": "git-network",
+        "color": "#E91E63",
+        "features": ["scala_based", "simulation", "formal"],
+        "file_extensions": [".scala"],
+        "paradigms": ["functional", "hardware"],
+        "tier": 3,
+        "description": "Scala-based HDL"
+    },
+}
+
+# ============================================================================
+# ALGORITHM REGISTRY - State of the Art Compilation Algorithms
+# ============================================================================
+ALGORITHM_REGISTRY = {
+    # Parsing Algorithms
+    "parsing": {
+        "ll1": {"name": "LL(1)", "type": "top_down", "complexity": "O(n)", "description": "Predictive parsing with 1 lookahead"},
+        "lr1": {"name": "LR(1)", "type": "bottom_up", "complexity": "O(n)", "description": "Canonical LR parsing"},
+        "lalr1": {"name": "LALR(1)", "type": "bottom_up", "complexity": "O(n)", "description": "Look-Ahead LR, used by yacc/bison"},
+        "glr": {"name": "GLR", "type": "generalized", "complexity": "O(n³) worst", "description": "Generalized LR for ambiguous grammars"},
+        "earley": {"name": "Earley", "type": "chart", "complexity": "O(n³)", "description": "Chart parsing for all CFGs"},
+        "peg": {"name": "PEG", "type": "packrat", "complexity": "O(n)", "description": "Parsing Expression Grammar with memoization"},
+        "gll": {"name": "GLL", "type": "generalized", "complexity": "O(n³)", "description": "Generalized LL parsing"},
+        "pratt": {"name": "Pratt Parser", "type": "operator_precedence", "complexity": "O(n)", "description": "Top-down operator precedence"},
+    },
+    # Optimization Algorithms
+    "optimization": {
+        "ssa": {"name": "SSA Construction", "complexity": "O(n)", "description": "Static Single Assignment form conversion"},
+        "dominators": {"name": "Dominance", "complexity": "O(n²)", "description": "Dominator tree construction"},
+        "loop_detection": {"name": "Loop Analysis", "complexity": "O(n)", "description": "Natural loop detection"},
+        "constant_propagation": {"name": "Sparse Conditional CP", "complexity": "O(n)", "description": "Constant propagation with control flow"},
+        "dead_code_elimination": {"name": "DCE", "complexity": "O(n)", "description": "Dead code elimination"},
+        "gcse": {"name": "GCSE", "complexity": "O(n²)", "description": "Global common subexpression elimination"},
+        "licm": {"name": "LICM", "complexity": "O(n)", "description": "Loop invariant code motion"},
+        "strength_reduction": {"name": "Strength Reduction", "complexity": "O(n)", "description": "Replace expensive ops with cheaper ones"},
+        "induction_variable": {"name": "IV Optimization", "complexity": "O(n)", "description": "Induction variable optimization"},
+        "vectorization": {"name": "Auto-Vectorization", "complexity": "O(n²)", "description": "SIMD instruction generation"},
+        "polyhedral": {"name": "Polyhedral Model", "complexity": "exponential", "description": "Loop nest optimization"},
+    },
+    # Register Allocation
+    "register_allocation": {
+        "linear_scan": {"name": "Linear Scan", "complexity": "O(n log n)", "description": "Fast allocation via live intervals"},
+        "graph_coloring": {"name": "Graph Coloring", "complexity": "NP-complete", "description": "Optimal allocation via interference graph"},
+        "chaitin_briggs": {"name": "Chaitin-Briggs", "complexity": "O(n²)", "description": "Iterative graph coloring with spilling"},
+        "ssa_based": {"name": "SSA-based", "complexity": "O(n)", "description": "Register allocation on SSA form"},
+        "pbqp": {"name": "PBQP", "complexity": "O(n²)", "description": "Partitioned Boolean Quadratic Programming"},
+    },
+    # Instruction Selection
+    "instruction_selection": {
+        "maximal_munch": {"name": "Maximal Munch", "complexity": "O(n)", "description": "Greedy tree covering"},
+        "burg": {"name": "BURG", "complexity": "O(n)", "description": "Bottom-up rewrite system"},
+        "iburg": {"name": "IBURG", "complexity": "O(n)", "description": "Interpreted BURG"},
+        "superoptimization": {"name": "Superoptimization", "complexity": "exponential", "description": "Exhaustive search for optimal code"},
+    },
+    # Garbage Collection
+    "garbage_collection": {
+        "mark_sweep": {"name": "Mark-Sweep", "complexity": "O(live)", "description": "Classic tracing GC"},
+        "mark_compact": {"name": "Mark-Compact", "complexity": "O(heap)", "description": "Compacting tracing GC"},
+        "copying": {"name": "Copying", "complexity": "O(live)", "description": "Semi-space copying collector"},
+        "generational": {"name": "Generational", "complexity": "O(young)", "description": "Age-based collection"},
+        "incremental": {"name": "Incremental", "complexity": "O(n)", "description": "Pauseless incremental GC"},
+        "concurrent": {"name": "Concurrent", "complexity": "O(n)", "description": "Concurrent marking GC"},
+        "reference_counting": {"name": "Reference Counting", "complexity": "O(1)", "description": "Immediate reclamation"},
+    },
+}
+
+# ============================================================================
+# EXPANSION PACK DEFINITIONS
+# ============================================================================
+EXPANSION_PACKS = {
+    "systems_pro": {
+        "id": "systems_pro",
+        "name": "Systems Programming Pro",
+        "category": ExpansionCategory.LANGUAGE,
+        "description": "Complete systems programming toolkit",
+        "languages": ["rust", "go", "zig", "nim", "crystal", "d", "v", "odin"],
+        "features": ["memory_profiling", "unsafe_analysis", "ffi_generator"],
+        "price": "free",
+        "status": ExpansionStatus.AVAILABLE,
+    },
+    "data_science": {
+        "id": "data_science",
+        "name": "Data Science Suite",
+        "category": ExpansionCategory.LANGUAGE,
+        "description": "Scientific computing and data analysis",
+        "languages": ["julia", "r", "octave", "fortran", "wolfram"],
+        "features": ["notebook_mode", "visualization", "data_import"],
+        "price": "free",
+        "status": ExpansionStatus.AVAILABLE,
+    },
+    "mobile_dev": {
+        "id": "mobile_dev",
+        "name": "Mobile Development Kit",
+        "category": ExpansionCategory.LANGUAGE,
+        "description": "iOS, Android, and cross-platform development",
+        "languages": ["swift", "kotlin", "dart", "objective_c"],
+        "features": ["ui_preview", "device_simulation", "hot_reload"],
+        "price": "free",
+        "status": ExpansionStatus.AVAILABLE,
+    },
+    "functional_pure": {
+        "id": "functional_pure",
+        "name": "Functional Programming Mastery",
+        "category": ExpansionCategory.LANGUAGE,
+        "description": "Pure functional languages",
+        "languages": ["haskell", "ocaml", "f_sharp", "elixir", "erlang", "clojure", "elm", "purescript"],
+        "features": ["type_inference_viewer", "monad_tutorials", "repl_enhanced"],
+        "price": "free",
+        "status": ExpansionStatus.AVAILABLE,
+    },
+    "blockchain": {
+        "id": "blockchain",
+        "name": "Blockchain Development",
+        "category": ExpansionCategory.LANGUAGE,
+        "description": "Smart contract development",
+        "languages": ["solidity", "vyper", "move"],
+        "features": ["contract_testing", "gas_estimation", "security_audit"],
+        "price": "free",
+        "status": ExpansionStatus.AVAILABLE,
+    },
+    "theorem_provers": {
+        "id": "theorem_provers",
+        "name": "Formal Methods & Proof Assistants",
+        "category": ExpansionCategory.LANGUAGE,
+        "description": "Theorem proving and formal verification",
+        "languages": ["coq", "lean", "idris", "agda"],
+        "features": ["proof_visualization", "tactic_hints", "theorem_search"],
+        "price": "free",
+        "status": ExpansionStatus.AVAILABLE,
+    },
+    "compiler_internals": {
+        "id": "compiler_internals",
+        "name": "Compiler Internals Deep Dive",
+        "category": ExpansionCategory.COMPILER,
+        "description": "Low-level compilation analysis",
+        "languages": ["assembly_x86", "assembly_arm", "webassembly", "llvm_ir"],
+        "features": ["instruction_viewer", "pipeline_debugger", "binary_analysis"],
+        "price": "free",
+        "status": ExpansionStatus.AVAILABLE,
+    },
+    "hardware_design": {
+        "id": "hardware_design",
+        "name": "Hardware Design Suite",
+        "category": ExpansionCategory.LANGUAGE,
+        "description": "HDL and hardware description",
+        "languages": ["verilog", "vhdl", "chisel", "spinalhdl"],
+        "features": ["waveform_viewer", "synthesis_preview", "timing_analysis"],
+        "price": "free",
+        "status": ExpansionStatus.AVAILABLE,
+    },
+    "ai_ml_toolkit": {
+        "id": "ai_ml_toolkit",
+        "name": "AI/ML Integration Toolkit",
+        "category": ExpansionCategory.AI,
+        "description": "Multiple LLM providers and AI features",
+        "providers": ["openai", "anthropic", "google", "grok"],
+        "features": ["code_generation", "explanation", "refactoring", "test_generation"],
+        "price": "free",
+        "status": ExpansionStatus.AVAILABLE,
+    },
+    "algorithm_explorer": {
+        "id": "algorithm_explorer",
+        "name": "Algorithm Explorer Pro",
+        "category": ExpansionCategory.ALGORITHM,
+        "description": "Interactive algorithm visualization",
+        "algorithms": list(ALGORITHM_REGISTRY.keys()),
+        "features": ["step_by_step", "complexity_analysis", "comparison"],
+        "price": "free",
+        "status": ExpansionStatus.AVAILABLE,
+    },
+}
+
+# ============================================================================
+# SELF-EVOLVING AI HUB SERVICE
+# ============================================================================
+class AIHubService:
+    """
+    Self-evolving AI hub that queries for state-of-the-art expansion possibilities
+    and maintains cutting-edge capabilities
+    """
+    
+    def __init__(self):
+        self.api_key = os.environ.get('EMERGENT_LLM_KEY')
+        self.providers = {
+            LLMProvider.OPENAI: {"model": "gpt-4o", "available": True},
+            LLMProvider.ANTHROPIC: {"model": "claude-sonnet-4-20250514", "available": True},
+            LLMProvider.GOOGLE: {"model": "gemini-2.0-flash", "available": True},
+            LLMProvider.GROK: {"model": "grok-3", "available": False},  # Future
+        }
+        
+    async def suggest_features(self, context: dict) -> List[dict]:
+        """AI-powered feature suggestions based on usage patterns"""
+        if not self.api_key:
+            return self._get_default_suggestions()
+        
+        try:
+            chat = LlmChat(
+                api_key=self.api_key,
+                session_id=f"codedock-suggest-{uuid.uuid4().hex[:8]}",
+                system_message="""You are an expert compiler and IDE feature analyst. 
+                Based on the user's coding patterns and current feature set, suggest 
+                innovative features that would enhance their development experience.
+                Focus on:
+                1. Productivity improvements
+                2. Code quality enhancements
+                3. Learning opportunities
+                4. Advanced compilation features
+                5. Integration possibilities
+                
+                Return suggestions as JSON array with: id, name, description, category, impact, implementation_difficulty"""
+            ).with_model("openai", "gpt-4o")
+            
+            response = await chat.send_message(UserMessage(text=f"""
+            User context:
+            - Languages used: {context.get('languages', ['python'])}
+            - Features used: {context.get('features_used', [])}
+            - Skill level: {context.get('skill_level', 'intermediate')}
+            - Current installed packs: {context.get('installed_packs', [])}
+            
+            Suggest 5 innovative features they should add to their CodeDock IDE.
+            """))
+            
+            # Parse AI suggestions
+            suggestions = []
+            try:
+                import json
+                matches = re.findall(r'\[[\s\S]*?\]', response)
+                if matches:
+                    suggestions = json.loads(matches[0])
+            except:
+                suggestions = self._get_default_suggestions()
+            
+            return suggestions
+            
+        except Exception as e:
+            logger.error(f"Feature suggestion error: {e}")
+            return self._get_default_suggestions()
+    
+    def _get_default_suggestions(self) -> List[dict]:
+        """Default feature suggestions"""
+        return [
+            {
+                "id": "smart_completion",
+                "name": "AI Smart Completion",
+                "description": "Context-aware code completion powered by multiple LLMs",
+                "category": "productivity",
+                "impact": "high",
+                "implementation_difficulty": "medium"
+            },
+            {
+                "id": "code_review_bot",
+                "name": "Automated Code Review",
+                "description": "AI-powered code review with security and performance insights",
+                "category": "quality",
+                "impact": "high",
+                "implementation_difficulty": "medium"
+            },
+            {
+                "id": "interactive_debugger",
+                "name": "Visual Debugger",
+                "description": "Step-through debugging with variable inspection",
+                "category": "debugging",
+                "impact": "critical",
+                "implementation_difficulty": "high"
+            },
+            {
+                "id": "performance_profiler",
+                "name": "Real-time Profiler",
+                "description": "CPU and memory profiling with flame graphs",
+                "category": "performance",
+                "impact": "high",
+                "implementation_difficulty": "high"
+            },
+            {
+                "id": "collaborative_editing",
+                "name": "Enhanced Collaboration",
+                "description": "Video chat and screen sharing during pair programming",
+                "category": "collaboration",
+                "impact": "medium",
+                "implementation_difficulty": "high"
+            }
+        ]
+    
+    async def query_sota(self, domain: str) -> dict:
+        """Query for state-of-the-art developments in a domain"""
+        if not self.api_key:
+            return {"status": "offline", "suggestions": []}
+        
+        try:
+            chat = LlmChat(
+                api_key=self.api_key,
+                session_id=f"codedock-sota-{uuid.uuid4().hex[:8]}",
+                system_message="""You are a cutting-edge technology analyst specializing in 
+                programming languages, compilers, and developer tools. Provide the latest 
+                state-of-the-art developments and recommendations."""
+            ).with_model("openai", "gpt-4o")
+            
+            response = await chat.send_message(UserMessage(text=f"""
+            What are the latest state-of-the-art developments in {domain}?
+            Include:
+            1. Latest technologies and frameworks
+            2. Best practices in 2025/2026
+            3. Emerging trends
+            4. Recommended tools and libraries
+            5. Performance optimization techniques
+            
+            Be specific and actionable.
+            """))
+            
+            return {
+                "status": "success",
+                "domain": domain,
+                "analysis": response,
+                "timestamp": datetime.utcnow().isoformat()
+            }
+            
+        except Exception as e:
+            logger.error(f"SOTA query error: {e}")
+            return {"status": "error", "message": str(e)}
+    
+    async def auto_implement_feature(self, feature_spec: dict) -> dict:
+        """Generate implementation plan for a new feature"""
+        if not self.api_key:
+            return {"status": "offline"}
+        
+        try:
+            chat = LlmChat(
+                api_key=self.api_key,
+                session_id=f"codedock-impl-{uuid.uuid4().hex[:8]}",
+                system_message="""You are an expert software architect. Generate detailed 
+                implementation plans for new IDE features including:
+                1. Architecture design
+                2. API endpoints needed
+                3. UI components
+                4. Data models
+                5. Integration points
+                6. Testing strategy"""
+            ).with_model("openai", "gpt-4o")
+            
+            response = await chat.send_message(UserMessage(text=f"""
+            Generate an implementation plan for this feature:
+            
+            Name: {feature_spec.get('name')}
+            Description: {feature_spec.get('description')}
+            Category: {feature_spec.get('category')}
+            
+            Provide a complete implementation roadmap.
+            """))
+            
+            return {
+                "status": "success",
+                "feature": feature_spec.get('name'),
+                "implementation_plan": response,
+                "estimated_complexity": feature_spec.get('implementation_difficulty', 'medium')
+            }
+            
+        except Exception as e:
+            logger.error(f"Auto-implement error: {e}")
+            return {"status": "error", "message": str(e)}
+
+
+ai_hub = AIHubService()
+
+# ============================================================================
+# SELF-HEALING SERVICE
+# ============================================================================
+class SelfHealingService:
+    """Self-healing and self-organizing system"""
+    
+    def __init__(self):
+        self.health_checks = []
+        self.recovery_actions = []
+        
+    async def diagnose(self, error: dict) -> dict:
+        """Diagnose an error and suggest fixes"""
+        error_type = error.get('type', 'unknown')
+        message = error.get('message', '')
+        
+        diagnosis = {
+            "error_type": error_type,
+            "severity": self._assess_severity(error),
+            "possible_causes": [],
+            "suggested_fixes": [],
+            "auto_fixable": False
+        }
+        
+        # Common error patterns
+        if "syntax" in message.lower():
+            diagnosis["possible_causes"] = ["Syntax error in code", "Missing bracket or semicolon", "Invalid character"]
+            diagnosis["suggested_fixes"] = ["Check line indicated for typos", "Verify bracket matching", "Use linter"]
+            diagnosis["auto_fixable"] = True
+        elif "import" in message.lower() or "module" in message.lower():
+            diagnosis["possible_causes"] = ["Missing module", "Incorrect import path", "Module not installed"]
+            diagnosis["suggested_fixes"] = ["Install missing package", "Check import statement", "Verify module name"]
+        elif "memory" in message.lower():
+            diagnosis["possible_causes"] = ["Memory leak", "Large data structure", "Infinite loop"]
+            diagnosis["suggested_fixes"] = ["Profile memory usage", "Optimize data structures", "Check loop conditions"]
+        elif "timeout" in message.lower():
+            diagnosis["possible_causes"] = ["Infinite loop", "Slow algorithm", "Network issue"]
+            diagnosis["suggested_fixes"] = ["Check loop termination", "Optimize algorithm", "Increase timeout"]
+        
+        return diagnosis
+    
+    def _assess_severity(self, error: dict) -> str:
+        message = error.get('message', '').lower()
+        if "fatal" in message or "crash" in message:
+            return "critical"
+        elif "error" in message:
+            return "high"
+        elif "warning" in message:
+            return "medium"
+        return "low"
+    
+    async def auto_fix(self, code: str, error: dict) -> dict:
+        """Attempt automatic fix for common errors"""
+        fixes_applied = []
+        fixed_code = code
+        
+        # Auto-fix common issues
+        error_msg = error.get('message', '')
+        
+        # Missing semicolon (for C-like languages)
+        if "expected ';'" in error_msg:
+            line = error.get('line', 0)
+            lines = fixed_code.split('\n')
+            if 0 < line <= len(lines):
+                if not lines[line-1].rstrip().endswith(';'):
+                    lines[line-1] = lines[line-1].rstrip() + ';'
+                    fixes_applied.append(f"Added semicolon at line {line}")
+            fixed_code = '\n'.join(lines)
+        
+        # Missing colon (Python)
+        if "expected ':'" in error_msg:
+            line = error.get('line', 0)
+            lines = fixed_code.split('\n')
+            if 0 < line <= len(lines):
+                if not lines[line-1].rstrip().endswith(':'):
+                    lines[line-1] = lines[line-1].rstrip() + ':'
+                    fixes_applied.append(f"Added colon at line {line}")
+            fixed_code = '\n'.join(lines)
+        
+        return {
+            "success": len(fixes_applied) > 0,
+            "original_code": code,
+            "fixed_code": fixed_code,
+            "fixes_applied": fixes_applied
+        }
+    
+    async def organize_library(self, files: List[dict]) -> dict:
+        """Self-organizing library storage"""
+        organized = {
+            "by_language": {},
+            "by_date": {},
+            "by_project": {},
+            "suggestions": []
+        }
+        
+        for file in files:
+            lang = file.get('language', 'unknown')
+            if lang not in organized["by_language"]:
+                organized["by_language"][lang] = []
+            organized["by_language"][lang].append(file)
+        
+        # Generate organization suggestions
+        for lang, files_list in organized["by_language"].items():
+            if len(files_list) > 10:
+                organized["suggestions"].append({
+                    "type": "create_folder",
+                    "language": lang,
+                    "message": f"Consider creating a '{lang}' folder for {len(files_list)} files"
+                })
+        
+        return organized
+
+
+self_healer = SelfHealingService()
+
+# ============================================================================
+# IMPORT/EXPORT SERVICE
+# ============================================================================
+class ImportExportService:
+    """Handle file import/export in multiple formats"""
+    
+    SUPPORTED_IMPORT_FORMATS = [
+        "txt", "py", "js", "ts", "cpp", "c", "h", "hpp", "java", "kt", "swift",
+        "rs", "go", "rb", "php", "html", "css", "scss", "json", "yaml", "yml",
+        "xml", "md", "sql", "sh", "bash", "ps1", "r", "jl", "lua", "pl", "ex",
+        "exs", "hs", "ml", "fs", "clj", "scala", "dart", "sol", "v", "vhd",
+        "asm", "s", "wat", "tex", "typ", "toml", "ini", "cfg", "dockerfile",
+        "makefile", "cmake", "gradle", "sbt", "cabal", "cargo", "package"
+    ]
+    
+    SUPPORTED_EXPORT_FORMATS = [
+        "txt", "html", "pdf", "md", "json", "zip"
+    ]
+    
+    async def import_file(self, content: str, filename: str, format_hint: str = None) -> dict:
+        """Import a file and detect its language"""
+        extension = filename.split('.')[-1].lower() if '.' in filename else format_hint
+        
+        # Language detection
+        language = self._detect_language(content, extension)
+        
+        # Parse file metadata
+        metadata = self._extract_metadata(content, language)
+        
+        return {
+            "success": True,
+            "filename": filename,
+            "language": language,
+            "content": content,
+            "metadata": metadata,
+            "line_count": len(content.splitlines()),
+            "char_count": len(content)
+        }
+    
+    async def export_file(self, code: str, language: str, format: str, options: dict = None) -> dict:
+        """Export code in various formats"""
+        options = options or {}
+        
+        if format == "txt":
+            return {"content": code, "mime_type": "text/plain", "extension": ".txt"}
+        
+        elif format == "html":
+            html = self._code_to_html(code, language, options)
+            return {"content": html, "mime_type": "text/html", "extension": ".html"}
+        
+        elif format == "md":
+            md = f"```{language}\n{code}\n```"
+            return {"content": md, "mime_type": "text/markdown", "extension": ".md"}
+        
+        elif format == "json":
+            import json
+            data = {
+                "code": code,
+                "language": language,
+                "exported_at": datetime.utcnow().isoformat(),
+                "version": "9.0.0"
+            }
+            return {"content": json.dumps(data, indent=2), "mime_type": "application/json", "extension": ".json"}
+        
+        return {"error": f"Unsupported format: {format}"}
+    
+    def _detect_language(self, content: str, extension: str) -> str:
+        """Detect programming language from content and extension"""
+        extension_map = {
+            "py": "python", "js": "javascript", "ts": "typescript",
+            "cpp": "cpp", "c": "c", "h": "c", "hpp": "cpp",
+            "java": "java", "kt": "kotlin", "swift": "swift",
+            "rs": "rust", "go": "go", "rb": "ruby", "php": "php",
+            "html": "html", "css": "css", "scss": "scss",
+            "json": "json", "yaml": "yaml", "yml": "yaml",
+            "xml": "xml", "md": "markdown", "sql": "sql",
+            "sh": "bash", "bash": "bash", "ps1": "powershell",
+            "r": "r", "jl": "julia", "lua": "lua", "pl": "perl",
+            "ex": "elixir", "exs": "elixir", "hs": "haskell",
+            "ml": "ocaml", "fs": "f_sharp", "clj": "clojure",
+            "scala": "scala", "dart": "dart", "sol": "solidity",
+            "v": "verilog", "vhd": "vhdl", "asm": "assembly_x86",
+            "s": "assembly_arm", "wat": "webassembly",
+            "tex": "latex", "typ": "typst", "toml": "toml"
+        }
+        
+        if extension in extension_map:
+            return extension_map[extension]
+        
+        # Content-based detection
+        if content.startswith("#!/usr/bin/env python") or "import " in content[:100]:
+            return "python"
+        if "function " in content[:100] or "const " in content[:100]:
+            return "javascript"
+        if "#include" in content[:100]:
+            return "cpp"
+        
+        return "text"
+    
+    def _extract_metadata(self, content: str, language: str) -> dict:
+        """Extract metadata from code"""
+        metadata = {
+            "functions": [],
+            "classes": [],
+            "imports": [],
+            "comments_ratio": 0
+        }
+        
+        lines = content.splitlines()
+        comment_lines = 0
+        
+        for line in lines:
+            stripped = line.strip()
+            
+            # Count comments
+            if language == "python" and stripped.startswith("#"):
+                comment_lines += 1
+            elif language in ["javascript", "typescript", "cpp", "c", "java"] and stripped.startswith("//"):
+                comment_lines += 1
+            
+            # Detect functions
+            if language == "python" and stripped.startswith("def "):
+                func_name = stripped[4:].split("(")[0]
+                metadata["functions"].append(func_name)
+            elif language == "javascript" and "function " in stripped:
+                match = re.search(r'function\s+(\w+)', stripped)
+                if match:
+                    metadata["functions"].append(match.group(1))
+            
+            # Detect classes
+            if language == "python" and stripped.startswith("class "):
+                class_name = stripped[6:].split("(")[0].split(":")[0]
+                metadata["classes"].append(class_name)
+        
+        if lines:
+            metadata["comments_ratio"] = round(comment_lines / len(lines) * 100, 1)
+        
+        return metadata
+    
+    def _code_to_html(self, code: str, language: str, options: dict) -> str:
+        """Convert code to HTML with syntax highlighting"""
+        theme = options.get("theme", "dark")
+        bg_color = "#1E1E1E" if theme == "dark" else "#FFFFFF"
+        text_color = "#D4D4D4" if theme == "dark" else "#000000"
+        
+        escaped_code = code.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+        
+        return f"""<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>CodeDock Export</title>
+    <style>
+        body {{ background: {bg_color}; color: {text_color}; font-family: 'Fira Code', monospace; padding: 20px; }}
+        pre {{ background: {bg_color}; padding: 20px; border-radius: 8px; overflow-x: auto; }}
+        .header {{ color: #888; margin-bottom: 10px; }}
+    </style>
+</head>
+<body>
+    <div class="header">Language: {language} | Exported from CodeDock v9.0.0</div>
+    <pre><code>{escaped_code}</code></pre>
+</body>
+</html>"""
+
+
+import_export = ImportExportService()
+
+# ============================================================================
+# COMPILATION BIBLE - Deep Teaching System
+# ============================================================================
+COMPILATION_BIBLE = {
+    "chapters": [
+        {
+            "id": "lexical_analysis",
+            "title": "Chapter 1: Lexical Analysis",
+            "subtitle": "From Characters to Tokens",
+            "difficulty": "beginner",
+            "content": """
+# Lexical Analysis: The First Step
+
+Lexical analysis (scanning) is the first phase of compilation. It converts a stream of characters into a stream of tokens.
+
+## Key Concepts
+
+### 1. Tokens
+A token is a meaningful unit:
+- **Keywords**: if, while, for, class
+- **Identifiers**: variable names, function names
+- **Literals**: numbers, strings
+- **Operators**: +, -, *, /, ==
+- **Delimiters**: (, ), {, }, ;
+
+### 2. Regular Expressions
+Tokens are typically defined using regular expressions:
+- `[a-zA-Z_][a-zA-Z0-9_]*` - Identifiers
+- `[0-9]+` - Integer literals
+- `"[^"]*"` - String literals
+
+### 3. Finite Automata
+Lexers are implemented as finite automata:
+- DFA (Deterministic) - One transition per input
+- NFA (Non-deterministic) - Multiple possible transitions
+
+## Algorithm: Maximal Munch
+The lexer always matches the longest possible token.
+
+```
+Input: "ifdef"
+Could be: "if" + "def" OR "ifdef"
+Result: "ifdef" (identifier)
+```
+
+## Practice Exercise
+Build a lexer that tokenizes: `x = 10 + 20`
+Expected tokens: [IDENT:x, ASSIGN, INT:10, PLUS, INT:20]
+            """,
+            "exercises": [
+                {"type": "code", "prompt": "Implement a simple tokenizer for arithmetic expressions"},
+                {"type": "quiz", "question": "What is the time complexity of a DFA-based lexer?", "answer": "O(n)"}
+            ]
+        },
+        {
+            "id": "parsing",
+            "title": "Chapter 2: Parsing",
+            "subtitle": "Building the Syntax Tree",
+            "difficulty": "intermediate",
+            "content": """
+# Parsing: From Tokens to Trees
+
+Parsing (syntactic analysis) constructs an Abstract Syntax Tree (AST) from tokens.
+
+## Grammar Notation
+
+### Context-Free Grammars (CFG)
+```
+expr   → term (('+' | '-') term)*
+term   → factor (('*' | '/') factor)*
+factor → NUMBER | '(' expr ')'
+```
+
+### BNF (Backus-Naur Form)
+```
+<expr>   ::= <term> | <expr> '+' <term>
+<term>   ::= <factor> | <term> '*' <factor>
+<factor> ::= <number> | '(' <expr> ')'
+```
+
+## Parsing Strategies
+
+### Top-Down Parsing
+- **Recursive Descent**: Hand-written, intuitive
+- **LL(k)**: Table-driven, k lookahead tokens
+- **Pratt Parsing**: Elegant operator precedence
+
+### Bottom-Up Parsing
+- **LR(k)**: Powerful, handles left recursion
+- **LALR**: Used by Yacc/Bison
+- **GLR**: Handles ambiguous grammars
+
+## Precedence & Associativity
+
+| Operator | Precedence | Associativity |
+|----------|------------|---------------|
+| =        | 1          | Right         |
+| + -      | 2          | Left          |
+| * /      | 3          | Left          |
+| ^        | 4          | Right         |
+| - (unary)| 5          | Right         |
+
+## Building an AST
+
+```python
+class BinaryOp:
+    def __init__(self, left, op, right):
+        self.left = left
+        self.op = op
+        self.right = right
+
+# For: 2 + 3 * 4
+ast = BinaryOp(
+    Num(2),
+    '+',
+    BinaryOp(Num(3), '*', Num(4))
+)
+```
+            """,
+            "exercises": [
+                {"type": "code", "prompt": "Implement a recursive descent parser for arithmetic"},
+                {"type": "diagram", "prompt": "Draw the AST for: (a + b) * c - d"}
+            ]
+        },
+        {
+            "id": "semantic_analysis",
+            "title": "Chapter 3: Semantic Analysis",
+            "subtitle": "Making Sense of Syntax",
+            "difficulty": "intermediate",
+            "content": """
+# Semantic Analysis: Beyond Syntax
+
+Semantic analysis checks that the program makes sense: types match, variables are declared, etc.
+
+## Symbol Tables
+
+Track identifiers and their attributes:
+```
+Symbol Table:
+| Name  | Type   | Scope  | Address |
+|-------|--------|--------|---------|
+| x     | int    | global | 0x100   |
+| foo   | func   | global | 0x200   |
+| y     | float  | foo    | 0x208   |
+```
+
+## Type Checking
+
+### Static Type Checking (Compile-time)
+```
+int x = "hello";  // ERROR: type mismatch
+```
+
+### Type Inference
+```python
+def add(a, b):
+    return a + b  # Types inferred from usage
+```
+
+### Type Coercion
+```c
+int a = 5;
+float b = a;  // Implicit conversion: int → float
+```
+
+## Scope Rules
+
+### Lexical Scoping
+```python
+x = 10  # Global
+def foo():
+    x = 20  # Local shadows global
+    def bar():
+        print(x)  # Uses foo's x (20)
+```
+
+### Dynamic Scoping (rare)
+Variable binding determined at runtime.
+
+## Control Flow Analysis
+
+- **Dead Code Detection**: Unreachable statements
+- **Definite Assignment**: Variables initialized before use
+- **Return Path Analysis**: All paths return a value
+            """,
+            "exercises": [
+                {"type": "code", "prompt": "Implement a type checker for a simple language"},
+                {"type": "quiz", "question": "What is the difference between static and dynamic scoping?"}
+            ]
+        },
+        {
+            "id": "intermediate_representation",
+            "title": "Chapter 4: Intermediate Representation",
+            "subtitle": "The Bridge Between Front and Back",
+            "difficulty": "advanced",
+            "content": """
+# Intermediate Representation (IR)
+
+IR bridges the gap between source language and target machine code.
+
+## IR Formats
+
+### Three-Address Code (TAC)
+Each instruction has at most 3 operands:
+```
+t1 = a + b
+t2 = c * d
+t3 = t1 - t2
+```
+
+### Static Single Assignment (SSA)
+Every variable assigned exactly once:
+```
+// Original
+x = 1
+x = 2
+y = x
+
+// SSA Form
+x1 = 1
+x2 = 2
+y = x2
+```
+
+### LLVM IR
+```llvm
+define i32 @add(i32 %a, i32 %b) {
+entry:
+  %sum = add i32 %a, %b
+  ret i32 %sum
+}
+```
+
+## Control Flow Graph (CFG)
+
+Basic blocks connected by control flow edges:
+```
+┌─────────┐
+│ Entry   │
+└────┬────┘
+     │
+┌────▼────┐
+│ if cond │──false──┐
+└────┬────┘         │
+     │true          │
+┌────▼────┐   ┌─────▼────┐
+│ then    │   │ else     │
+└────┬────┘   └────┬─────┘
+     │             │
+     └──────┬──────┘
+      ┌─────▼─────┐
+      │  merge    │
+      └───────────┘
+```
+
+## SSA Construction
+
+### φ (phi) Functions
+Merge values at join points:
+```
+if (cond)
+  x = 1
+else
+  x = 2
+// At merge: x3 = φ(x1, x2)
+```
+
+### Dominance Frontier Algorithm
+Efficiently place φ functions using dominance information.
+            """,
+            "exercises": [
+                {"type": "code", "prompt": "Convert a simple program to SSA form"},
+                {"type": "diagram", "prompt": "Draw the CFG for a while loop"}
+            ]
+        },
+        {
+            "id": "optimization",
+            "title": "Chapter 5: Optimization",
+            "subtitle": "Making Code Fast",
+            "difficulty": "advanced",
+            "content": """
+# Code Optimization
+
+Transform code to run faster or use less memory.
+
+## Local Optimizations (Single Block)
+
+### Constant Folding
+```
+x = 2 + 3    →    x = 5
+```
+
+### Constant Propagation
+```
+x = 5
+y = x + 2    →    y = 7
+```
+
+### Algebraic Simplification
+```
+x * 1 → x
+x + 0 → x
+x * 2 → x << 1
+```
+
+### Dead Code Elimination
+```
+x = 5
+x = 10  // Previous assignment is dead
+```
+
+## Global Optimizations (Multiple Blocks)
+
+### Common Subexpression Elimination (CSE)
+```
+a = b + c
+...
+d = b + c    →    d = a (if b,c unchanged)
+```
+
+### Loop Invariant Code Motion (LICM)
+```
+for i in range(n):
+    x = y + z      // Move outside loop
+    a[i] = x * i
+
+// Becomes:
+x = y + z
+for i in range(n):
+    a[i] = x * i
+```
+
+### Strength Reduction
+```
+// Original
+for i in range(n):
+    y = i * 4
+
+// Optimized
+y = 0
+for i in range(n):
+    y += 4
+```
+
+## Loop Optimizations
+
+### Loop Unrolling
+```
+// Original
+for i in range(4):
+    sum += a[i]
+
+// Unrolled
+sum += a[0] + a[1] + a[2] + a[3]
+```
+
+### Loop Fusion
+Combine adjacent loops with same bounds.
+
+### Loop Tiling
+Improve cache performance for nested loops.
+
+## Data Flow Analysis
+
+- **Reaching Definitions**: Which assignments reach a point
+- **Live Variables**: Which variables are used later
+- **Available Expressions**: Which expressions are already computed
+            """,
+            "exercises": [
+                {"type": "code", "prompt": "Implement constant propagation"},
+                {"type": "analysis", "prompt": "Identify optimizations for a given code snippet"}
+            ]
+        },
+        {
+            "id": "register_allocation",
+            "title": "Chapter 6: Register Allocation",
+            "subtitle": "From Virtual to Physical",
+            "difficulty": "advanced",
+            "content": """
+# Register Allocation
+
+Map virtual registers to physical machine registers.
+
+## The Challenge
+
+- CPUs have limited registers (8-32 typically)
+- Programs may use thousands of variables
+- Some instructions require specific registers
+
+## Live Ranges & Interference
+
+### Live Range
+The span where a variable's value is needed:
+```
+x = 10      // x live starts
+y = 20
+z = x + y   // x live ends
+```
+
+### Interference Graph
+Nodes = variables, Edges = simultaneous liveness
+```
+If x and y are both live at some point,
+they cannot share a register.
+```
+
+## Algorithms
+
+### Graph Coloring
+- Color graph with k colors (k = register count)
+- NP-complete in general
+- Heuristics work well in practice
+
+### Chaitin-Briggs Algorithm
+1. Build interference graph
+2. Simplify: Remove nodes with < k edges
+3. Spill: If stuck, spill a variable to memory
+4. Select: Assign colors in reverse order
+
+### Linear Scan
+- Faster than graph coloring
+- Order variables by live range start
+- Greedily assign registers
+- Commonly used in JIT compilers
+
+## Spilling
+
+When registers run out:
+1. Choose a variable to spill
+2. Store to memory (stack)
+3. Load when needed
+
+### Spill Cost
+```
+cost = Σ (10^loop_depth × use_count)
+```
+Spill variables with lowest cost.
+
+## Coalescing
+
+Eliminate unnecessary copies:
+```
+a = b   // If a and b don't interfere,
+        // assign same register
+```
+            """,
+            "exercises": [
+                {"type": "code", "prompt": "Implement linear scan register allocation"},
+                {"type": "diagram", "prompt": "Build interference graph for a code snippet"}
+            ]
+        },
+        {
+            "id": "code_generation",
+            "title": "Chapter 7: Code Generation",
+            "subtitle": "Generating Machine Code",
+            "difficulty": "expert",
+            "content": """
+# Code Generation
+
+Transform IR to target machine code.
+
+## Instruction Selection
+
+### Tree Pattern Matching
+Match IR trees to instruction templates:
+```
+ADD(REG, CONST) → addi rd, rs, imm
+ADD(REG, REG)   → add rd, rs1, rs2
+```
+
+### BURG-style Selection
+- Define cost for each pattern
+- Find minimum-cost covering
+- Dynamic programming on trees
+
+## Instruction Scheduling
+
+Reorder instructions to:
+- Hide latencies (pipelining)
+- Avoid stalls
+- Maximize parallelism
+
+### List Scheduling
+1. Build dependence DAG
+2. Compute priorities
+3. Schedule highest priority ready instruction
+
+### Software Pipelining
+Overlap iterations of loops.
+
+## Target-Specific Concerns
+
+### x86-64 Calling Convention
+- Args: RDI, RSI, RDX, RCX, R8, R9
+- Return: RAX
+- Callee-saved: RBX, RBP, R12-R15
+
+### ARM64 Calling Convention
+- Args: X0-X7
+- Return: X0
+- Callee-saved: X19-X28
+
+### SIMD Code Generation
+Vectorize loops for SSE/AVX/NEON:
+```c
+// Scalar
+for (int i = 0; i < n; i++)
+    c[i] = a[i] + b[i];
+
+// Vector (AVX)
+for (int i = 0; i < n; i += 8)
+    _mm256_store_ps(&c[i], 
+        _mm256_add_ps(
+            _mm256_load_ps(&a[i]),
+            _mm256_load_ps(&b[i])));
+```
+
+## Peephole Optimization
+
+Local rewriting of instruction sequences:
+```
+mov eax, 0    →    xor eax, eax
+add eax, 1    →    inc eax
+```
+            """,
+            "exercises": [
+                {"type": "code", "prompt": "Generate x86 assembly for a simple function"},
+                {"type": "analysis", "prompt": "Identify instruction scheduling opportunities"}
+            ]
+        },
+        {
+            "id": "advanced_topics",
+            "title": "Chapter 8: Advanced Topics",
+            "subtitle": "Cutting-Edge Compilation",
+            "difficulty": "expert",
+            "content": """
+# Advanced Compilation Topics
+
+## Just-In-Time (JIT) Compilation
+
+Compile at runtime for dynamic optimization:
+- **Tracing JIT**: Record hot paths, compile traces
+- **Method JIT**: Compile whole methods
+- **Tiered Compilation**: Interpret → Baseline → Optimizing
+
+## Profile-Guided Optimization (PGO)
+
+Use runtime profiles to guide optimization:
+1. Instrument build
+2. Run with representative workload
+3. Rebuild with profile data
+
+Benefits:
+- Better branch prediction
+- Improved function inlining
+- Optimized code layout
+
+## Polyhedral Optimization
+
+Model nested loops as polyhedra:
+- Represent iterations as integer points
+- Apply affine transformations
+- Optimize for parallelism and locality
+
+## Link-Time Optimization (LTO)
+
+Optimize across compilation units:
+- Cross-module inlining
+- Whole-program dead code elimination
+- Better constant propagation
+
+## Garbage Collection
+
+### Tracing GC
+- Mark reachable objects
+- Sweep/compact unreachable
+
+### Reference Counting
+- Increment on reference
+- Decrement on dereference
+- Cycle detection needed
+
+### Generational GC
+- Young generation: frequent, fast collection
+- Old generation: rare, thorough collection
+
+## Formal Verification
+
+Prove compiler correctness:
+- CompCert (verified C compiler)
+- CakeML (verified ML compiler)
+- Proof-carrying code
+            """,
+            "exercises": [
+                {"type": "research", "prompt": "Compare tracing and method JIT compilation"},
+                {"type": "project", "prompt": "Implement a simple mark-sweep garbage collector"}
+            ]
+        }
+    ],
+    "total_chapters": 8,
+    "estimated_hours": 40,
+    "certification_available": True
+}
+
+# ============================================================================
+# API ENDPOINTS - Ultimate Hub
+# ============================================================================
+
+@api_router.get("/v9/info")
+async def get_v9_info():
+    """Get CodeDock v9.0.0 Ultimate Hub information"""
+    return {
+        "version": "9.0.0",
+        "codename": "Ultimate Hub",
+        "build": "2026.02.22-ULTIMATE",
+        "features": [
+            "self_evolving_ai",
+            "multi_llm_support",
+            "50_plus_languages",
+            "self_healing",
+            "expansion_packs",
+            "compilation_bible",
+            "predictive_upgrades",
+            "state_of_art_algorithms"
+        ],
+        "llm_providers": list(ai_hub.providers.keys()),
+        "language_packs": len(LANGUAGE_PACK_REGISTRY),
+        "expansion_packs": len(EXPANSION_PACKS),
+        "algorithms": sum(len(v) for v in ALGORITHM_REGISTRY.values())
+    }
+
+@api_router.get("/languages/packs")
+async def get_language_packs():
+    """Get all language packs"""
+    packs = []
+    for lang_id, pack in LANGUAGE_PACK_REGISTRY.items():
+        packs.append({
+            "id": lang_id,
+            **pack
+        })
+    return {
+        "packs": packs,
+        "total": len(packs),
+        "categories": list(set(p["category"] for p in LANGUAGE_PACK_REGISTRY.values()))
+    }
+
+@api_router.get("/languages/packs/{category}")
+async def get_language_packs_by_category(category: str):
+    """Get language packs by category"""
+    packs = [
+        {"id": k, **v} for k, v in LANGUAGE_PACK_REGISTRY.items() 
+        if v.get("category") == category
+    ]
+    return {"category": category, "packs": packs, "count": len(packs)}
+
+@api_router.get("/expansions")
+async def get_expansions():
+    """Get all expansion packs"""
+    return {
+        "expansions": list(EXPANSION_PACKS.values()),
+        "total": len(EXPANSION_PACKS),
+        "categories": [e.value for e in ExpansionCategory]
+    }
+
+@api_router.get("/expansions/{pack_id}")
+async def get_expansion(pack_id: str):
+    """Get specific expansion pack"""
+    if pack_id in EXPANSION_PACKS:
+        return EXPANSION_PACKS[pack_id]
+    raise HTTPException(status_code=404, detail="Expansion not found")
+
+@api_router.post("/expansions/{pack_id}/install")
+async def install_expansion(pack_id: str):
+    """Install an expansion pack"""
+    if pack_id not in EXPANSION_PACKS:
+        raise HTTPException(status_code=404, detail="Expansion not found")
+    
+    # Record installation
+    await db.installed_expansions.update_one(
+        {"pack_id": pack_id},
+        {"$set": {
+            "pack_id": pack_id,
+            "installed_at": datetime.utcnow(),
+            "status": ExpansionStatus.INSTALLED.value
+        }},
+        upsert=True
+    )
+    
+    return {"success": True, "pack_id": pack_id, "status": "installed"}
+
+@api_router.get("/ai/hub/providers")
+async def get_llm_providers():
+    """Get available LLM providers"""
+    return {
+        "providers": [
+            {
+                "id": provider.value,
+                "name": provider.value.capitalize(),
+                "model": info["model"],
+                "available": info["available"]
+            }
+            for provider, info in ai_hub.providers.items()
+        ]
+    }
+
+@api_router.post("/ai/hub/suggest-features")
+async def suggest_features(context: dict = {}):
+    """AI-powered feature suggestions"""
+    suggestions = await ai_hub.suggest_features(context)
+    return {"suggestions": suggestions}
+
+@api_router.post("/ai/hub/query-sota")
+async def query_sota(data: dict):
+    """Query state-of-the-art developments"""
+    domain = data.get("domain", "compiler optimization")
+    result = await ai_hub.query_sota(domain)
+    return result
+
+@api_router.post("/ai/hub/auto-implement")
+async def auto_implement(feature_spec: dict):
+    """Generate implementation plan for a feature"""
+    result = await ai_hub.auto_implement_feature(feature_spec)
+    return result
+
+@api_router.post("/healing/diagnose")
+async def diagnose_error(error: dict):
+    """Diagnose an error"""
+    diagnosis = await self_healer.diagnose(error)
+    return diagnosis
+
+@api_router.post("/healing/auto-fix")
+async def auto_fix_code(data: dict):
+    """Attempt automatic fix"""
+    result = await self_healer.auto_fix(
+        data.get("code", ""),
+        data.get("error", {})
+    )
+    return result
+
+@api_router.post("/healing/organize")
+async def organize_library(data: dict):
+    """Self-organize library"""
+    files = data.get("files", [])
+    result = await self_healer.organize_library(files)
+    return result
+
+@api_router.post("/import/file")
+async def import_file(data: dict):
+    """Import a file"""
+    result = await import_export.import_file(
+        data.get("content", ""),
+        data.get("filename", "untitled"),
+        data.get("format")
+    )
+    return result
+
+@api_router.post("/export/file")
+async def export_file(data: dict):
+    """Export code in various formats"""
+    result = await import_export.export_file(
+        data.get("code", ""),
+        data.get("language", "text"),
+        data.get("format", "txt"),
+        data.get("options", {})
+    )
+    return result
+
+@api_router.get("/export/formats")
+async def get_export_formats():
+    """Get supported export formats"""
+    return {
+        "import_formats": import_export.SUPPORTED_IMPORT_FORMATS,
+        "export_formats": import_export.SUPPORTED_EXPORT_FORMATS
+    }
+
+@api_router.get("/algorithms")
+async def get_algorithms():
+    """Get all algorithms"""
+    return {
+        "algorithms": ALGORITHM_REGISTRY,
+        "categories": list(ALGORITHM_REGISTRY.keys())
+    }
+
+@api_router.get("/algorithms/{category}")
+async def get_algorithms_by_category(category: str):
+    """Get algorithms by category"""
+    if category in ALGORITHM_REGISTRY:
+        return {"category": category, "algorithms": ALGORITHM_REGISTRY[category]}
+    raise HTTPException(status_code=404, detail="Category not found")
+
+@api_router.get("/bible")
+async def get_compilation_bible():
+    """Get the compilation bible"""
+    return {
+        "title": "The Complete Compilation Bible",
+        "chapters": len(COMPILATION_BIBLE["chapters"]),
+        "estimated_hours": COMPILATION_BIBLE["estimated_hours"],
+        "toc": [
+            {
+                "id": ch["id"],
+                "title": ch["title"],
+                "subtitle": ch["subtitle"],
+                "difficulty": ch["difficulty"]
+            }
+            for ch in COMPILATION_BIBLE["chapters"]
+        ]
+    }
+
+@api_router.get("/bible/chapter/{chapter_id}")
+async def get_bible_chapter(chapter_id: str):
+    """Get a specific bible chapter"""
+    for chapter in COMPILATION_BIBLE["chapters"]:
+        if chapter["id"] == chapter_id:
+            return chapter
+    raise HTTPException(status_code=404, detail="Chapter not found")
+
 
 # Include all routes at the end after all definitions
 app.include_router(api_router)

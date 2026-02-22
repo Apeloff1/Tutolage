@@ -428,29 +428,35 @@ class CSBibleAPITester:
             if response.status_code == 200:
                 data = response.json()
                 
-                if not isinstance(data, list):
-                    self.log_test("Search Courses", False, f"Expected list, got {type(data)}")
+                # Handle the actual response format with 'results' key
+                if isinstance(data, dict) and "results" in data:
+                    results = data["results"]
+                    if not isinstance(results, list):
+                        self.log_test("Search Courses", False, f"Expected results list, got {type(results)}")
+                        return False
+                    
+                    # Should find courses related to algorithms
+                    if len(results) == 0:
+                        self.log_test("Search Courses", False, "No courses found for 'algorithm' search")
+                        return False
+                    
+                    # Check that results contain algorithm-related content
+                    algorithm_found = False
+                    for result in results:
+                        result_text = json.dumps(result).lower()
+                        if "algorithm" in result_text:
+                            algorithm_found = True
+                            break
+                    
+                    if not algorithm_found:
+                        self.log_test("Search Courses", False, "Search results don't contain algorithm-related content")
+                        return False
+                    
+                    self.log_test("Search Courses", True, f"Found {len(results)} courses for 'algorithm' search")
+                    return True
+                else:
+                    self.log_test("Search Courses", False, f"Expected dict with 'results' key, got {type(data)}")
                     return False
-                
-                # Should find courses related to algorithms
-                if len(data) == 0:
-                    self.log_test("Search Courses", False, "No courses found for 'algorithm' search")
-                    return False
-                
-                # Check that results contain algorithm-related content
-                algorithm_found = False
-                for course in data:
-                    course_text = json.dumps(course).lower()
-                    if "algorithm" in course_text:
-                        algorithm_found = True
-                        break
-                
-                if not algorithm_found:
-                    self.log_test("Search Courses", False, "Search results don't contain algorithm-related content")
-                    return False
-                
-                self.log_test("Search Courses", True, f"Found {len(data)} courses for 'algorithm' search")
-                return True
                 
             else:
                 self.log_test("Search Courses", False, f"HTTP {response.status_code}")

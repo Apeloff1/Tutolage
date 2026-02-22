@@ -6,523 +6,461 @@ Testing all modular routes and endpoints as specified in the review request.
 
 import requests
 import json
-import sys
-from typing import Dict, Any, List
 import time
+from typing import Dict, Any, List
+import sys
 
-# Backend URL from environment
+# Backend URL from frontend .env
 BACKEND_URL = "https://codedock-ultimate.preview.emergentagent.com"
+API_BASE = f"{BACKEND_URL}/api"
 
-class CSBibleAPITester:
-    def __init__(self, base_url: str):
-        self.base_url = base_url
-        self.session = requests.Session()
-        self.session.timeout = 30
-        self.test_results = []
+class Colors:
+    GREEN = '\033[92m'
+    RED = '\033[91m'
+    YELLOW = '\033[93m'
+    BLUE = '\033[94m'
+    PURPLE = '\033[95m'
+    CYAN = '\033[96m'
+    WHITE = '\033[97m'
+    BOLD = '\033[1m'
+    END = '\033[0m'
+
+class TestResult:
+    def __init__(self):
+        self.passed = 0
+        self.failed = 0
+        self.errors = []
         
-    def log_test(self, test_name: str, success: bool, details: str = ""):
-        """Log test result"""
-        status = "✅ PASS" if success else "❌ FAIL"
-        print(f"{status} {test_name}")
+    def success(self, test_name: str, details: str = ""):
+        self.passed += 1
+        print(f"{Colors.GREEN}✅ {test_name}{Colors.END}")
         if details:
-            print(f"    {details}")
-        self.test_results.append({
-            "test": test_name,
-            "success": success,
-            "details": details
-        })
-        
-    def test_health_check(self):
-        """Test basic health check endpoint"""
-        try:
-            response = self.session.get(f"{self.base_url}/api/health")
-            if response.status_code == 200:
-                data = response.json()
-                if data.get("status") == "healthy":
-                    self.log_test("Health Check", True, f"Status: {data.get('status')}")
-                    return True
-                else:
-                    self.log_test("Health Check", False, f"Unexpected status: {data}")
-                    return False
-            else:
-                self.log_test("Health Check", False, f"HTTP {response.status_code}")
-                return False
-        except Exception as e:
-            self.log_test("Health Check", False, f"Exception: {str(e)}")
-            return False
+            print(f"   {Colors.CYAN}{details}{Colors.END}")
             
-    def test_languages_endpoint(self):
-        """Test languages endpoint"""
-        try:
-            response = self.session.get(f"{self.base_url}/api/languages")
-            if response.status_code == 200:
-                data = response.json()
-                # Handle both list format and object format with 'languages' key
-                if isinstance(data, list) and len(data) > 0:
-                    self.log_test("Languages Endpoint", True, f"Found {len(data)} languages")
-                    return True
-                elif isinstance(data, dict) and "languages" in data and len(data["languages"]) > 0:
-                    self.log_test("Languages Endpoint", True, f"Found {len(data['languages'])} languages")
-                    return True
-                else:
-                    self.log_test("Languages Endpoint", False, f"Invalid response format")
-                    return False
-            else:
-                self.log_test("Languages Endpoint", False, f"HTTP {response.status_code}")
-                return False
-        except Exception as e:
-            self.log_test("Languages Endpoint", False, f"Exception: {str(e)}")
-            return False
+    def failure(self, test_name: str, error: str):
+        self.failed += 1
+        self.errors.append(f"{test_name}: {error}")
+        print(f"{Colors.RED}❌ {test_name}{Colors.END}")
+        print(f"   {Colors.RED}Error: {error}{Colors.END}")
+        
+    def summary(self):
+        total = self.passed + self.failed
+        success_rate = (self.passed / total * 100) if total > 0 else 0
+        
+        print(f"\n{Colors.BOLD}{'='*60}{Colors.END}")
+        print(f"{Colors.BOLD}TEST SUMMARY{Colors.END}")
+        print(f"{Colors.BOLD}{'='*60}{Colors.END}")
+        print(f"Total Tests: {total}")
+        print(f"{Colors.GREEN}Passed: {self.passed}{Colors.END}")
+        print(f"{Colors.RED}Failed: {self.failed}{Colors.END}")
+        print(f"Success Rate: {Colors.GREEN if success_rate >= 80 else Colors.YELLOW}{success_rate:.1f}%{Colors.END}")
+        
+        if self.errors:
+            print(f"\n{Colors.RED}FAILED TESTS:{Colors.END}")
+            for error in self.errors:
+                print(f"  • {error}")
+
+def make_request(method: str, endpoint: str, data: Dict = None, timeout: int = 10) -> Dict[str, Any]:
+    """Make HTTP request with error handling"""
+    try:
+        url = f"{API_BASE}{endpoint}"
+        
+        if method.upper() == "GET":
+            response = requests.get(url, timeout=timeout)
+        elif method.upper() == "POST":
+            response = requests.post(url, json=data, timeout=timeout)
+        elif method.upper() == "PUT":
+            response = requests.put(url, json=data, timeout=timeout)
+        elif method.upper() == "DELETE":
+            response = requests.delete(url, timeout=timeout)
+        else:
+            raise ValueError(f"Unsupported method: {method}")
             
-    def test_code_execution(self):
-        """Test basic code execution"""
-        try:
-            payload = {
-                "code": 'print("Hello from CS Bible test!")',
-                "language": "python"
-            }
-            response = self.session.post(f"{self.base_url}/api/execute", json=payload)
-            if response.status_code == 200:
-                data = response.json()
-                if "result" in data and "output" in data["result"]:
-                    self.log_test("Code Execution", True, f"Output: {data['result']['output'][:50]}...")
-                    return True
-                else:
-                    self.log_test("Code Execution", False, f"Invalid response structure: {data}")
-                    return False
-            else:
-                self.log_test("Code Execution", False, f"HTTP {response.status_code}")
-                return False
-        except Exception as e:
-            self.log_test("Code Execution", False, f"Exception: {str(e)}")
-            return False
+        return {
+            "status_code": response.status_code,
+            "data": response.json() if response.headers.get('content-type', '').startswith('application/json') else response.text,
+            "headers": dict(response.headers)
+        }
+    except requests.exceptions.Timeout:
+        return {"error": "Request timeout"}
+    except requests.exceptions.ConnectionError:
+        return {"error": "Connection error"}
+    except Exception as e:
+        return {"error": str(e)}
 
-    def test_bible_overview(self):
-        """Test GET /api/bible - Full curriculum overview"""
-        try:
-            response = self.session.get(f"{self.base_url}/api/bible")
-            if response.status_code == 200:
-                data = response.json()
-                
-                # Check required fields
-                required_fields = ["title", "subtitle", "total_years", "total_courses", "total_hours"]
-                missing_fields = [field for field in required_fields if field not in data]
-                
-                if missing_fields:
-                    self.log_test("Bible Overview", False, f"Missing fields: {missing_fields}")
-                    return False
-                
-                # Validate specific values
-                if data.get("total_years") != 15:
-                    self.log_test("Bible Overview", False, f"Expected 15 years, got {data.get('total_years')}")
-                    return False
-                    
-                if data.get("total_courses") != 180:
-                    self.log_test("Bible Overview", False, f"Expected 180 courses, got {data.get('total_courses')}")
-                    return False
-                    
-                if data.get("total_hours") != 12000:
-                    self.log_test("Bible Overview", False, f"Expected 12000 hours, got {data.get('total_hours')}")
-                    return False
-                
-                # Check certification levels
-                if "certification_levels" not in data or len(data["certification_levels"]) != 5:
-                    self.log_test("Bible Overview", False, f"Expected 5 certification levels")
-                    return False
-                
-                # Check tracks
-                if "tracks" not in data:
-                    self.log_test("Bible Overview", False, "Missing tracks information")
-                    return False
-                
-                # Check years summary
-                if "years_summary" not in data:
-                    self.log_test("Bible Overview", False, "Missing years_summary")
-                    return False
-                
-                self.log_test("Bible Overview", True, 
-                    f"Title: {data['title']}, Years: {data['total_years']}, Courses: {data['total_courses']}")
-                return True
-                
-            else:
-                self.log_test("Bible Overview", False, f"HTTP {response.status_code}")
-                return False
-        except Exception as e:
-            self.log_test("Bible Overview", False, f"Exception: {str(e)}")
-            return False
+def test_health_and_system_routes(result: TestResult):
+    """Test Health & System Routes"""
+    print(f"\n{Colors.BOLD}{Colors.BLUE}🏥 TESTING HEALTH & SYSTEM ROUTES{Colors.END}")
+    
+    # Test root info endpoint
+    response = make_request("GET", "/")
+    if "error" in response:
+        result.failure("GET /api/ - Root info", response["error"])
+    elif response["status_code"] == 200:
+        data = response["data"]
+        if isinstance(data, dict) and data.get("version") == "10.0.0":
+            result.success("GET /api/ - Root info", f"Version: {data.get('version')}, Codename: {data.get('codename', 'N/A')}")
+        else:
+            result.failure("GET /api/ - Root info", f"Expected version 10.0.0, got: {data.get('version') if isinstance(data, dict) else 'Invalid response'}")
+    else:
+        result.failure("GET /api/ - Root info", f"HTTP {response['status_code']}")
+    
+    # Test health check
+    response = make_request("GET", "/health")
+    if "error" in response:
+        result.failure("GET /api/health - Health check", response["error"])
+    elif response["status_code"] == 200:
+        data = response["data"]
+        if isinstance(data, dict) and data.get("status") == "healthy":
+            result.success("GET /api/health - Health check", f"Status: {data.get('status')}")
+        else:
+            result.failure("GET /api/health - Health check", f"Expected healthy status, got: {data}")
+    else:
+        result.failure("GET /api/health - Health check", f"HTTP {response['status_code']}")
+    
+    # Test readiness probe
+    response = make_request("GET", "/readiness")
+    if "error" in response:
+        result.failure("GET /api/readiness - Readiness probe", response["error"])
+    elif response["status_code"] == 200:
+        result.success("GET /api/readiness - Readiness probe", "Kubernetes readiness OK")
+    else:
+        result.failure("GET /api/readiness - Readiness probe", f"HTTP {response['status_code']}")
+    
+    # Test liveness probe
+    response = make_request("GET", "/liveness")
+    if "error" in response:
+        result.failure("GET /api/liveness - Liveness probe", response["error"])
+    elif response["status_code"] == 200:
+        result.success("GET /api/liveness - Liveness probe", "Kubernetes liveness OK")
+    else:
+        result.failure("GET /api/liveness - Liveness probe", f"HTTP {response['status_code']}")
+    
+    # Test system info
+    response = make_request("GET", "/system/info")
+    if "error" in response:
+        result.failure("GET /api/system/info - System info", response["error"])
+    elif response["status_code"] == 200:
+        data = response["data"]
+        if isinstance(data, dict):
+            result.success("GET /api/system/info - System info", f"System info retrieved")
+        else:
+            result.failure("GET /api/system/info - System info", "Invalid response format")
+    else:
+        result.failure("GET /api/system/info - System info", f"HTTP {response['status_code']}")
 
-    def test_year_1_details(self):
-        """Test GET /api/bible/year/1 - Year 1 details"""
-        try:
-            response = self.session.get(f"{self.base_url}/api/bible/year/1")
-            if response.status_code == 200:
-                data = response.json()
-                
-                # Check basic structure
-                if data.get("year") != 1:
-                    self.log_test("Year 1 Details", False, f"Expected year 1, got {data.get('year')}")
-                    return False
-                
-                if data.get("name") != "Foundation Year":
-                    self.log_test("Year 1 Details", False, f"Expected 'Foundation Year', got {data.get('name')}")
-                    return False
-                
-                # Check tracks
-                if "tracks" not in data:
-                    self.log_test("Year 1 Details", False, "Missing tracks")
-                    return False
-                
-                # Check for core track courses
-                tracks = data["tracks"]
-                if "core" not in tracks:
-                    self.log_test("Year 1 Details", False, "Missing core track")
-                    return False
-                
-                core_courses = tracks["core"]
-                if not isinstance(core_courses, list) or len(core_courses) == 0:
-                    self.log_test("Year 1 Details", False, "No core courses found")
-                    return False
-                
-                # Check for CS 101 course
-                cs101_found = False
-                for course in core_courses:
-                    if course.get("code") == "CS 101":
-                        cs101_found = True
-                        # Check course structure
-                        required_course_fields = ["id", "title", "learning_objectives", "topics", "projects"]
-                        missing_course_fields = [field for field in required_course_fields if field not in course]
-                        if missing_course_fields:
-                            self.log_test("Year 1 Details", False, f"CS 101 missing fields: {missing_course_fields}")
-                            return False
-                        break
-                
-                if not cs101_found:
-                    self.log_test("Year 1 Details", False, "CS 101 course not found")
-                    return False
-                
-                self.log_test("Year 1 Details", True, 
-                    f"Year: {data['year']}, Name: {data['name']}, Tracks: {len(tracks)}")
-                return True
-                
-            else:
-                self.log_test("Year 1 Details", False, f"HTTP {response.status_code}")
-                return False
-        except Exception as e:
-            self.log_test("Year 1 Details", False, f"Exception: {str(e)}")
-            return False
+def test_cs_bible_routes(result: TestResult):
+    """Test CS Bible Routes (Modular)"""
+    print(f"\n{Colors.BOLD}{Colors.PURPLE}📚 TESTING CS BIBLE ROUTES{Colors.END}")
+    
+    # Test full curriculum overview
+    response = make_request("GET", "/bible")
+    if "error" in response:
+        result.failure("GET /api/bible - Full curriculum overview", response["error"])
+    elif response["status_code"] == 200:
+        data = response["data"]
+        if isinstance(data, dict) and "total_years" in data and "total_courses" in data:
+            result.success("GET /api/bible - Full curriculum overview", 
+                         f"Years: {data.get('total_years')}, Courses: {data.get('total_courses')}, Hours: {data.get('total_hours')}")
+        else:
+            result.failure("GET /api/bible - Full curriculum overview", "Missing expected fields")
+    else:
+        result.failure("GET /api/bible - Full curriculum overview", f"HTTP {response['status_code']}")
+    
+    # Test Year 1 details
+    response = make_request("GET", "/bible/year/1")
+    if "error" in response:
+        result.failure("GET /api/bible/year/1 - Year 1 details", response["error"])
+    elif response["status_code"] == 200:
+        data = response["data"]
+        if isinstance(data, dict) and "year" in data:
+            result.success("GET /api/bible/year/1 - Year 1 details", 
+                         f"Year {data.get('year')}: {data.get('name', 'N/A')}")
+        else:
+            result.failure("GET /api/bible/year/1 - Year 1 details", "Missing expected fields")
+    else:
+        result.failure("GET /api/bible/year/1 - Year 1 details", f"HTTP {response['status_code']}")
+    
+    # Test CS 101 course
+    response = make_request("GET", "/bible/course/y1_cs101")
+    if "error" in response:
+        result.failure("GET /api/bible/course/y1_cs101 - CS 101 course", response["error"])
+    elif response["status_code"] == 200:
+        data = response["data"]
+        if isinstance(data, dict) and "id" in data and "title" in data:
+            result.success("GET /api/bible/course/y1_cs101 - CS 101 course", 
+                         f"Course: {data.get('title')}")
+        else:
+            result.failure("GET /api/bible/course/y1_cs101 - CS 101 course", "Missing expected fields")
+    else:
+        result.failure("GET /api/bible/course/y1_cs101 - CS 101 course", f"HTTP {response['status_code']}")
+    
+    # Test all tracks
+    response = make_request("GET", "/bible/tracks")
+    if "error" in response:
+        result.failure("GET /api/bible/tracks - All 8 tracks", response["error"])
+    elif response["status_code"] == 200:
+        data = response["data"]
+        if isinstance(data, list) and len(data) == 8:
+            track_names = [track.get('name', 'Unknown') for track in data if isinstance(track, dict)]
+            result.success("GET /api/bible/tracks - All 8 tracks", f"Found {len(data)} tracks")
+        else:
+            result.failure("GET /api/bible/tracks - All 8 tracks", f"Expected 8 tracks, got: {len(data) if isinstance(data, list) else 'Invalid format'}")
+    else:
+        result.failure("GET /api/bible/tracks - All 8 tracks", f"HTTP {response['status_code']}")
+    
+    # Test certification path
+    response = make_request("GET", "/bible/certifications")
+    if "error" in response:
+        result.failure("GET /api/bible/certifications - Certification path", response["error"])
+    elif response["status_code"] == 200:
+        data = response["data"]
+        if isinstance(data, dict) and "levels" in data and len(data["levels"]) >= 5:
+            result.success("GET /api/bible/certifications - Certification path", 
+                         f"Found {len(data['levels'])} certifications")
+        else:
+            result.failure("GET /api/bible/certifications - Certification path", f"Expected certification levels, got: {data}")
+    else:
+        result.failure("GET /api/bible/certifications - Certification path", f"HTTP {response['status_code']}")
 
-    def test_year_8_details(self):
-        """Test GET /api/bible/year/8 - Year 8 AI details"""
-        try:
-            response = self.session.get(f"{self.base_url}/api/bible/year/8")
-            if response.status_code == 200:
-                data = response.json()
-                
-                # Check basic structure
-                if data.get("year") != 8:
-                    self.log_test("Year 8 Details", False, f"Expected year 8, got {data.get('year')}")
-                    return False
-                
-                # Should be AI Foundations Year
-                year_name = data.get("name", "")
-                if "AI" not in year_name:
-                    self.log_test("Year 8 Details", False, f"Expected AI year, got: {year_name}")
-                    return False
-                
-                # Check for key courses with Machine Learning and Deep Learning
-                if "key_courses" in data:
-                    key_courses = data["key_courses"]
-                    ai_courses_found = False
-                    ml_found = False
-                    dl_found = False
-                    
-                    for course in key_courses:
-                        course_title = course.get("title", "")
-                        if "Machine Learning" in course_title:
-                            ml_found = True
-                        if "Deep Learning" in course_title:
-                            dl_found = True
-                    
-                    ai_courses_found = ml_found and dl_found
-                    
-                    if not ai_courses_found:
-                        self.log_test("Year 8 Details", False, f"Missing ML/DL courses. ML found: {ml_found}, DL found: {dl_found}")
-                        return False
-                
-                self.log_test("Year 8 Details", True, 
-                    f"Year: {data['year']}, Name: {data['name']}")
-                return True
-                
-            else:
-                self.log_test("Year 8 Details", False, f"HTTP {response.status_code}")
-                return False
-        except Exception as e:
-            self.log_test("Year 8 Details", False, f"Exception: {str(e)}")
-            return False
+def test_compiler_routes(result: TestResult):
+    """Test Compiler Routes (Modular)"""
+    print(f"\n{Colors.BOLD}{Colors.YELLOW}⚙️ TESTING COMPILER ROUTES{Colors.END}")
+    
+    # Test available sanitizers
+    response = make_request("GET", "/compiler/sanitizers")
+    if "error" in response:
+        result.failure("GET /api/compiler/sanitizers - Available sanitizers", response["error"])
+    elif response["status_code"] == 200:
+        data = response["data"]
+        if isinstance(data, list) and len(data) > 0:
+            sanitizer_names = [s.get('name', 'Unknown') for s in data if isinstance(s, dict)]
+            result.success("GET /api/compiler/sanitizers - Available sanitizers", 
+                         f"Found {len(data)} sanitizers")
+        else:
+            result.failure("GET /api/compiler/sanitizers - Available sanitizers", "No sanitizers found")
+    else:
+        result.failure("GET /api/compiler/sanitizers - Available sanitizers", f"HTTP {response['status_code']}")
+    
+    # Test available optimizers
+    response = make_request("GET", "/compiler/optimizers")
+    if "error" in response:
+        result.failure("GET /api/compiler/optimizers - Available optimizers", response["error"])
+    elif response["status_code"] == 200:
+        data = response["data"]
+        if isinstance(data, list) and len(data) > 0:
+            optimizer_names = [o.get('name', 'Unknown') for o in data if isinstance(o, dict)]
+            result.success("GET /api/compiler/optimizers - Available optimizers", 
+                         f"Found {len(data)} optimizers")
+        else:
+            result.failure("GET /api/compiler/optimizers - Available optimizers", "No optimizers found")
+    else:
+        result.failure("GET /api/compiler/optimizers - Available optimizers", f"HTTP {response['status_code']}")
+    
+    # Test compile code
+    compile_request = {
+        "code": 'print("Hello from compiler test!")',
+        "language": "python",
+        "sanitizers": ["memory"],
+        "optimizers": ["basic"]
+    }
+    response = make_request("POST", "/compiler/compile", compile_request)
+    if "error" in response:
+        result.failure("POST /api/compiler/compile - Compile code", response["error"])
+    elif response["status_code"] == 200:
+        data = response["data"]
+        if isinstance(data, dict) and "status" in data:
+            result.success("POST /api/compiler/compile - Compile code", 
+                         f"Compilation status: {data.get('status')}")
+        else:
+            result.failure("POST /api/compiler/compile - Compile code", "Invalid response format")
+    else:
+        result.failure("POST /api/compiler/compile - Compile code", f"HTTP {response['status_code']}")
 
-    def test_specific_course(self):
-        """Test GET /api/bible/course/y1_cs101 - Specific course"""
-        try:
-            response = self.session.get(f"{self.base_url}/api/bible/course/y1_cs101")
-            if response.status_code == 200:
-                data = response.json()
-                
-                # Check course structure
-                if data.get("id") != "y1_cs101":
-                    self.log_test("Specific Course", False, f"Expected y1_cs101, got {data.get('id')}")
-                    return False
-                
-                if data.get("title") != "Introduction to Programming":
-                    self.log_test("Specific Course", False, f"Expected 'Introduction to Programming', got {data.get('title')}")
-                    return False
-                
-                # Check required fields
-                required_fields = ["weeks", "topics", "content", "projects"]
-                missing_fields = [field for field in required_fields if field not in data]
-                if missing_fields:
-                    self.log_test("Specific Course", False, f"Missing fields: {missing_fields}")
-                    return False
-                
-                # Check topics structure
-                topics = data.get("topics", [])
-                if not isinstance(topics, list) or len(topics) == 0:
-                    self.log_test("Specific Course", False, "No topics found")
-                    return False
-                
-                # Check projects structure
-                projects = data.get("projects", [])
-                if not isinstance(projects, list) or len(projects) == 0:
-                    self.log_test("Specific Course", False, "No projects found")
-                    return False
-                
-                self.log_test("Specific Course", True, 
-                    f"Course: {data['title']}, Topics: {len(topics)}, Projects: {len(projects)}")
-                return True
-                
-            else:
-                self.log_test("Specific Course", False, f"HTTP {response.status_code}")
-                return False
-        except Exception as e:
-            self.log_test("Specific Course", False, f"Exception: {str(e)}")
-            return False
+def test_hub_routes(result: TestResult):
+    """Test Hub Routes (Modular)"""
+    print(f"\n{Colors.BOLD}{Colors.CYAN}🚀 TESTING HUB ROUTES{Colors.END}")
+    
+    # Test hub info
+    response = make_request("GET", "/v9/info")
+    if "error" in response:
+        result.failure("GET /api/v9/info - Hub info", response["error"])
+    elif response["status_code"] == 200:
+        data = response["data"]
+        if isinstance(data, dict):
+            result.success("GET /api/v9/info - Hub info", f"Hub version: {data.get('version', 'N/A')}")
+        else:
+            result.failure("GET /api/v9/info - Hub info", "Invalid response format")
+    else:
+        result.failure("GET /api/v9/info - Hub info", f"HTTP {response['status_code']}")
+    
+    # Test language packs (should be 64)
+    response = make_request("GET", "/language-packs")
+    if "error" in response:
+        result.failure("GET /api/language-packs - All language packs", response["error"])
+    elif response["status_code"] == 200:
+        data = response["data"]
+        if isinstance(data, list):
+            result.success("GET /api/language-packs - All language packs", 
+                         f"Found {len(data)} language packs (expected 64)")
+        else:
+            result.failure("GET /api/language-packs - All language packs", "Invalid response format")
+    else:
+        result.failure("GET /api/language-packs - All language packs", f"HTTP {response['status_code']}")
+    
+    # Test expansion packs (should be 10)
+    response = make_request("GET", "/expansions")
+    if "error" in response:
+        result.failure("GET /api/expansions - All expansion packs", response["error"])
+    elif response["status_code"] == 200:
+        data = response["data"]
+        if isinstance(data, list):
+            result.success("GET /api/expansions - All expansion packs", 
+                         f"Found {len(data)} expansion packs (expected 10)")
+        else:
+            result.failure("GET /api/expansions - All expansion packs", "Invalid response format")
+    else:
+        result.failure("GET /api/expansions - All expansion packs", f"HTTP {response['status_code']}")
+    
+    # Test algorithms
+    response = make_request("GET", "/algorithms")
+    if "error" in response:
+        result.failure("GET /api/algorithms - All algorithms", response["error"])
+    elif response["status_code"] == 200:
+        data = response["data"]
+        if isinstance(data, list) and len(data) > 0:
+            result.success("GET /api/algorithms - All algorithms", f"Found {len(data)} algorithms")
+        else:
+            result.failure("GET /api/algorithms - All algorithms", "No algorithms found")
+    else:
+        result.failure("GET /api/algorithms - All algorithms", f"HTTP {response['status_code']}")
 
-    def test_courses_by_year(self):
-        """Test GET /api/bible/courses?year=1 - Filter courses by year"""
-        try:
-            response = self.session.get(f"{self.base_url}/api/bible/courses?year=1")
-            if response.status_code == 200:
-                data = response.json()
-                
-                # Handle the actual response format with 'courses' key
-                if isinstance(data, dict) and "courses" in data:
-                    courses = data["courses"]
-                    if not isinstance(courses, list):
-                        self.log_test("Courses by Year", False, f"Expected courses list, got {type(courses)}")
-                        return False
-                    
-                    if len(courses) == 0:
-                        self.log_test("Courses by Year", False, "No courses returned for year 1")
-                        return False
-                    
-                    # Check that all courses are from year 1
-                    for course in courses:
-                        if course.get("year") != 1:
-                            self.log_test("Courses by Year", False, f"Non-year-1 course found: year {course.get('year')}")
-                            return False
-                    
-                    self.log_test("Courses by Year", True, f"Found {len(courses)} courses for year 1")
-                    return True
-                else:
-                    self.log_test("Courses by Year", False, f"Expected dict with 'courses' key, got {type(data)}")
-                    return False
-                
-            else:
-                self.log_test("Courses by Year", False, f"HTTP {response.status_code}")
-                return False
-        except Exception as e:
-            self.log_test("Courses by Year", False, f"Exception: {str(e)}")
-            return False
+def test_ai_routes(result: TestResult):
+    """Test AI Routes (Modular)"""
+    print(f"\n{Colors.BOLD}{Colors.PURPLE}🤖 TESTING AI ROUTES{Colors.END}")
+    
+    # Test AI modes
+    response = make_request("GET", "/ai/modes")
+    if "error" in response:
+        result.failure("GET /api/ai/modes - AI assistance modes", response["error"])
+    elif response["status_code"] == 200:
+        data = response["data"]
+        if isinstance(data, list) and len(data) > 0:
+            mode_names = [mode.get('name', 'Unknown') for mode in data if isinstance(mode, dict)]
+            result.success("GET /api/ai/modes - AI assistance modes", 
+                         f"Found {len(data)} AI modes")
+        else:
+            result.failure("GET /api/ai/modes - AI assistance modes", "No AI modes found")
+    else:
+        result.failure("GET /api/ai/modes - AI assistance modes", f"HTTP {response['status_code']}")
+    
+    # Test AI providers
+    response = make_request("GET", "/ai/hub/providers")
+    if "error" in response:
+        result.failure("GET /api/ai/hub/providers - AI providers", response["error"])
+    elif response["status_code"] == 200:
+        data = response["data"]
+        if isinstance(data, list) and len(data) > 0:
+            provider_names = [p.get('name', 'Unknown') for p in data if isinstance(p, dict)]
+            result.success("GET /api/ai/hub/providers - AI providers", 
+                         f"Found {len(data)} providers")
+        else:
+            result.failure("GET /api/ai/hub/providers - AI providers", "No AI providers found")
+    else:
+        result.failure("GET /api/ai/hub/providers - AI providers", f"HTTP {response['status_code']}")
+    
+    # Test AI assistance
+    ai_request = {
+        "code": 'def hello():\n    print("Hello World")',
+        "language": "python",
+        "mode": "explain"
+    }
+    response = make_request("POST", "/ai/assist", ai_request)
+    if "error" in response:
+        result.failure("POST /api/ai/assist - Get AI assistance", response["error"])
+    elif response["status_code"] == 200:
+        data = response["data"]
+        if isinstance(data, dict) and "suggestion" in data:
+            result.success("POST /api/ai/assist - Get AI assistance", 
+                         f"AI mode: {data.get('mode')}, Response received")
+        else:
+            result.failure("POST /api/ai/assist - Get AI assistance", "Invalid response format")
+    else:
+        result.failure("POST /api/ai/assist - Get AI assistance", f"HTTP {response['status_code']}")
 
-    def test_learning_tracks(self):
-        """Test GET /api/bible/tracks - Get all learning tracks"""
-        try:
-            response = self.session.get(f"{self.base_url}/api/bible/tracks")
-            if response.status_code == 200:
-                data = response.json()
-                
-                if not isinstance(data, list):
-                    self.log_test("Learning Tracks", False, f"Expected list, got {type(data)}")
-                    return False
-                
-                if len(data) != 8:
-                    self.log_test("Learning Tracks", False, f"Expected 8 tracks, got {len(data)}")
-                    return False
-                
-                # Check for expected track names
-                expected_tracks = ["Systems", "Theory", "AI/ML", "Security", "Web/Mobile", "Data", "Graphics", "Compilers"]
-                track_names = [track.get("name", "") for track in data]
-                
-                missing_tracks = []
-                for expected in expected_tracks:
-                    if not any(expected.lower() in name.lower() for name in track_names):
-                        missing_tracks.append(expected)
-                
-                if missing_tracks:
-                    self.log_test("Learning Tracks", False, f"Missing tracks: {missing_tracks}")
-                    return False
-                
-                self.log_test("Learning Tracks", True, f"Found all 8 tracks: {[t.get('name') for t in data]}")
-                return True
-                
-            else:
-                self.log_test("Learning Tracks", False, f"HTTP {response.status_code}")
-                return False
-        except Exception as e:
-            self.log_test("Learning Tracks", False, f"Exception: {str(e)}")
-            return False
-
-    def test_certifications(self):
-        """Test GET /api/bible/certifications - Get certification path"""
-        try:
-            response = self.session.get(f"{self.base_url}/api/bible/certifications")
-            if response.status_code == 200:
-                data = response.json()
-                
-                # Handle the actual response format with 'levels' key
-                if isinstance(data, dict) and "levels" in data:
-                    levels = data["levels"]
-                    if not isinstance(levels, list):
-                        self.log_test("Certifications", False, f"Expected levels list, got {type(levels)}")
-                        return False
-                    
-                    if len(levels) != 5:
-                        self.log_test("Certifications", False, f"Expected 5 certification levels, got {len(levels)}")
-                        return False
-                    
-                    # Check for expected certification levels
-                    expected_levels = ["Certificate", "Associate", "Bachelor", "Master", "PhD"]
-                    cert_names = [cert.get("name", "") for cert in levels]
-                    
-                    for expected in expected_levels:
-                        if expected not in cert_names:
-                            self.log_test("Certifications", False, f"Missing certification: {expected}")
-                            return False
-                    
-                    self.log_test("Certifications", True, f"Found all 5 certifications: {cert_names}")
-                    return True
-                else:
-                    self.log_test("Certifications", False, f"Expected dict with 'levels' key, got {type(data)}")
-                    return False
-                
-            else:
-                self.log_test("Certifications", False, f"HTTP {response.status_code}")
-                return False
-        except Exception as e:
-            self.log_test("Certifications", False, f"Exception: {str(e)}")
-            return False
-
-    def test_search_courses(self):
-        """Test GET /api/bible/search?q=algorithm - Search courses"""
-        try:
-            response = self.session.get(f"{self.base_url}/api/bible/search?q=algorithm")
-            if response.status_code == 200:
-                data = response.json()
-                
-                # Handle the actual response format with 'results' key
-                if isinstance(data, dict) and "results" in data:
-                    results = data["results"]
-                    if not isinstance(results, list):
-                        self.log_test("Search Courses", False, f"Expected results list, got {type(results)}")
-                        return False
-                    
-                    # Should find courses related to algorithms
-                    if len(results) == 0:
-                        self.log_test("Search Courses", False, "No courses found for 'algorithm' search")
-                        return False
-                    
-                    # Check that results contain algorithm-related content
-                    algorithm_found = False
-                    for result in results:
-                        result_text = json.dumps(result).lower()
-                        if "algorithm" in result_text:
-                            algorithm_found = True
-                            break
-                    
-                    if not algorithm_found:
-                        self.log_test("Search Courses", False, "Search results don't contain algorithm-related content")
-                        return False
-                    
-                    self.log_test("Search Courses", True, f"Found {len(results)} courses for 'algorithm' search")
-                    return True
-                else:
-                    self.log_test("Search Courses", False, f"Expected dict with 'results' key, got {type(data)}")
-                    return False
-                
-            else:
-                self.log_test("Search Courses", False, f"HTTP {response.status_code}")
-                return False
-        except Exception as e:
-            self.log_test("Search Courses", False, f"Exception: {str(e)}")
-            return False
-
-    def run_all_tests(self):
-        """Run all CS Bible API tests"""
-        print("🧪 Starting CS Bible API Testing Suite")
-        print("=" * 50)
-        
-        # Test existing functionality first
-        print("\n📋 Testing Existing Functionality:")
-        self.test_health_check()
-        self.test_languages_endpoint()
-        self.test_code_execution()
-        
-        # Test new CS Bible endpoints
-        print("\n📚 Testing CS Bible Curriculum Endpoints:")
-        self.test_bible_overview()
-        self.test_year_1_details()
-        self.test_year_8_details()
-        self.test_specific_course()
-        self.test_courses_by_year()
-        self.test_learning_tracks()
-        self.test_certifications()
-        self.test_search_courses()
-        
-        # Summary
-        print("\n" + "=" * 50)
-        print("📊 Test Summary:")
-        
-        total_tests = len(self.test_results)
-        passed_tests = sum(1 for result in self.test_results if result["success"])
-        failed_tests = total_tests - passed_tests
-        
-        print(f"Total Tests: {total_tests}")
-        print(f"✅ Passed: {passed_tests}")
-        print(f"❌ Failed: {failed_tests}")
-        print(f"Success Rate: {(passed_tests/total_tests)*100:.1f}%")
-        
-        if failed_tests > 0:
-            print("\n🔍 Failed Tests:")
-            for result in self.test_results:
-                if not result["success"]:
-                    print(f"  ❌ {result['test']}: {result['details']}")
-        
-        return passed_tests, failed_tests
+def test_core_routes(result: TestResult):
+    """Test Core Routes"""
+    print(f"\n{Colors.BOLD}{Colors.GREEN}🔧 TESTING CORE ROUTES{Colors.END}")
+    
+    # Test available languages
+    response = make_request("GET", "/languages")
+    if "error" in response:
+        result.failure("GET /api/languages - Available languages", response["error"])
+    elif response["status_code"] == 200:
+        data = response["data"]
+        if isinstance(data, list) and len(data) > 0:
+            executable_count = sum(1 for lang in data if isinstance(lang, dict) and lang.get('executable', False))
+            result.success("GET /api/languages - Available languages", 
+                         f"Found {len(data)} languages, {executable_count} executable")
+        else:
+            result.failure("GET /api/languages - Available languages", "No languages found")
+    else:
+        result.failure("GET /api/languages - Available languages", f"HTTP {response['status_code']}")
+    
+    # Test code execution
+    execute_request = {
+        "code": 'print("test")',
+        "language": "python"
+    }
+    response = make_request("POST", "/execute", execute_request)
+    if "error" in response:
+        result.failure("POST /api/execute - Execute code", response["error"])
+    elif response["status_code"] == 200:
+        data = response["data"]
+        if isinstance(data, dict) and "result" in data:
+            result.success("POST /api/execute - Execute code", 
+                         f"Execution status: {data.get('result', {}).get('status', 'Unknown')}")
+        else:
+            result.failure("POST /api/execute - Execute code", "Invalid response format")
+    else:
+        result.failure("POST /api/execute - Execute code", f"HTTP {response['status_code']}")
+    
+    # Test tutorial steps
+    response = make_request("GET", "/tutorial/steps")
+    if "error" in response:
+        result.failure("GET /api/tutorial/steps - Tutorial steps", response["error"])
+    elif response["status_code"] == 200:
+        data = response["data"]
+        if isinstance(data, list) and len(data) > 0:
+            result.success("GET /api/tutorial/steps - Tutorial steps", f"Found {len(data)} tutorial steps")
+        else:
+            result.failure("GET /api/tutorial/steps - Tutorial steps", "No tutorial steps found")
+    else:
+        result.failure("GET /api/tutorial/steps - Tutorial steps", f"HTTP {response['status_code']}")
 
 def main():
-    """Main test runner"""
-    print("🚀 CodeDock CS Bible API Test Suite")
-    print(f"🌐 Testing backend at: {BACKEND_URL}")
+    """Run comprehensive backend API tests"""
+    print(f"{Colors.BOLD}{Colors.WHITE}{'='*80}{Colors.END}")
+    print(f"{Colors.BOLD}{Colors.WHITE}CodeDock v10.0.0 (CS Bible Edition) - Backend API Testing{Colors.END}")
+    print(f"{Colors.BOLD}{Colors.WHITE}Testing Backend: {BACKEND_URL}{Colors.END}")
+    print(f"{Colors.BOLD}{Colors.WHITE}{'='*80}{Colors.END}")
     
-    tester = CSBibleAPITester(BACKEND_URL)
-    passed, failed = tester.run_all_tests()
+    result = TestResult()
     
-    # Exit with appropriate code
-    if failed > 0:
-        print(f"\n⚠️  {failed} test(s) failed!")
-        sys.exit(1)
-    else:
-        print("\n🎉 All tests passed!")
-        sys.exit(0)
+    # Run all test suites
+    test_health_and_system_routes(result)
+    test_cs_bible_routes(result)
+    test_compiler_routes(result)
+    test_hub_routes(result)
+    test_ai_routes(result)
+    test_core_routes(result)
+    
+    # Print summary
+    result.summary()
+    
+    # Return exit code based on results
+    return 0 if result.failed == 0 else 1
 
 if __name__ == "__main__":
-    main()
+    exit_code = main()
+    sys.exit(exit_code)

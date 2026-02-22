@@ -4017,3 +4017,8 @@ async def leave_collaboration_session(session_id: str, data: dict):
     )
     
     return {"success": True}
+
+
+
+# Include all routes at the end after all definitions
+app.include_router(api_router)

@@ -1,12 +1,12 @@
 """
 ╔══════════════════════════════════════════════════════════════════════════════════════════════════╗
-║                         CODEDOCK QUANTUM NEXUS v4.0 - EXPANSION READY                            ║
+║                         CODEDOCK QUANTUM NEXUS v10.0.0 - PRODUCTION READY                         ║
 ║                    Beyond Bleeding-Edge Multi-Language Compiler Platform                         ║
 ║                                                                                                  ║
 ║  Architecture: Plugin-First | Event-Driven | AI-Native | Expansion-Ready | Zero-Trust           ║
 ║  Standards: 2026+ Hyperscale | Grok-Compatible | SOTA Security | Hotfix-Enabled                 ║
 ║                                                                                                  ║
-║  Features: Teaching Mode | Advanced Hidden Panel | Language Dock System | Tooltips              ║
+║  Features: Teaching Mode | Advanced Hidden Panel | Language Dock System | 15-Year CS Bible      ║
 ╚══════════════════════════════════════════════════════════════════════════════════════════════════╝
 """
 
@@ -45,7 +45,10 @@ from io import StringIO
 # AI Integration
 from emergentintegrations.llm.chat import LlmChat, UserMessage
 
-# Import the 15-Year CS Bible Curriculum
+# Import modular routes
+from routes.bible import router as bible_router
+
+# Import the 15-Year CS Bible Curriculum (for backward compatibility)
 from cs_bible import CS_BIBLE, get_year_info, get_course, get_all_courses, get_curriculum_stats
 
 ROOT_DIR = Path(__file__).parent

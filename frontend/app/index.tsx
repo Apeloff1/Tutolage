@@ -950,6 +950,24 @@ export default function CodeDockApp() {
         language={selectedLanguage?.key || 'python'}
         onCodeChange={setCode}
       />
+
+      {/* Ultimate Hub Modal */}
+      <HubModal
+        visible={showHubModal}
+        onClose={() => setShowHubModal(false)}
+        colors={colors}
+      />
+
+      {/* AI Feature Suggestions Modal */}
+      <AISuggestionsModal
+        visible={showAISuggestionsModal}
+        onClose={() => setShowAISuggestionsModal(false)}
+        colors={colors}
+        context={{
+          languages: [selectedLanguage?.key || 'python'],
+          skill_level: 'intermediate',
+        }}
+      />
     </SafeAreaView>
   );
 }

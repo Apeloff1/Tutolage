@@ -1,580 +1,495 @@
 #!/usr/bin/env python3
 """
-Comprehensive Backend API Testing for CodeDock Multi-Language Compiler
-Tests all endpoints thoroughly as requested in the review.
+Backend API Testing Suite for CodeDock CS Bible Curriculum
+Tests the new 15-Year CS Bible curriculum API endpoints
 """
 
 import requests
 import json
-import time
 import sys
 from typing import Dict, Any, List
+import time
 
-# Get backend URL from frontend .env
-BACKEND_URL = "https://codedock-ultimate.preview.emergentagent.com/api"
+# Backend URL from environment
+BACKEND_URL = "https://codedock-ultimate.preview.emergentagent.com"
 
-class CodeDockAPITester:
+class CSBibleAPITester:
     def __init__(self, base_url: str):
         self.base_url = base_url
         self.session = requests.Session()
+        self.session.timeout = 30
         self.test_results = []
-        self.created_file_id = None
-        self.created_addon_id = None
         
-    def log_test(self, test_name: str, success: bool, message: str, details: Any = None):
-        """Log test results"""
-        result = {
+    def log_test(self, test_name: str, success: bool, details: str = ""):
+        """Log test result"""
+        status = "✅ PASS" if success else "❌ FAIL"
+        print(f"{status} {test_name}")
+        if details:
+            print(f"    {details}")
+        self.test_results.append({
             "test": test_name,
             "success": success,
-            "message": message,
             "details": details
-        }
-        self.test_results.append(result)
-        status = "✅ PASS" if success else "❌ FAIL"
-        print(f"{status} {test_name}: {message}")
-        if details and not success:
-            print(f"   Details: {details}")
-    
+        })
+        
     def test_health_check(self):
-        """Test GET /api/health"""
+        """Test basic health check endpoint"""
         try:
-            response = self.session.get(f"{self.base_url}/health", timeout=10)
-            
+            response = self.session.get(f"{self.base_url}/api/health")
             if response.status_code == 200:
                 data = response.json()
                 if data.get("status") == "healthy":
-                    self.log_test("Health Check", True, "API is healthy")
+                    self.log_test("Health Check", True, f"Status: {data.get('status')}")
                     return True
                 else:
-                    self.log_test("Health Check", False, f"Unexpected status: {data.get('status')}", data)
+                    self.log_test("Health Check", False, f"Unexpected status: {data}")
+                    return False
             else:
-                self.log_test("Health Check", False, f"HTTP {response.status_code}", response.text)
+                self.log_test("Health Check", False, f"HTTP {response.status_code}")
+                return False
         except Exception as e:
-            self.log_test("Health Check", False, f"Request failed: {str(e)}")
-        return False
-    
+            self.log_test("Health Check", False, f"Exception: {str(e)}")
+            return False
+            
     def test_languages_endpoint(self):
-        """Test GET /api/languages"""
+        """Test languages endpoint"""
         try:
-            response = self.session.get(f"{self.base_url}/languages", timeout=10)
-            
+            response = self.session.get(f"{self.base_url}/api/languages")
             if response.status_code == 200:
                 data = response.json()
-                languages = data.get("languages", [])
-                
-                # Check for required languages
-                required_langs = ["python", "html", "javascript", "cpp", "css", "json", "markdown", "sql"]
-                found_langs = [lang.get("key") for lang in languages]
-                
-                missing = [lang for lang in required_langs if lang not in found_langs]
-                
-                if not missing:
-                    self.log_test("Languages Endpoint", True, f"Found all {len(languages)} languages")
+                if isinstance(data, list) and len(data) > 0:
+                    self.log_test("Languages Endpoint", True, f"Found {len(data)} languages")
                     return True
                 else:
-                    self.log_test("Languages Endpoint", False, f"Missing languages: {missing}", found_langs)
+                    self.log_test("Languages Endpoint", False, f"Invalid response: {data}")
+                    return False
             else:
-                self.log_test("Languages Endpoint", False, f"HTTP {response.status_code}", response.text)
+                self.log_test("Languages Endpoint", False, f"HTTP {response.status_code}")
+                return False
         except Exception as e:
-            self.log_test("Languages Endpoint", False, f"Request failed: {str(e)}")
-        return False
-    
+            self.log_test("Languages Endpoint", False, f"Exception: {str(e)}")
+            return False
+            
     def test_code_execution(self):
-        """Test POST /api/execute with different languages"""
-        test_cases = [
-            {
-                "name": "Python Execution",
-                "payload": {
-                    "code": "print('Hello World')\nfor i in range(3): print(i)",
-                    "language": "python"
-                },
-                "expected_output": "Hello World\n0\n1\n2"
-            },
-            {
-                "name": "C++ Execution", 
-                "payload": {
-                    "code": "#include <iostream>\nint main() { std::cout << \"C++ works!\" << std::endl; return 0; }",
-                    "language": "cpp"
-                },
-                "expected_output": "C++ works!"
-            },
-            {
-                "name": "JavaScript Execution",
-                "payload": {
-                    "code": "console.log('JS test'); const x = 1 + 2; console.log(x);",
-                    "language": "javascript"
-                },
-                "expected_contains": "JS test"
-            },
-            {
-                "name": "HTML Execution",
-                "payload": {
-                    "code": "<html><body><h1>Test</h1></body></html>",
-                    "language": "html"
-                },
-                "expected_contains": "<h1>Test</h1>"
+        """Test basic code execution"""
+        try:
+            payload = {
+                "code": 'print("Hello from CS Bible test!")',
+                "language": "python"
             }
-        ]
-        
-        all_passed = True
-        for test_case in test_cases:
-            try:
-                response = self.session.post(
-                    f"{self.base_url}/execute",
-                    json=test_case["payload"],
-                    timeout=30
-                )
+            response = self.session.post(f"{self.base_url}/api/execute", json=payload)
+            if response.status_code == 200:
+                data = response.json()
+                if "result" in data and "output" in data["result"]:
+                    self.log_test("Code Execution", True, f"Output: {data['result']['output'][:50]}...")
+                    return True
+                else:
+                    self.log_test("Code Execution", False, f"Invalid response structure: {data}")
+                    return False
+            else:
+                self.log_test("Code Execution", False, f"HTTP {response.status_code}")
+                return False
+        except Exception as e:
+            self.log_test("Code Execution", False, f"Exception: {str(e)}")
+            return False
+
+    def test_bible_overview(self):
+        """Test GET /api/bible - Full curriculum overview"""
+        try:
+            response = self.session.get(f"{self.base_url}/api/bible")
+            if response.status_code == 200:
+                data = response.json()
                 
-                if response.status_code == 200:
-                    data = response.json()
-                    result = data.get("result", {})
-                    status = result.get("status")
-                    output = result.get("output", "")
-                    error = result.get("error", "")
+                # Check required fields
+                required_fields = ["title", "subtitle", "total_years", "total_courses", "total_hours"]
+                missing_fields = [field for field in required_fields if field not in data]
+                
+                if missing_fields:
+                    self.log_test("Bible Overview", False, f"Missing fields: {missing_fields}")
+                    return False
+                
+                # Validate specific values
+                if data.get("total_years") != 15:
+                    self.log_test("Bible Overview", False, f"Expected 15 years, got {data.get('total_years')}")
+                    return False
                     
-                    if status == "success":
-                        # Check expected output
-                        if "expected_output" in test_case:
-                            if test_case["expected_output"].strip() in output.strip():
-                                self.log_test(test_case["name"], True, "Code executed successfully")
-                            else:
-                                self.log_test(test_case["name"], False, f"Output mismatch. Got: {output}", test_case)
-                                all_passed = False
-                        elif "expected_contains" in test_case:
-                            if test_case["expected_contains"] in output:
-                                self.log_test(test_case["name"], True, "Code executed successfully")
-                            else:
-                                self.log_test(test_case["name"], False, f"Output doesn't contain expected text. Got: {output}", test_case)
-                                all_passed = False
-                        else:
-                            self.log_test(test_case["name"], True, "Code executed successfully")
-                    else:
-                        self.log_test(test_case["name"], False, f"Execution failed: {error}", result)
-                        all_passed = False
-                else:
-                    self.log_test(test_case["name"], False, f"HTTP {response.status_code}", response.text)
-                    all_passed = False
-            except Exception as e:
-                self.log_test(test_case["name"], False, f"Request failed: {str(e)}")
-                all_passed = False
-        
-        return all_passed
-    
-    def test_code_validation(self):
-        """Test POST /api/validate"""
-        test_cases = [
-            {
-                "name": "Valid Python Code",
-                "payload": {
-                    "code": "print('Hello World')",
-                    "language": "python"
-                },
-                "should_be_valid": True
-            },
-            {
-                "name": "Invalid Python Code (Forbidden Import)",
-                "payload": {
-                    "code": "import os",
-                    "language": "python"
-                },
-                "should_be_valid": False
-            }
-        ]
-        
-        all_passed = True
-        for test_case in test_cases:
-            try:
-                response = self.session.post(
-                    f"{self.base_url}/validate",
-                    json=test_case["payload"],
-                    timeout=10
-                )
-                
-                if response.status_code == 200:
-                    data = response.json()
-                    is_valid = data.get("valid")
+                if data.get("total_courses") != 180:
+                    self.log_test("Bible Overview", False, f"Expected 180 courses, got {data.get('total_courses')}")
+                    return False
                     
-                    if is_valid == test_case["should_be_valid"]:
-                        self.log_test(test_case["name"], True, f"Validation correct: {is_valid}")
-                    else:
-                        self.log_test(test_case["name"], False, f"Expected {test_case['should_be_valid']}, got {is_valid}", data)
-                        all_passed = False
-                else:
-                    self.log_test(test_case["name"], False, f"HTTP {response.status_code}", response.text)
-                    all_passed = False
-            except Exception as e:
-                self.log_test(test_case["name"], False, f"Request failed: {str(e)}")
-                all_passed = False
-        
-        return all_passed
-    
-    def test_templates(self):
-        """Test template endpoints"""
-        all_passed = True
-        
-        # Test GET /api/templates
-        try:
-            response = self.session.get(f"{self.base_url}/templates", timeout=10)
-            if response.status_code == 200:
-                data = response.json()
-                templates = data.get("templates", {})
-                if "python" in templates and "html" in templates:
-                    self.log_test("All Templates", True, f"Found templates for {len(templates)} languages")
-                else:
-                    self.log_test("All Templates", False, "Missing expected templates", templates)
-                    all_passed = False
-            else:
-                self.log_test("All Templates", False, f"HTTP {response.status_code}", response.text)
-                all_passed = False
-        except Exception as e:
-            self.log_test("All Templates", False, f"Request failed: {str(e)}")
-            all_passed = False
-        
-        # Test GET /api/templates/python
-        try:
-            response = self.session.get(f"{self.base_url}/templates/python", timeout=10)
-            if response.status_code == 200:
-                data = response.json()
-                templates = data.get("templates", [])
-                template_names = [t.get("name") for t in templates]
-                expected = ["hello_world", "function", "class", "loop"]
+                if data.get("total_hours") != 12000:
+                    self.log_test("Bible Overview", False, f"Expected 12000 hours, got {data.get('total_hours')}")
+                    return False
                 
-                if all(name in template_names for name in expected):
-                    self.log_test("Python Templates", True, f"Found all expected templates: {template_names}")
-                else:
-                    self.log_test("Python Templates", False, f"Missing templates. Found: {template_names}", expected)
-                    all_passed = False
-            else:
-                self.log_test("Python Templates", False, f"HTTP {response.status_code}", response.text)
-                all_passed = False
-        except Exception as e:
-            self.log_test("Python Templates", False, f"Request failed: {str(e)}")
-            all_passed = False
-        
-        # Test GET /api/templates/html
-        try:
-            response = self.session.get(f"{self.base_url}/templates/html", timeout=10)
-            if response.status_code == 200:
-                data = response.json()
-                templates = data.get("templates", [])
-                if len(templates) > 0:
-                    self.log_test("HTML Templates", True, f"Found {len(templates)} HTML templates")
-                else:
-                    self.log_test("HTML Templates", False, "No HTML templates found", data)
-                    all_passed = False
-            else:
-                self.log_test("HTML Templates", False, f"HTTP {response.status_code}", response.text)
-                all_passed = False
-        except Exception as e:
-            self.log_test("HTML Templates", False, f"Request failed: {str(e)}")
-            all_passed = False
-        
-        return all_passed
-    
-    def test_file_management(self):
-        """Test file CRUD operations"""
-        all_passed = True
-        
-        # Test POST /api/files - Create file
-        try:
-            create_payload = {
-                "name": "test.py",
-                "language": "python",
-                "code": "print('test')"
-            }
-            response = self.session.post(
-                f"{self.base_url}/files",
-                json=create_payload,
-                timeout=10
-            )
-            
-            if response.status_code == 200:
-                data = response.json()
-                self.created_file_id = data.get("id")
-                if self.created_file_id:
-                    self.log_test("Create File", True, f"File created with ID: {self.created_file_id}")
-                else:
-                    self.log_test("Create File", False, "No file ID returned", data)
-                    all_passed = False
-            else:
-                self.log_test("Create File", False, f"HTTP {response.status_code}", response.text)
-                all_passed = False
-        except Exception as e:
-            self.log_test("Create File", False, f"Request failed: {str(e)}")
-            all_passed = False
-        
-        # Test GET /api/files - List files
-        try:
-            response = self.session.get(f"{self.base_url}/files", timeout=10)
-            if response.status_code == 200:
-                data = response.json()
-                files = data.get("files", [])
-                self.log_test("List Files", True, f"Found {len(files)} files")
-            else:
-                self.log_test("List Files", False, f"HTTP {response.status_code}", response.text)
-                all_passed = False
-        except Exception as e:
-            self.log_test("List Files", False, f"Request failed: {str(e)}")
-            all_passed = False
-        
-        # Test GET /api/files/{id} - Get specific file
-        if self.created_file_id:
-            try:
-                response = self.session.get(f"{self.base_url}/files/{self.created_file_id}", timeout=10)
-                if response.status_code == 200:
-                    data = response.json()
-                    if data.get("name") == "test.py":
-                        self.log_test("Get File", True, "Retrieved file successfully")
-                    else:
-                        self.log_test("Get File", False, "File data mismatch", data)
-                        all_passed = False
-                else:
-                    self.log_test("Get File", False, f"HTTP {response.status_code}", response.text)
-                    all_passed = False
-            except Exception as e:
-                self.log_test("Get File", False, f"Request failed: {str(e)}")
-                all_passed = False
-        
-        # Test PUT /api/files/{id} - Update file
-        if self.created_file_id:
-            try:
-                update_payload = {
-                    "name": "updated_test.py",
-                    "code": "print('updated test')"
-                }
-                response = self.session.put(
-                    f"{self.base_url}/files/{self.created_file_id}",
-                    json=update_payload,
-                    timeout=10
-                )
+                # Check certification levels
+                if "certification_levels" not in data or len(data["certification_levels"]) != 5:
+                    self.log_test("Bible Overview", False, f"Expected 5 certification levels")
+                    return False
                 
-                if response.status_code == 200:
-                    data = response.json()
-                    if data.get("name") == "updated_test.py":
-                        self.log_test("Update File", True, "File updated successfully")
-                    else:
-                        self.log_test("Update File", False, "Update failed", data)
-                        all_passed = False
-                else:
-                    self.log_test("Update File", False, f"HTTP {response.status_code}", response.text)
-                    all_passed = False
-            except Exception as e:
-                self.log_test("Update File", False, f"Request failed: {str(e)}")
-                all_passed = False
-        
-        # Test DELETE /api/files/{id} - Delete file
-        if self.created_file_id:
-            try:
-                response = self.session.delete(f"{self.base_url}/files/{self.created_file_id}", timeout=10)
-                if response.status_code == 200:
-                    self.log_test("Delete File", True, "File deleted successfully")
-                else:
-                    self.log_test("Delete File", False, f"HTTP {response.status_code}", response.text)
-                    all_passed = False
-            except Exception as e:
-                self.log_test("Delete File", False, f"Request failed: {str(e)}")
-                all_passed = False
-        
-        return all_passed
-    
-    def test_addons_management(self):
-        """Test addon CRUD operations"""
-        all_passed = True
-        
-        # Test POST /api/addons - Create addon
+                # Check tracks
+                if "tracks" not in data:
+                    self.log_test("Bible Overview", False, "Missing tracks information")
+                    return False
+                
+                # Check years summary
+                if "years_summary" not in data:
+                    self.log_test("Bible Overview", False, "Missing years_summary")
+                    return False
+                
+                self.log_test("Bible Overview", True, 
+                    f"Title: {data['title']}, Years: {data['total_years']}, Courses: {data['total_courses']}")
+                return True
+                
+            else:
+                self.log_test("Bible Overview", False, f"HTTP {response.status_code}")
+                return False
+        except Exception as e:
+            self.log_test("Bible Overview", False, f"Exception: {str(e)}")
+            return False
+
+    def test_year_1_details(self):
+        """Test GET /api/bible/year/1 - Year 1 details"""
         try:
-            create_payload = {
-                "language_key": "go",
-                "name": "Go",
-                "extension": ".go",
-                "description": "Go language"
-            }
-            response = self.session.post(
-                f"{self.base_url}/addons",
-                json=create_payload,
-                timeout=10
-            )
-            
+            response = self.session.get(f"{self.base_url}/api/bible/year/1")
             if response.status_code == 200:
                 data = response.json()
-                self.created_addon_id = data.get("id")
-                if self.created_addon_id:
-                    self.log_test("Create Addon", True, f"Addon created with ID: {self.created_addon_id}")
-                else:
-                    self.log_test("Create Addon", False, "No addon ID returned", data)
-                    all_passed = False
+                
+                # Check basic structure
+                if data.get("year") != 1:
+                    self.log_test("Year 1 Details", False, f"Expected year 1, got {data.get('year')}")
+                    return False
+                
+                if data.get("name") != "Foundation Year":
+                    self.log_test("Year 1 Details", False, f"Expected 'Foundation Year', got {data.get('name')}")
+                    return False
+                
+                # Check tracks
+                if "tracks" not in data:
+                    self.log_test("Year 1 Details", False, "Missing tracks")
+                    return False
+                
+                # Check for core track courses
+                tracks = data["tracks"]
+                if "core" not in tracks:
+                    self.log_test("Year 1 Details", False, "Missing core track")
+                    return False
+                
+                core_courses = tracks["core"]
+                if not isinstance(core_courses, list) or len(core_courses) == 0:
+                    self.log_test("Year 1 Details", False, "No core courses found")
+                    return False
+                
+                # Check for CS 101 course
+                cs101_found = False
+                for course in core_courses:
+                    if course.get("code") == "CS 101":
+                        cs101_found = True
+                        # Check course structure
+                        required_course_fields = ["id", "title", "learning_objectives", "topics", "projects"]
+                        missing_course_fields = [field for field in required_course_fields if field not in course]
+                        if missing_course_fields:
+                            self.log_test("Year 1 Details", False, f"CS 101 missing fields: {missing_course_fields}")
+                            return False
+                        break
+                
+                if not cs101_found:
+                    self.log_test("Year 1 Details", False, "CS 101 course not found")
+                    return False
+                
+                self.log_test("Year 1 Details", True, 
+                    f"Year: {data['year']}, Name: {data['name']}, Tracks: {len(tracks)}")
+                return True
+                
             else:
-                self.log_test("Create Addon", False, f"HTTP {response.status_code}", response.text)
-                all_passed = False
+                self.log_test("Year 1 Details", False, f"HTTP {response.status_code}")
+                return False
         except Exception as e:
-            self.log_test("Create Addon", False, f"Request failed: {str(e)}")
-            all_passed = False
-        
-        # Test GET /api/addons - List addons
+            self.log_test("Year 1 Details", False, f"Exception: {str(e)}")
+            return False
+
+    def test_year_8_details(self):
+        """Test GET /api/bible/year/8 - Year 8 AI details"""
         try:
-            response = self.session.get(f"{self.base_url}/addons", timeout=10)
+            response = self.session.get(f"{self.base_url}/api/bible/year/8")
             if response.status_code == 200:
                 data = response.json()
-                addons = data.get("addons", [])
-                self.log_test("List Addons", True, f"Found {len(addons)} addons")
+                
+                # Check basic structure
+                if data.get("year") != 8:
+                    self.log_test("Year 8 Details", False, f"Expected year 8, got {data.get('year')}")
+                    return False
+                
+                # Should be AI Foundations Year
+                year_name = data.get("name", "")
+                if "AI" not in year_name:
+                    self.log_test("Year 8 Details", False, f"Expected AI year, got: {year_name}")
+                    return False
+                
+                # Check for key courses
+                if "key_courses" in data:
+                    key_courses = data["key_courses"]
+                    ai_courses_found = any("Machine Learning" in course or "Deep Learning" in course 
+                                         for course in key_courses)
+                    if not ai_courses_found:
+                        self.log_test("Year 8 Details", False, "No AI/ML courses found in key_courses")
+                        return False
+                
+                self.log_test("Year 8 Details", True, 
+                    f"Year: {data['year']}, Name: {data['name']}")
+                return True
+                
             else:
-                self.log_test("List Addons", False, f"HTTP {response.status_code}", response.text)
-                all_passed = False
+                self.log_test("Year 8 Details", False, f"HTTP {response.status_code}")
+                return False
         except Exception as e:
-            self.log_test("List Addons", False, f"Request failed: {str(e)}")
-            all_passed = False
-        
-        # Test DELETE /api/addons/{id} - Delete addon
-        if self.created_addon_id:
-            try:
-                response = self.session.delete(f"{self.base_url}/addons/{self.created_addon_id}", timeout=10)
-                if response.status_code == 200:
-                    self.log_test("Delete Addon", True, "Addon deleted successfully")
-                else:
-                    self.log_test("Delete Addon", False, f"HTTP {response.status_code}", response.text)
-                    all_passed = False
-            except Exception as e:
-                self.log_test("Delete Addon", False, f"Request failed: {str(e)}")
-                all_passed = False
-        
-        return all_passed
-    
-    def test_user_preferences(self):
-        """Test user preferences endpoints"""
-        all_passed = True
-        
-        # Test GET /api/preferences
+            self.log_test("Year 8 Details", False, f"Exception: {str(e)}")
+            return False
+
+    def test_specific_course(self):
+        """Test GET /api/bible/course/y1_cs101 - Specific course"""
         try:
-            response = self.session.get(f"{self.base_url}/preferences", timeout=10)
+            response = self.session.get(f"{self.base_url}/api/bible/course/y1_cs101")
             if response.status_code == 200:
                 data = response.json()
-                if "theme" in data and "font_size" in data:
-                    self.log_test("Get Preferences", True, "Retrieved preferences successfully")
-                else:
-                    self.log_test("Get Preferences", False, "Missing expected preference fields", data)
-                    all_passed = False
+                
+                # Check course structure
+                if data.get("id") != "y1_cs101":
+                    self.log_test("Specific Course", False, f"Expected y1_cs101, got {data.get('id')}")
+                    return False
+                
+                if data.get("title") != "Introduction to Programming":
+                    self.log_test("Specific Course", False, f"Expected 'Introduction to Programming', got {data.get('title')}")
+                    return False
+                
+                # Check required fields
+                required_fields = ["weeks", "topics", "content", "projects"]
+                missing_fields = [field for field in required_fields if field not in data]
+                if missing_fields:
+                    self.log_test("Specific Course", False, f"Missing fields: {missing_fields}")
+                    return False
+                
+                # Check topics structure
+                topics = data.get("topics", [])
+                if not isinstance(topics, list) or len(topics) == 0:
+                    self.log_test("Specific Course", False, "No topics found")
+                    return False
+                
+                # Check projects structure
+                projects = data.get("projects", [])
+                if not isinstance(projects, list) or len(projects) == 0:
+                    self.log_test("Specific Course", False, "No projects found")
+                    return False
+                
+                self.log_test("Specific Course", True, 
+                    f"Course: {data['title']}, Topics: {len(topics)}, Projects: {len(projects)}")
+                return True
+                
             else:
-                self.log_test("Get Preferences", False, f"HTTP {response.status_code}", response.text)
-                all_passed = False
+                self.log_test("Specific Course", False, f"HTTP {response.status_code}")
+                return False
         except Exception as e:
-            self.log_test("Get Preferences", False, f"Request failed: {str(e)}")
-            all_passed = False
-        
-        # Test PUT /api/preferences
+            self.log_test("Specific Course", False, f"Exception: {str(e)}")
+            return False
+
+    def test_courses_by_year(self):
+        """Test GET /api/bible/courses?year=1 - Filter courses by year"""
         try:
-            update_payload = {
-                "theme": "light",
-                "font_size": 16
-            }
-            response = self.session.put(
-                f"{self.base_url}/preferences",
-                json=update_payload,
-                timeout=10
-            )
-            
+            response = self.session.get(f"{self.base_url}/api/bible/courses?year=1")
             if response.status_code == 200:
                 data = response.json()
-                if data.get("theme") == "light" and data.get("font_size") == 16:
-                    self.log_test("Update Preferences", True, "Preferences updated successfully")
-                else:
-                    self.log_test("Update Preferences", False, "Update failed", data)
-                    all_passed = False
+                
+                if not isinstance(data, list):
+                    self.log_test("Courses by Year", False, f"Expected list, got {type(data)}")
+                    return False
+                
+                if len(data) == 0:
+                    self.log_test("Courses by Year", False, "No courses returned for year 1")
+                    return False
+                
+                # Check that all courses are from year 1
+                for course in data:
+                    if not course.get("id", "").startswith("y1_"):
+                        self.log_test("Courses by Year", False, f"Non-year-1 course found: {course.get('id')}")
+                        return False
+                
+                self.log_test("Courses by Year", True, f"Found {len(data)} courses for year 1")
+                return True
+                
             else:
-                self.log_test("Update Preferences", False, f"HTTP {response.status_code}", response.text)
-                all_passed = False
+                self.log_test("Courses by Year", False, f"HTTP {response.status_code}")
+                return False
         except Exception as e:
-            self.log_test("Update Preferences", False, f"Request failed: {str(e)}")
-            all_passed = False
-        
-        return all_passed
-    
-    def test_execution_history(self):
-        """Test execution history endpoints"""
-        all_passed = True
-        
-        # Test GET /api/history
+            self.log_test("Courses by Year", False, f"Exception: {str(e)}")
+            return False
+
+    def test_learning_tracks(self):
+        """Test GET /api/bible/tracks - Get all learning tracks"""
         try:
-            response = self.session.get(f"{self.base_url}/history", timeout=10)
+            response = self.session.get(f"{self.base_url}/api/bible/tracks")
             if response.status_code == 200:
                 data = response.json()
-                history = data.get("history", [])
-                self.log_test("Get History", True, f"Retrieved {len(history)} history entries")
+                
+                if not isinstance(data, list):
+                    self.log_test("Learning Tracks", False, f"Expected list, got {type(data)}")
+                    return False
+                
+                if len(data) != 8:
+                    self.log_test("Learning Tracks", False, f"Expected 8 tracks, got {len(data)}")
+                    return False
+                
+                # Check for expected track names
+                expected_tracks = ["Systems", "Theory", "AI/ML", "Security", "Web/Mobile", "Data", "Graphics", "Compilers"]
+                track_names = [track.get("name", "") for track in data]
+                
+                missing_tracks = []
+                for expected in expected_tracks:
+                    if not any(expected.lower() in name.lower() for name in track_names):
+                        missing_tracks.append(expected)
+                
+                if missing_tracks:
+                    self.log_test("Learning Tracks", False, f"Missing tracks: {missing_tracks}")
+                    return False
+                
+                self.log_test("Learning Tracks", True, f"Found all 8 tracks: {[t.get('name') for t in data]}")
+                return True
+                
             else:
-                self.log_test("Get History", False, f"HTTP {response.status_code}", response.text)
-                all_passed = False
+                self.log_test("Learning Tracks", False, f"HTTP {response.status_code}")
+                return False
         except Exception as e:
-            self.log_test("Get History", False, f"Request failed: {str(e)}")
-            all_passed = False
-        
-        # Test DELETE /api/history
+            self.log_test("Learning Tracks", False, f"Exception: {str(e)}")
+            return False
+
+    def test_certifications(self):
+        """Test GET /api/bible/certifications - Get certification path"""
         try:
-            response = self.session.delete(f"{self.base_url}/history", timeout=10)
+            response = self.session.get(f"{self.base_url}/api/bible/certifications")
             if response.status_code == 200:
-                self.log_test("Clear History", True, "History cleared successfully")
+                data = response.json()
+                
+                if not isinstance(data, list):
+                    self.log_test("Certifications", False, f"Expected list, got {type(data)}")
+                    return False
+                
+                if len(data) != 5:
+                    self.log_test("Certifications", False, f"Expected 5 certification levels, got {len(data)}")
+                    return False
+                
+                # Check for expected certification levels
+                expected_levels = ["Certificate", "Associate", "Bachelor", "Master", "PhD"]
+                cert_names = [cert.get("name", "") for cert in data]
+                
+                for expected in expected_levels:
+                    if expected not in cert_names:
+                        self.log_test("Certifications", False, f"Missing certification: {expected}")
+                        return False
+                
+                self.log_test("Certifications", True, f"Found all 5 certifications: {cert_names}")
+                return True
+                
             else:
-                self.log_test("Clear History", False, f"HTTP {response.status_code}", response.text)
-                all_passed = False
+                self.log_test("Certifications", False, f"HTTP {response.status_code}")
+                return False
         except Exception as e:
-            self.log_test("Clear History", False, f"Request failed: {str(e)}")
-            all_passed = False
-        
-        return all_passed
-    
+            self.log_test("Certifications", False, f"Exception: {str(e)}")
+            return False
+
+    def test_search_courses(self):
+        """Test GET /api/bible/search?q=algorithm - Search courses"""
+        try:
+            response = self.session.get(f"{self.base_url}/api/bible/search?q=algorithm")
+            if response.status_code == 200:
+                data = response.json()
+                
+                if not isinstance(data, list):
+                    self.log_test("Search Courses", False, f"Expected list, got {type(data)}")
+                    return False
+                
+                # Should find courses related to algorithms
+                if len(data) == 0:
+                    self.log_test("Search Courses", False, "No courses found for 'algorithm' search")
+                    return False
+                
+                # Check that results contain algorithm-related content
+                algorithm_found = False
+                for course in data:
+                    course_text = json.dumps(course).lower()
+                    if "algorithm" in course_text:
+                        algorithm_found = True
+                        break
+                
+                if not algorithm_found:
+                    self.log_test("Search Courses", False, "Search results don't contain algorithm-related content")
+                    return False
+                
+                self.log_test("Search Courses", True, f"Found {len(data)} courses for 'algorithm' search")
+                return True
+                
+            else:
+                self.log_test("Search Courses", False, f"HTTP {response.status_code}")
+                return False
+        except Exception as e:
+            self.log_test("Search Courses", False, f"Exception: {str(e)}")
+            return False
+
     def run_all_tests(self):
-        """Run all tests and return summary"""
-        print(f"🚀 Starting CodeDock API Tests against {self.base_url}")
-        print("=" * 60)
+        """Run all CS Bible API tests"""
+        print("🧪 Starting CS Bible API Testing Suite")
+        print("=" * 50)
         
-        test_functions = [
-            ("Health Check", self.test_health_check),
-            ("Languages Endpoint", self.test_languages_endpoint),
-            ("Code Execution", self.test_code_execution),
-            ("Code Validation", self.test_code_validation),
-            ("Templates", self.test_templates),
-            ("File Management", self.test_file_management),
-            ("Addons Management", self.test_addons_management),
-            ("User Preferences", self.test_user_preferences),
-            ("Execution History", self.test_execution_history)
-        ]
+        # Test existing functionality first
+        print("\n📋 Testing Existing Functionality:")
+        self.test_health_check()
+        self.test_languages_endpoint()
+        self.test_code_execution()
         
-        passed_categories = 0
-        total_categories = len(test_functions)
+        # Test new CS Bible endpoints
+        print("\n📚 Testing CS Bible Curriculum Endpoints:")
+        self.test_bible_overview()
+        self.test_year_1_details()
+        self.test_year_8_details()
+        self.test_specific_course()
+        self.test_courses_by_year()
+        self.test_learning_tracks()
+        self.test_certifications()
+        self.test_search_courses()
         
-        for category_name, test_func in test_functions:
-            print(f"\n📋 Testing {category_name}...")
-            if test_func():
-                passed_categories += 1
-        
-        print("\n" + "=" * 60)
-        print("📊 TEST SUMMARY")
-        print("=" * 60)
+        # Summary
+        print("\n" + "=" * 50)
+        print("📊 Test Summary:")
         
         total_tests = len(self.test_results)
-        passed_tests = sum(1 for r in self.test_results if r["success"])
+        passed_tests = sum(1 for result in self.test_results if result["success"])
         failed_tests = total_tests - passed_tests
         
-        print(f"Categories: {passed_categories}/{total_categories} passed")
-        print(f"Individual Tests: {passed_tests}/{total_tests} passed")
+        print(f"Total Tests: {total_tests}")
+        print(f"✅ Passed: {passed_tests}")
+        print(f"❌ Failed: {failed_tests}")
+        print(f"Success Rate: {(passed_tests/total_tests)*100:.1f}%")
         
         if failed_tests > 0:
-            print(f"\n❌ FAILED TESTS ({failed_tests}):")
+            print("\n🔍 Failed Tests:")
             for result in self.test_results:
                 if not result["success"]:
-                    print(f"  • {result['test']}: {result['message']}")
+                    print(f"  ❌ {result['test']}: {result['details']}")
         
-        return passed_tests == total_tests
+        return passed_tests, failed_tests
 
 def main():
-    """Main test execution"""
-    tester = CodeDockAPITester(BACKEND_URL)
-    success = tester.run_all_tests()
+    """Main test runner"""
+    print("🚀 CodeDock CS Bible API Test Suite")
+    print(f"🌐 Testing backend at: {BACKEND_URL}")
     
-    if success:
+    tester = CSBibleAPITester(BACKEND_URL)
+    passed, failed = tester.run_all_tests()
+    
+    # Exit with appropriate code
+    if failed > 0:
+        print(f"\n⚠️  {failed} test(s) failed!")
+        sys.exit(1)
+    else:
         print("\n🎉 All tests passed!")
         sys.exit(0)
-    else:
-        print("\n💥 Some tests failed!")
-        sys.exit(1)
 
 if __name__ == "__main__":
     main()

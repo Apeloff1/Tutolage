@@ -436,8 +436,9 @@ def test_core_routes(result: TestResult):
         result.failure("GET /api/tutorial/steps - Tutorial steps", response["error"])
     elif response["status_code"] == 200:
         data = response["data"]
-        if isinstance(data, list) and len(data) > 0:
-            result.success("GET /api/tutorial/steps - Tutorial steps", f"Found {len(data)} tutorial steps")
+        if isinstance(data, dict) and "steps" in data and len(data["steps"]) > 0:
+            steps = data["steps"]
+            result.success("GET /api/tutorial/steps - Tutorial steps", f"Found {len(steps)} tutorial steps")
         else:
             result.failure("GET /api/tutorial/steps - Tutorial steps", "No tutorial steps found")
     else:

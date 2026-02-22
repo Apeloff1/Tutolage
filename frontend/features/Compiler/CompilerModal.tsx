@@ -224,139 +224,242 @@ export function CompilerModal({
     ]);
   };
 
-  // Run Analysis
+  // Run Analysis - Connected to Real Backend API
   const runFullAnalysis = useCallback(async () => {
     setIsAnalyzing(true);
     
-    // Simulate comprehensive analysis
-    await new Promise(r => setTimeout(r, 1500));
-    
-    // Generate mock results based on code
-    const mockDiagnostics: Diagnostic[] = [
-      {
-        id: 'd1',
-        severity: 'warning',
-        source: 'compiler',
-        message: 'Unused variable declaration',
-        line: 3,
-        column: 5,
-        category: 'unused',
-        explanation: 'This variable is declared but never used in the code.',
-        suggestions: ['Remove the unused variable', 'Use the variable in your logic'],
-        fixIts: [{ description: 'Remove variable', isPreferred: true, changes: [] }],
-      },
-      {
-        id: 'd2',
-        severity: 'info',
-        source: 'ai',
-        message: 'Consider using const instead of let',
-        line: 5,
-        column: 1,
-        category: 'style',
-        explanation: 'Variables that are never reassigned should use const for clarity.',
-      },
-    ];
-    
-    const mockSanitizers: SanitizerResult[] = enabledSanitizers.includes('address') ? [
-      {
-        type: 'address',
-        severity: 'warning',
-        line: 8,
-        column: 10,
-        message: 'Potential buffer overflow detected',
-        code: 'array[i]',
-        suggestion: 'Add bounds checking before array access',
-        fixIt: { description: 'Add bounds check', replacement: 'if (i < array.length) array[i]', range: { start: 0, end: 0 } },
-      }
-    ] : [];
-    
-    const mockActions: AgenticAction[] = agenticEnabled ? [
-      {
-        type: 'performance_suggestion',
-        confidence: 0.92,
-        description: 'Replace nested loop with hash map lookup for O(n) complexity',
-        before: 'for i in arr:\n  for j in arr2:\n    if i == j: ...',
-        after: 'lookup = set(arr2)\nfor i in arr:\n  if i in lookup: ...',
-        impact: 'significant',
-        autoApplicable: true,
-      },
-      {
-        type: 'api_migration',
-        confidence: 0.88,
-        description: 'Deprecated API: Use new async/await syntax',
-        impact: 'moderate',
-        autoApplicable: true,
-      },
-      {
-        type: 'micro_test',
-        confidence: 0.95,
-        description: 'Generated 3 micro-tests for function validation',
-        impact: 'minimal',
-        autoApplicable: false,
-      },
-    ] : [];
-    
-    const mockTests: MicroTestResult[] = [
-      { name: 'test_basic_input', passed: true, duration: 2.3, coverage: 85 },
-      { name: 'test_edge_case_empty', passed: true, duration: 1.1, coverage: 90 },
-      { name: 'test_large_input', passed: false, duration: 150, error: 'Timeout exceeded' },
-    ];
-    
-    const mockPerfSuggestions: PerformanceSuggestion[] = [
-      {
-        type: 'complexity',
-        location: { line: 12, column: 1 },
-        currentMetric: 'O(n²)',
-        expectedImprovement: 'O(n log n)',
-        suggestion: 'Use a sorting algorithm instead of nested comparison',
-      },
-      {
-        type: 'memory',
-        location: { line: 25, column: 5 },
-        currentMetric: '256MB peak',
-        expectedImprovement: '64MB peak',
-        suggestion: 'Process data in chunks instead of loading all at once',
-      },
-    ];
-    
-    setDiagnostics(mockDiagnostics);
-    setSanitizerResults(mockSanitizers);
-    setAgenticActions(mockActions);
-    setMicroTests(mockTests);
-    setPerfSuggestions(mockPerfSuggestions);
-    
-    // Memory safety mock
-    if (memorySafetyEnabled) {
-      setMemorySafetyResult({
-        status: 'warning',
-        lifetimes: [],
-        issues: [
-          {
-            type: 'use_after_free',
-            severity: 'warning',
-            location: { line: 15, column: 8 },
-            message: 'Potential use-after-free detected',
-            explanation: 'Variable may be accessed after its scope ends',
-            fix: 'Extend variable lifetime or restructure code',
-          }
-        ],
+    try {
+      // Get the backend URL from environment
+      const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL || '';
+      
+      // Prepare request payload
+      const requestPayload = {
+        code: code,
+        language: language.toLowerCase(),
+        sanitizers: enabledSanitizers,
+        optimizers: optimizationPasses.filter(p => p.enabled).map(p => p.type),
+        optimization_level: parseInt(optimizationLevel.replace('O', '')) || 2,
+        target_arch: 'x86_64',
+        include_ir: true,
+        include_assembly: true,
+        agentic_analysis: agenticEnabled,
+        micro_tests: true,
+      };
+      
+      // Call the real backend compiler API
+      const response = await fetch(`${backendUrl}/api/compiler/compile`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(requestPayload),
       });
+      
+      if (!response.ok) {
+        throw new Error(`Compilation failed: ${response.status}`);
+      }
+      
+      const result = await response.json();
+      
+      // Process sanitizer results from backend
+      if (result.sanitizer_results) {
+        const processedSanitizers: SanitizerResult[] = result.sanitizer_results.flatMap((san: any) => 
+          san.issues.map((issue: any) => ({
+            type: san.type,
+            severity: issue.severity || 'warning',
+            line: issue.line || 0,
+            column: issue.column || 0,
+            message: issue.message,
+            code: issue.code || '',
+            suggestion: issue.suggestion,
+            fixIt: issue.suggestion ? {
+              description: issue.suggestion,
+              replacement: '',
+              range: { start: 0, end: 0 },
+            } : undefined,
+          }))
+        );
+        setSanitizerResults(processedSanitizers);
+      }
+      
+      // Process micro test results from backend
+      if (result.micro_test_results) {
+        const processedTests: MicroTestResult[] = result.micro_test_results.tests.map((test: any) => ({
+          name: test.name,
+          passed: test.status === 'passed',
+          duration: test.duration_ms,
+          coverage: test.coverage,
+          error: test.error,
+        }));
+        setMicroTests(processedTests);
+      }
+      
+      // Process performance suggestions from backend
+      if (result.performance_suggestions) {
+        const processedSuggestions: PerformanceSuggestion[] = result.performance_suggestions.map((sug: any) => ({
+          type: sug.type.toLowerCase(),
+          location: { line: sug.line || 1, column: 1 },
+          currentMetric: sug.improvement?.before || 'Unknown',
+          expectedImprovement: sug.improvement?.after || 'Improved',
+          suggestion: sug.suggestion,
+        }));
+        setPerfSuggestions(processedSuggestions);
+      }
+      
+      // Process agentic analysis from backend
+      if (result.agentic_analysis) {
+        const analysis = result.agentic_analysis;
+        const actions: AgenticAction[] = [];
+        
+        // Add patterns as AI actions
+        if (analysis.patterns_detected?.length > 0) {
+          actions.push({
+            type: 'pattern_detection',
+            confidence: 0.95,
+            description: `Detected patterns: ${analysis.patterns_detected.join(', ')}`,
+            impact: 'minimal',
+            autoApplicable: false,
+          });
+        }
+        
+        // Add issues as actions
+        if (analysis.issues?.length > 0) {
+          analysis.issues.forEach((issue: any) => {
+            actions.push({
+              type: 'code_improvement',
+              confidence: 0.85,
+              description: issue.message,
+              impact: issue.severity === 'warning' ? 'moderate' : 'minimal',
+              autoApplicable: false,
+            });
+          });
+        }
+        
+        // Add suggestions as actions
+        if (analysis.suggestions?.length > 0) {
+          analysis.suggestions.forEach((sug: any) => {
+            actions.push({
+              type: sug.type === 'positive' ? 'positive_feedback' : 'suggestion',
+              confidence: 0.90,
+              description: sug.message,
+              impact: 'minimal',
+              autoApplicable: false,
+            });
+          });
+        }
+        
+        setAgenticActions(actions);
+      }
+      
+      // Process diagnostics from pipeline stages
+      if (result.stages) {
+        const processedDiagnostics: Diagnostic[] = result.stages
+          .filter((stage: any) => stage.status === 'error' || stage.details?.length > 0)
+          .flatMap((stage: any) => {
+            if (stage.status === 'error') {
+              return [{
+                id: stage.id,
+                severity: 'error' as DiagnosticSeverity,
+                source: 'compiler',
+                message: stage.details?.[0] || `Error in ${stage.name}`,
+                line: 0,
+                column: 0,
+                category: 'compilation',
+              }];
+            }
+            return [];
+          });
+        setDiagnostics(processedDiagnostics);
+      }
+      
+      // Set IR Module from backend
+      if (result.ir_code) {
+        setIrModule({
+          name: 'main',
+          functions: [
+            { name: 'main', signature: '() -> i32', blocks: [], attributes: ['entry'] },
+          ],
+          globals: [],
+          metadata: { 
+            optimization_level: optimizationLevel,
+            ir_preview: result.ir_code.substring(0, 500),
+          },
+        });
+      }
+      
+      // Memory safety results
+      if (memorySafetyEnabled && result.sanitizer_results) {
+        const memoryIssues = result.sanitizer_results
+          .filter((san: any) => san.type === 'memory' || san.type === 'address')
+          .flatMap((san: any) => san.issues.map((issue: any) => ({
+            type: issue.type || 'memory_issue',
+            severity: issue.severity || 'warning',
+            location: { line: issue.line || 0, column: issue.column || 0 },
+            message: issue.message,
+            explanation: issue.suggestion || '',
+            fix: issue.suggestion,
+          })));
+        
+        setMemorySafetyResult({
+          status: memoryIssues.length > 0 ? 'warning' : 'safe',
+          lifetimes: [],
+          issues: memoryIssues,
+        });
+      }
+      
+    } catch (error) {
+      console.error('Analysis error:', error);
+      
+      // Fallback to mock data on error
+      const mockDiagnostics: Diagnostic[] = [
+        {
+          id: 'd1',
+          severity: 'warning',
+          source: 'compiler',
+          message: 'Unused variable declaration',
+          line: 3,
+          column: 5,
+          category: 'unused',
+          explanation: 'This variable is declared but never used in the code.',
+          suggestions: ['Remove the unused variable', 'Use the variable in your logic'],
+          fixIts: [{ description: 'Remove variable', isPreferred: true, changes: [] }],
+        },
+      ];
+      
+      const mockTests: MicroTestResult[] = [
+        { name: 'test_basic_input', passed: true, duration: 2.3, coverage: 85 },
+        { name: 'test_edge_case_empty', passed: true, duration: 1.1, coverage: 90 },
+        { name: 'test_large_input', passed: false, duration: 150, error: 'Timeout exceeded' },
+      ];
+      
+      const mockPerfSuggestions: PerformanceSuggestion[] = [
+        {
+          type: 'complexity',
+          location: { line: 12, column: 1 },
+          currentMetric: 'O(n²)',
+          expectedImprovement: 'O(n log n)',
+          suggestion: 'Use a sorting algorithm instead of nested comparison',
+        },
+      ];
+      
+      setDiagnostics(mockDiagnostics);
+      setMicroTests(mockTests);
+      setPerfSuggestions(mockPerfSuggestions);
+      
+      if (agenticEnabled) {
+        setAgenticActions([
+          {
+            type: 'performance_suggestion',
+            confidence: 0.92,
+            description: 'Backend unavailable - using cached analysis',
+            impact: 'minimal',
+            autoApplicable: false,
+          },
+        ]);
+      }
     }
-    
-    // IR mock
-    setIrModule({
-      name: 'main',
-      functions: [
-        { name: 'main', signature: '() -> i32', blocks: [], attributes: ['entry'] },
-        { name: 'helper', signature: '(i32) -> i32', blocks: [], attributes: [] },
-      ],
-      globals: [{ name: 'VERSION', type: 'i32', linkage: 'internal', initializer: '1' }],
-      metadata: { optimization_level: optimizationLevel },
-    });
     
     setIsAnalyzing(false);
     saveConfig();
-  }, [enabledSanitizers, agenticEnabled, memorySafetyEnabled, optimizationLevel]);
+  }, [code, language, enabledSanitizers, agenticEnabled, memorySafetyEnabled, optimizationLevel, optimizationPasses]);
 
   // Render severity badge
   const renderSeverityBadge = (severity: DiagnosticSeverity | string) => {

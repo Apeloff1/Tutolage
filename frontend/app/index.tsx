@@ -486,6 +486,15 @@ export default function CodeDockApp() {
             <Text style={[styles.featureChipText, { color: '#10B981' }]}>Learn</Text>
           </TouchableOpacity>
           
+          {/* Collaboration Button */}
+          <TouchableOpacity 
+            style={[styles.featureChip, { backgroundColor: '#F4390020' }]} 
+            onPress={() => setShowCollaborationModal(true)}
+          >
+            <Ionicons name="people" size={14} color="#F43900" />
+            <Text style={[styles.featureChipText, { color: '#F43900' }]}>Collab</Text>
+          </TouchableOpacity>
+          
           {/* Voice Command Button */}
           {voice.isSupported && (
             <TouchableOpacity 

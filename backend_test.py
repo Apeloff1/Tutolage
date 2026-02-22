@@ -300,9 +300,10 @@ def test_hub_routes(result: TestResult):
         result.failure("GET /api/language-packs - All language packs", response["error"])
     elif response["status_code"] == 200:
         data = response["data"]
-        if isinstance(data, list):
+        if isinstance(data, dict) and "packs" in data:
+            packs = data["packs"]
             result.success("GET /api/language-packs - All language packs", 
-                         f"Found {len(data)} language packs (expected 64)")
+                         f"Found {len(packs)} language packs (expected 64)")
         else:
             result.failure("GET /api/language-packs - All language packs", "Invalid response format")
     else:

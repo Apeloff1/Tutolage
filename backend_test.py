@@ -349,10 +349,10 @@ def test_ai_routes(result: TestResult):
         result.failure("GET /api/ai/modes - AI assistance modes", response["error"])
     elif response["status_code"] == 200:
         data = response["data"]
-        if isinstance(data, list) and len(data) > 0:
-            mode_names = [mode.get('name', 'Unknown') for mode in data if isinstance(mode, dict)]
+        if isinstance(data, dict) and "modes" in data and len(data["modes"]) > 0:
+            modes = data["modes"]
             result.success("GET /api/ai/modes - AI assistance modes", 
-                         f"Found {len(data)} AI modes")
+                         f"Found {len(modes)} AI modes")
         else:
             result.failure("GET /api/ai/modes - AI assistance modes", "No AI modes found")
     else:
@@ -364,10 +364,10 @@ def test_ai_routes(result: TestResult):
         result.failure("GET /api/ai/hub/providers - AI providers", response["error"])
     elif response["status_code"] == 200:
         data = response["data"]
-        if isinstance(data, list) and len(data) > 0:
-            provider_names = [p.get('name', 'Unknown') for p in data if isinstance(p, dict)]
+        if isinstance(data, dict) and "providers" in data and len(data["providers"]) > 0:
+            providers = data["providers"]
             result.success("GET /api/ai/hub/providers - AI providers", 
-                         f"Found {len(data)} providers")
+                         f"Found {len(providers)} providers")
         else:
             result.failure("GET /api/ai/hub/providers - AI providers", "No AI providers found")
     else:

@@ -229,13 +229,24 @@ class CSBibleAPITester:
                     self.log_test("Year 8 Details", False, f"Expected AI year, got: {year_name}")
                     return False
                 
-                # Check for key courses
+                # Check for key courses with Machine Learning and Deep Learning
                 if "key_courses" in data:
                     key_courses = data["key_courses"]
-                    ai_courses_found = any("Machine Learning" in course or "Deep Learning" in course 
-                                         for course in key_courses)
+                    ai_courses_found = False
+                    ml_found = False
+                    dl_found = False
+                    
+                    for course in key_courses:
+                        course_title = course.get("title", "")
+                        if "Machine Learning" in course_title:
+                            ml_found = True
+                        if "Deep Learning" in course_title:
+                            dl_found = True
+                    
+                    ai_courses_found = ml_found and dl_found
+                    
                     if not ai_courses_found:
-                        self.log_test("Year 8 Details", False, "No AI/ML courses found in key_courses")
+                        self.log_test("Year 8 Details", False, f"Missing ML/DL courses. ML found: {ml_found}, DL found: {dl_found}")
                         return False
                 
                 self.log_test("Year 8 Details", True, 

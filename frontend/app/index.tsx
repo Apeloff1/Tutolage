@@ -1,7 +1,7 @@
 // ============================================================================
-// CODEDOCK QUANTUM NEXUS - Main Application
-// Version: 8.0.0 | Ultimate Multiplayer Galaxy Edition
-// Voice • Pipeline • Learning • Collaboration • WASM Compiler
+// CODEDOCK ULTIMATE HUB - Main Application
+// Version: 9.0.0 | Ultimate Hub Edition
+// Voice • Pipeline • Learning • Collaboration • WASM Compiler • AI Hub
 // ============================================================================
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
@@ -25,6 +25,8 @@ import { CompilerModal } from '../features/Compiler/CompilerModal';
 import { PipelineVisualizer } from '../features/Pipeline/PipelineVisualizer';
 import { LearningDashboard } from '../features/Learning/LearningDashboard';
 import { CollaborationModal } from '../features/Collaboration/CollaborationModal';
+import { HubModal } from '../features/Hub/HubModal';
+import { AISuggestionsModal } from '../features/AI/AISuggestionsModal';
 import { useVoiceCommands, speak } from '../features/Voice/useVoiceCommands';
 import { starlog } from '../features/VersionControl/Starlog';
 import { wasmCompiler } from '../features/WasmCompiler/WasmCompiler';

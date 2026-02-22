@@ -398,12 +398,13 @@ def test_core_routes(result: TestResult):
         result.failure("GET /api/languages - Available languages", response["error"])
     elif response["status_code"] == 200:
         data = response["data"]
-        if isinstance(data, list) and len(data) > 0:
-            executable_count = sum(1 for lang in data if isinstance(lang, dict) and lang.get('executable', False))
+        if isinstance(data, dict) and "languages" in data and len(data["languages"]) > 0:
+            languages = data["languages"]
+            executable_count = sum(1 for lang in languages if isinstance(lang, dict) and lang.get('executable', False))
             result.success("GET /api/languages - Available languages", 
-                         f"Found {len(data)} languages, {executable_count} executable")
+                         f"Found {len(languages)} languages, {executable_count} executable")
         else:
-            result.failure("GET /api/languages - Available languages", "No languages found")
+            result.failure("GET /api/languages - Available languages", "No languages found or invalid format")
     else:
         result.failure("GET /api/languages - Available languages", f"HTTP {response['status_code']}")
     

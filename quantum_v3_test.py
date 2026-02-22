@@ -11,7 +11,7 @@ import time
 from typing import Dict, Any, List
 
 # Use the correct backend URL from environment
-BACKEND_URL = "https://multiplayer-codedock.preview.emergentagent.com/api"
+BACKEND_URL = "https://codedock-ultimate.preview.emergentagent.com/api"
 
 class QuantumV3Tester:
     def __init__(self):

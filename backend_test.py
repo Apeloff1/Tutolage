@@ -11,7 +11,7 @@ import sys
 from typing import Dict, Any, List
 
 # Get backend URL from frontend .env
-BACKEND_URL = "https://multiplayer-codedock.preview.emergentagent.com/api"
+BACKEND_URL = "https://codedock-ultimate.preview.emergentagent.com/api"
 
 class CodeDockAPITester:
     def __init__(self, base_url: str):

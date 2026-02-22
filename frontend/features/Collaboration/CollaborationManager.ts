@@ -160,7 +160,7 @@ export class CollaborationManager {
     // Setup WebRTC provider for real-time sync
     this.provider = new WebrtcProvider(sessionId, this.doc, {
       signaling: ['wss://signaling.yjs.dev', 'wss://y-webrtc-signaling-eu.herokuapp.com'],
-      password: null,
+      password: undefined,
       awareness: undefined,
       maxConns: 8,
       filterBcConns: true,

@@ -499,6 +499,24 @@ export default function CodeDockApp() {
             <Text style={[styles.featureChipText, { color: '#F43900' }]}>Collab</Text>
           </TouchableOpacity>
           
+          {/* Ultimate Hub Button */}
+          <TouchableOpacity 
+            style={[styles.featureChip, { backgroundColor: '#8B5CF620' }]} 
+            onPress={() => setShowHubModal(true)}
+          >
+            <Ionicons name="planet" size={14} color="#8B5CF6" />
+            <Text style={[styles.featureChipText, { color: '#8B5CF6' }]}>Hub</Text>
+          </TouchableOpacity>
+          
+          {/* AI Suggestions Button */}
+          <TouchableOpacity 
+            style={[styles.featureChip, { backgroundColor: '#EC489920' }]} 
+            onPress={() => setShowAISuggestionsModal(true)}
+          >
+            <Ionicons name="sparkles" size={14} color="#EC4899" />
+            <Text style={[styles.featureChipText, { color: '#EC4899' }]}>AI Lab</Text>
+          </TouchableOpacity>
+          
           {/* Voice Command Button */}
           {voice.isSupported && (
             <TouchableOpacity 

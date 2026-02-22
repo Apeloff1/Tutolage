@@ -47,6 +47,10 @@ from emergentintegrations.llm.chat import LlmChat, UserMessage
 
 # Import modular routes
 from routes.bible import router as bible_router
+from routes.health import router as health_router
+from routes.compiler import router as compiler_router
+from routes.hub import router as hub_router
+from routes.ai import router as ai_router
 
 # Import the 15-Year CS Bible Curriculum (for backward compatibility)
 from cs_bible import CS_BIBLE, get_year_info, get_course, get_all_courses, get_curriculum_stats

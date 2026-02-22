@@ -388,25 +388,31 @@ class CSBibleAPITester:
             if response.status_code == 200:
                 data = response.json()
                 
-                if not isinstance(data, list):
-                    self.log_test("Certifications", False, f"Expected list, got {type(data)}")
-                    return False
-                
-                if len(data) != 5:
-                    self.log_test("Certifications", False, f"Expected 5 certification levels, got {len(data)}")
-                    return False
-                
-                # Check for expected certification levels
-                expected_levels = ["Certificate", "Associate", "Bachelor", "Master", "PhD"]
-                cert_names = [cert.get("name", "") for cert in data]
-                
-                for expected in expected_levels:
-                    if expected not in cert_names:
-                        self.log_test("Certifications", False, f"Missing certification: {expected}")
+                # Handle the actual response format with 'levels' key
+                if isinstance(data, dict) and "levels" in data:
+                    levels = data["levels"]
+                    if not isinstance(levels, list):
+                        self.log_test("Certifications", False, f"Expected levels list, got {type(levels)}")
                         return False
-                
-                self.log_test("Certifications", True, f"Found all 5 certifications: {cert_names}")
-                return True
+                    
+                    if len(levels) != 5:
+                        self.log_test("Certifications", False, f"Expected 5 certification levels, got {len(levels)}")
+                        return False
+                    
+                    # Check for expected certification levels
+                    expected_levels = ["Certificate", "Associate", "Bachelor", "Master", "PhD"]
+                    cert_names = [cert.get("name", "") for cert in levels]
+                    
+                    for expected in expected_levels:
+                        if expected not in cert_names:
+                            self.log_test("Certifications", False, f"Missing certification: {expected}")
+                            return False
+                    
+                    self.log_test("Certifications", True, f"Found all 5 certifications: {cert_names}")
+                    return True
+                else:
+                    self.log_test("Certifications", False, f"Expected dict with 'levels' key, got {type(data)}")
+                    return False
                 
             else:
                 self.log_test("Certifications", False, f"HTTP {response.status_code}")

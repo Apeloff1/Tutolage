@@ -44,6 +44,13 @@ export const FEATURES = [
   'offline_bible',
   'progress_tracking',
   'achievements_system',
+  'multiplayer_collaboration',
+  'realtime_sync_yjs',
+  'webrtc_peer_connection',
+  'collaboration_chat',
+  'pipeline_visualizer',
+  'learning_dashboard',
+  'voice_commands',
 ];
 
 export const API_URL = process.env.EXPO_PUBLIC_BACKEND_URL || '';

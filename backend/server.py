@@ -6320,31 +6320,138 @@ async def get_algorithms_by_category(category: str):
         return {"category": category, "algorithms": ALGORITHM_REGISTRY[category]}
     raise HTTPException(status_code=404, detail="Category not found")
 
+# ============================================================================
+# CS BIBLE API - 15-Year Computer Science Curriculum
+# ============================================================================
+
 @api_router.get("/bible")
-async def get_compilation_bible():
-    """Get the compilation bible"""
+async def get_cs_bible_overview():
+    """Get overview of the 15-year CS Bible curriculum"""
+    stats = get_curriculum_stats()
     return {
-        "title": "The Complete Compilation Bible",
-        "chapters": len(COMPILATION_BIBLE["chapters"]),
-        "estimated_hours": COMPILATION_BIBLE["estimated_hours"],
-        "toc": [
+        "title": stats["title"],
+        "subtitle": stats["subtitle"],
+        "total_years": stats["total_years"],
+        "total_courses": stats["total_courses"],
+        "total_hours": stats["total_hours"],
+        "parallel_tracks": stats["parallel_tracks"],
+        "certification_levels": stats["certification_levels"],
+        "tracks": stats["tracks"],
+        "years_summary": [
             {
-                "id": ch["id"],
-                "title": ch["title"],
-                "subtitle": ch["subtitle"],
-                "difficulty": ch["difficulty"]
+                "year": i,
+                "name": CS_BIBLE.get(f"year_{i}", {}).get("name", f"Year {i}"),
+                "theme": CS_BIBLE.get(f"year_{i}", {}).get("theme", ""),
+                "level": CS_BIBLE.get(f"year_{i}", {}).get("level", ""),
+                "hours": CS_BIBLE.get(f"year_{i}", {}).get("total_hours", 720)
             }
-            for ch in COMPILATION_BIBLE["chapters"]
+            for i in range(1, 16)
         ]
     }
 
+@api_router.get("/bible/year/{year_num}")
+async def get_bible_year(year_num: int):
+    """Get all courses and details for a specific year"""
+    if year_num < 1 or year_num > 15:
+        raise HTTPException(status_code=400, detail="Year must be between 1 and 15")
+    
+    year_data = get_year_info(year_num)
+    if not year_data:
+        raise HTTPException(status_code=404, detail=f"Year {year_num} not found")
+    
+    return year_data
+
+@api_router.get("/bible/course/{course_id}")
+async def get_bible_course(course_id: str):
+    """Get detailed information about a specific course"""
+    course = get_course(course_id)
+    if not course:
+        raise HTTPException(status_code=404, detail=f"Course {course_id} not found")
+    return course
+
+@api_router.get("/bible/courses")
+async def get_all_bible_courses(
+    year: Optional[int] = None,
+    track: Optional[str] = None,
+    difficulty: Optional[str] = None
+):
+    """Get all courses with optional filtering"""
+    courses = get_all_courses()
+    
+    # Filter by year
+    if year is not None:
+        courses = [c for c in courses if c.get("year") == year]
+    
+    # Filter by track
+    if track is not None:
+        courses = [c for c in courses if c.get("track") == track]
+    
+    # Filter by difficulty
+    if difficulty is not None:
+        courses = [c for c in courses if c.get("difficulty") == difficulty]
+    
+    return {
+        "total": len(courses),
+        "filters": {"year": year, "track": track, "difficulty": difficulty},
+        "courses": courses
+    }
+
+@api_router.get("/bible/tracks")
+async def get_bible_tracks():
+    """Get all available learning tracks"""
+    return CS_BIBLE["summary"]["tracks"]
+
+@api_router.get("/bible/certifications")
+async def get_bible_certifications():
+    """Get certification path information"""
+    return {
+        "levels": CS_BIBLE["certification_levels"],
+        "path": CS_BIBLE["summary"]["certification_path"]
+    }
+
+@api_router.get("/bible/search")
+async def search_bible(q: str):
+    """Search for courses by title or topic"""
+    q_lower = q.lower()
+    courses = get_all_courses()
+    
+    results = []
+    for course in courses:
+        # Search in title
+        if q_lower in course.get("title", "").lower():
+            results.append({"type": "title_match", "course": course})
+            continue
+        
+        # Search in topics
+        if "topics" in course:
+            for topic in course["topics"]:
+                if isinstance(topic, dict):
+                    if q_lower in topic.get("topic", "").lower():
+                        results.append({"type": "topic_match", "course": course, "matched_topic": topic})
+                        break
+    
+    return {
+        "query": q,
+        "total_results": len(results),
+        "results": results[:50]  # Limit results
+    }
+
+# Legacy endpoint for backwards compatibility
 @api_router.get("/bible/chapter/{chapter_id}")
-async def get_bible_chapter(chapter_id: str):
-    """Get a specific bible chapter"""
-    for chapter in COMPILATION_BIBLE["chapters"]:
-        if chapter["id"] == chapter_id:
-            return chapter
-    raise HTTPException(status_code=404, detail="Chapter not found")
+async def get_bible_chapter_legacy(chapter_id: str):
+    """Legacy endpoint - redirects to course endpoint"""
+    # Try to find course by ID
+    course = get_course(chapter_id)
+    if course:
+        return course
+    
+    # Fallback to old COMPILATION_BIBLE if exists
+    if "COMPILATION_BIBLE" in globals():
+        for chapter in COMPILATION_BIBLE.get("chapters", []):
+            if chapter["id"] == chapter_id:
+                return chapter
+    
+    raise HTTPException(status_code=404, detail="Chapter/Course not found")
 
 
 # Include all routes at the end after all definitions

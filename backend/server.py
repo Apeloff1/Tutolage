@@ -80,9 +80,9 @@ logger = logging.getLogger("CodeDock.Nexus")
 # SYSTEM VERSION & BUILD INFO
 #====================================================================================================
 
-SYSTEM_VERSION = "4.1.0"
-SYSTEM_CODENAME = "Nexus Pro"
-SYSTEM_BUILD = "2026.02.21-HOTFIX"
+SYSTEM_VERSION = "10.0.0"
+SYSTEM_CODENAME = "CS Bible Edition"
+SYSTEM_BUILD = "2026.02.22-PRODUCTION"
 SYSTEM_FEATURES = [
     "teaching_mode",
     "tooltips_engine", 

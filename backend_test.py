@@ -57,11 +57,15 @@ class CSBibleAPITester:
             response = self.session.get(f"{self.base_url}/api/languages")
             if response.status_code == 200:
                 data = response.json()
+                # Handle both list format and object format with 'languages' key
                 if isinstance(data, list) and len(data) > 0:
                     self.log_test("Languages Endpoint", True, f"Found {len(data)} languages")
                     return True
+                elif isinstance(data, dict) and "languages" in data and len(data["languages"]) > 0:
+                    self.log_test("Languages Endpoint", True, f"Found {len(data['languages'])} languages")
+                    return True
                 else:
-                    self.log_test("Languages Endpoint", False, f"Invalid response: {data}")
+                    self.log_test("Languages Endpoint", False, f"Invalid response format")
                     return False
             else:
                 self.log_test("Languages Endpoint", False, f"HTTP {response.status_code}")

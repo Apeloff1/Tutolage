@@ -255,7 +255,8 @@ export interface MemorySafetyIssue {
 // ============================================================================
 export interface AgenticAction {
   type: 'micro_test' | 'performance_suggestion' | 'api_migration' | 
-        'security_fix' | 'style_fix' | 'refactor' | 'documentation';
+        'security_fix' | 'style_fix' | 'refactor' | 'documentation' |
+        'pattern_detection' | 'code_improvement' | 'positive_feedback' | 'suggestion';
   confidence: number;
   description: string;
   before?: string;

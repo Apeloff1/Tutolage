@@ -315,9 +315,10 @@ def test_hub_routes(result: TestResult):
         result.failure("GET /api/expansions - All expansion packs", response["error"])
     elif response["status_code"] == 200:
         data = response["data"]
-        if isinstance(data, list):
+        if isinstance(data, dict) and "expansions" in data:
+            expansions = data["expansions"]
             result.success("GET /api/expansions - All expansion packs", 
-                         f"Found {len(data)} expansion packs (expected 10)")
+                         f"Found {len(expansions)} expansion packs (expected 10)")
         else:
             result.failure("GET /api/expansions - All expansion packs", "Invalid response format")
     else:
@@ -329,10 +330,12 @@ def test_hub_routes(result: TestResult):
         result.failure("GET /api/algorithms - All algorithms", response["error"])
     elif response["status_code"] == 200:
         data = response["data"]
-        if isinstance(data, list) and len(data) > 0:
-            result.success("GET /api/algorithms - All algorithms", f"Found {len(data)} algorithms")
+        if isinstance(data, dict) and "algorithms" in data:
+            algorithms = data["algorithms"]
+            total_algorithms = sum(len(category) for category in algorithms.values())
+            result.success("GET /api/algorithms - All algorithms", f"Found {total_algorithms} algorithms in {len(algorithms)} categories")
         else:
-            result.failure("GET /api/algorithms - All algorithms", "No algorithms found")
+            result.failure("GET /api/algorithms - All algorithms", "Invalid response format")
     else:
         result.failure("GET /api/algorithms - All algorithms", f"HTTP {response['status_code']}")
 

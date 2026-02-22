@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Backend API Testing Suite for CodeDock CS Bible Curriculum
-Tests the new 15-Year CS Bible curriculum API endpoints
+CodeDock v10.0.0 (CS Bible Edition) - Comprehensive Backend API Testing
+Testing all modular routes and endpoints as specified in the review request.
 """
 
 import requests

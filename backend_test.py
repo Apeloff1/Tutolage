@@ -313,22 +313,28 @@ class CSBibleAPITester:
             if response.status_code == 200:
                 data = response.json()
                 
-                if not isinstance(data, list):
-                    self.log_test("Courses by Year", False, f"Expected list, got {type(data)}")
-                    return False
-                
-                if len(data) == 0:
-                    self.log_test("Courses by Year", False, "No courses returned for year 1")
-                    return False
-                
-                # Check that all courses are from year 1
-                for course in data:
-                    if not course.get("id", "").startswith("y1_"):
-                        self.log_test("Courses by Year", False, f"Non-year-1 course found: {course.get('id')}")
+                # Handle the actual response format with 'courses' key
+                if isinstance(data, dict) and "courses" in data:
+                    courses = data["courses"]
+                    if not isinstance(courses, list):
+                        self.log_test("Courses by Year", False, f"Expected courses list, got {type(courses)}")
                         return False
-                
-                self.log_test("Courses by Year", True, f"Found {len(data)} courses for year 1")
-                return True
+                    
+                    if len(courses) == 0:
+                        self.log_test("Courses by Year", False, "No courses returned for year 1")
+                        return False
+                    
+                    # Check that all courses are from year 1
+                    for course in courses:
+                        if course.get("year") != 1:
+                            self.log_test("Courses by Year", False, f"Non-year-1 course found: year {course.get('year')}")
+                            return False
+                    
+                    self.log_test("Courses by Year", True, f"Found {len(courses)} courses for year 1")
+                    return True
+                else:
+                    self.log_test("Courses by Year", False, f"Expected dict with 'courses' key, got {type(data)}")
+                    return False
                 
             else:
                 self.log_test("Courses by Year", False, f"HTTP {response.status_code}")

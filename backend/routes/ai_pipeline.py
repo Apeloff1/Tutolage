@@ -146,8 +146,7 @@ async def generate_image_gemini(prompt: str) -> Dict[str, Any]:
     try:
         # Gemini image generation via text description
         chat = LlmChat(
-            api_key=EMERGENT_LLM_KEY,
-            model="gemini-2.0-flash"
+            api_key=EMERGENT_LLM_KEY
         )
         
         image_prompt = f"""Generate a detailed visual description for an image generator:

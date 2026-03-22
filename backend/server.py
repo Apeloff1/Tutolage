@@ -56,6 +56,11 @@ from routes.curriculum import router as curriculum_router
 from routes.vault import router as vault_router
 from routes.code_to_app_pipeline import router as code_to_app_router
 from routes.image_generation import router as imagine_router
+# SOTA 2026 Features
+from routes.ai_debugger import router as debugger_router
+from routes.music_pipeline import router as music_router
+from routes.interactive_education import router as education_router
+from routes.jeeves_tutor import router as jeeves_router
 
 # Import the 15-Year CS Bible Curriculum (for backward compatibility)
 from cs_bible import CS_BIBLE, get_year_info, get_course, get_all_courses, get_curriculum_stats
@@ -6347,3 +6352,8 @@ app.include_router(curriculum_router, prefix="/api")
 app.include_router(vault_router, prefix="/api")
 app.include_router(code_to_app_router, prefix="/api")
 app.include_router(imagine_router, prefix="/api")
+# SOTA 2026 Feature Routes
+app.include_router(debugger_router, prefix="/api")
+app.include_router(music_router, prefix="/api")
+app.include_router(education_router, prefix="/api")
+app.include_router(jeeves_router, prefix="/api")

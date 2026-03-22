@@ -1,0 +1,423 @@
+{
+  "timestamp": "2026-03-22T07:52:40.269810",
+  "backend_url": "https://march-2026-preview.preview.emergentagent.com/api",
+  "version": "11.1 SOTA 2026",
+  "summary": {
+    "total": 25,
+    "passed": 25,
+    "failed": 0,
+    "success_rate": 100.0
+  },
+  "results": [
+    {
+      "test": "AI Debugger Info Endpoint",
+      "status": "\u2705 PASS",
+      "success": true,
+      "details": "Found 8 capabilities, includes expected features: True",
+      "response": {
+        "name": "CodeDock AI Debugger",
+        "version": "11.0.0",
+        "capabilities": [
+          "Autonomous error detection",
+          "Stack trace interpretation",
+          "One-click fix suggestions",
+          "Security vulnerability scanning",
+          "Performance analysis",
+          "Memory leak detection",
+          "Code smell detection",
+          "Best practice recommendations"
+        ],
+        "supported_languages": [
+          "python",
+          "javascript",
+          "typescript",
+          "java",
+          "cpp",
+          "c",
+          "rust",
+          "go",
+          "swift",
+          "kotlin",
+          "ruby",
+          "php"
+        ],
+        "debug_levels": {
+          "quick": "Fast scan for obvious errors (< 5 seconds)",
+          "standard": "Comprehensive analysis with fixes (< 15 seconds)",
+          "deep": "Full audit with security + performance (< 30 seconds)"
+        },
+        "ai_models": [
+          "GPT-4o",
+          "Claude 3.5",
+          "Gemini Pro"
+        ],
+        "features": {
+          "auto_fix": true,
+          "line_by_line": true,
+          "security_scan": true,
+          "performance_analysis": true,
+          "memory_analysis": true,
+          "code_smell_detection": true
+        }
+      }
+    },
+    {
+      "test": "AI Debugger Analyze Endpoint",
+      "status": "\u2705 PASS",
+      "success": true,
+      "details": "Found 6 issues, analysis provided: True",
+      "response": {
+        "issues_count": 6
+      }
+    },
+    {
+      "test": "AI Debugger Security Scan Endpoint",
+      "status": "\u2705 PASS",
+      "success": true,
+      "details": "Risk score: 50, vulnerabilities detected: {'critical': 2, 'high': 0, 'medium': 0, 'low': 0, 'total': 2}",
+      "response": {
+        "risk_score": 50
+      }
+    },
+    {
+      "test": "AI Debugger Performance Analysis Endpoint",
+      "status": "\u2705 PASS",
+      "success": true,
+      "details": "Analysis provided: True, metrics: True",
+      "response": {
+        "has_analysis": true
+      }
+    },
+    {
+      "test": "AI Debugger Quick Fix Endpoint",
+      "status": "\u2705 PASS",
+      "success": true,
+      "details": "Fixed code contains colon: True, length: 132",
+      "response": {
+        "fixed_length": 132
+      }
+    },
+    {
+      "test": "AI Debugger Explain Code Endpoint",
+      "status": "\u2705 PASS",
+      "success": true,
+      "details": "Explanation length: 2552 chars, detailed: True",
+      "response": {
+        "explanation_length": 2552
+      }
+    },
+    {
+      "test": "Music Pipeline Info Endpoint",
+      "status": "\u2705 PASS",
+      "success": true,
+      "details": "Capabilities: 7, Genres: 16, Moods: 12",
+      "response": {
+        "name": "CodeDock AI Music Pipeline",
+        "version": "11.0.0",
+        "description": "AI-powered game music and sound generation",
+        "capabilities": [
+          "Text-to-music generation",
+          "Game soundtrack composition",
+          "Sound effect creation",
+          "Adaptive/procedural music",
+          "Loop-ready tracks",
+          "Mood-based generation",
+          "Music theory assistance"
+        ],
+        "genres": [
+          "8bit",
+          "chiptune",
+          "orchestral",
+          "ambient",
+          "electronic",
+          "rock",
+          "jazz",
+          "synthwave",
+          "lofi",
+          "epic",
+          "horror",
+          "peaceful",
+          "action",
+          "puzzle",
+          "adventure",
+          "retro"
+        ],
+        "moods": [
+          "happy",
+          "sad",
+          "tense",
+          "peaceful",
+          "epic",
+          "mysterious",
+          "energetic",
+          "calm",
+          "dark",
+          "uplifting",
+          "nostalgic",
+          "heroic"
+        ],
+        "output_formats": [
+          "composition_spec",
+          "midi_description",
+          "chord_progression",
+          "melody_notation",
+          "production_notes"
+        ],
+        "integrations": [
+          "Suno",
+          "Stable Audio",
+          "Mubert",
+          "AIVA"
+        ],
+        "features": {
+          "loopable_tracks": true,
+          "adaptive_music": true,
+          "sound_effects": true,
+          "stem_separation": true,
+          "tempo_control": true
+        }
+      }
+    },
+    {
+      "test": "Music Pipeline Presets Endpoint",
+      "status": "\u2705 PASS",
+      "success": true,
+      "details": "Found 8 presets, includes expected types: True",
+      "response": {
+        "preset_count": 8
+      }
+    },
+    {
+      "test": "Music Pipeline Generate Endpoint",
+      "status": "\u2705 PASS",
+      "success": true,
+      "details": "Status: success, composition length: 3680 chars",
+      "response": {
+        "composition_length": 3680
+      }
+    },
+    {
+      "test": "Music Pipeline Sound Effect Endpoint",
+      "status": "\u2705 PASS",
+      "success": true,
+      "details": "Status: success, sound design length: 3246 chars",
+      "response": {
+        "sound_design_length": 3246
+      }
+    },
+    {
+      "test": "Music Pipeline Adaptive Music Endpoint",
+      "status": "\u2705 PASS",
+      "success": true,
+      "details": "Status: success, adaptive system length: 3712 chars",
+      "response": {
+        "adaptive_system_length": 3712
+      }
+    },
+    {
+      "test": "Interactive Education Info Endpoint",
+      "status": "\u2705 PASS",
+      "success": true,
+      "details": "Features: 8, Languages: 2, Challenges: 7",
+      "response": {
+        "name": "CodeDock Interactive Education",
+        "version": "11.0.0",
+        "features": [
+          "Real-time coding challenges",
+          "AI-powered feedback",
+          "Skill assessments",
+          "Achievement system",
+          "Learning paths",
+          "Code reviews",
+          "Progress tracking",
+          "Gamification"
+        ],
+        "languages_supported": [
+          "python",
+          "javascript"
+        ],
+        "difficulty_levels": [
+          "beginner",
+          "intermediate",
+          "advanced"
+        ],
+        "total_challenges": 7,
+        "total_achievements": 10,
+        "gamification": {
+          "xp_system": true,
+          "achievements": true,
+          "streaks": true,
+          "leaderboards": true,
+          "badges": true
+        }
+      }
+    },
+    {
+      "test": "Interactive Education Challenges Endpoint",
+      "status": "\u2705 PASS",
+      "success": true,
+      "details": "Language: python, Difficulty: beginner, Challenges: 3",
+      "response": {
+        "challenge_count": 3
+      }
+    },
+    {
+      "test": "Interactive Education Daily Challenge Endpoint",
+      "status": "\u2705 PASS",
+      "success": true,
+      "details": "Date: 2026-03-22, Challenge: LRU Cache, XP: 150",
+      "response": {
+        "challenge_title": "LRU Cache"
+      }
+    },
+    {
+      "test": "Interactive Education Achievements Endpoint",
+      "status": "\u2705 PASS",
+      "success": true,
+      "details": "Achievements: 10, Total XP: 2250, Categories: 3",
+      "response": {
+        "achievement_count": 10
+      }
+    },
+    {
+      "test": "Interactive Education Submit Endpoint",
+      "status": "\u2705 PASS",
+      "success": true,
+      "details": "Status: evaluated, Evaluation provided: True",
+      "response": {
+        "has_evaluation": true
+      }
+    },
+    {
+      "test": "Interactive Education Learning Path Endpoint",
+      "status": "\u2705 PASS",
+      "success": true,
+      "details": "Learning path length: 4203 chars, parameters: True",
+      "response": {
+        "path_length": 4203
+      }
+    },
+    {
+      "test": "Jeeves AI Tutor Info Endpoint",
+      "status": "\u2705 PASS",
+      "success": true,
+      "details": "Capabilities: 8, Personalities: 4, Languages: 13",
+      "response": {
+        "name": "Jeeves",
+        "title": "AI Code Butler & Personal Tutor",
+        "version": "11.0.0",
+        "tagline": "At your service, ready to assist with all your coding needs.",
+        "capabilities": [
+          "Code explanation at any level",
+          "Debugging assistance",
+          "Concept teaching",
+          "Best practices guidance",
+          "Code review",
+          "Practice problem generation",
+          "Learning path suggestions",
+          "Motivation and encouragement"
+        ],
+        "personalities": {
+          "formal": "Distinguished and precise, like a traditional butler",
+          "friendly": "Warm and approachable coding buddy",
+          "encouraging": "Enthusiastic coach who celebrates your wins",
+          "concise": "Direct and efficient, minimal fluff"
+        },
+        "skill_levels": [
+          "beginner",
+          "intermediate",
+          "advanced",
+          "expert"
+        ],
+        "languages_fluent": [
+          "Python",
+          "JavaScript",
+          "TypeScript",
+          "Java",
+          "C++",
+          "C",
+          "Rust",
+          "Go",
+          "Swift",
+          "Kotlin",
+          "Ruby",
+          "PHP",
+          "C#"
+        ],
+        "specialties": [
+          "Data Structures & Algorithms",
+          "Object-Oriented Programming",
+          "Functional Programming",
+          "Web Development",
+          "Mobile Development",
+          "Database Design",
+          "System Design",
+          "Testing & QA"
+        ]
+      }
+    },
+    {
+      "test": "Jeeves AI Tutor Tip of the Day Endpoint",
+      "status": "\u2705 PASS",
+      "success": true,
+      "details": "Date: 2026-03-22, Language: python, Tip length: 1030 chars",
+      "response": {
+        "tip_length": 1030
+      }
+    },
+    {
+      "test": "Jeeves AI Tutor Ask Endpoint",
+      "status": "\u2705 PASS",
+      "success": true,
+      "details": "Response length: 1731 chars, Personality: friendly, Session: True",
+      "response": {
+        "response_length": 1731
+      }
+    },
+    {
+      "test": "Jeeves AI Tutor Explain Endpoint",
+      "status": "\u2705 PASS",
+      "success": true,
+      "details": "Explanation length: 3181 chars, Depth: beginner, Language: python",
+      "response": {
+        "explanation_length": 3181
+      }
+    },
+    {
+      "test": "Jeeves AI Tutor Debug Help Endpoint",
+      "status": "\u2705 PASS",
+      "success": true,
+      "details": "Assistance length: 1684 chars, Language: python, Had error: False",
+      "response": {
+        "assistance_length": 1684
+      }
+    },
+    {
+      "test": "Jeeves AI Tutor Teach Concept Endpoint",
+      "status": "\u2705 PASS",
+      "success": true,
+      "details": "Lesson length: 3497 chars, Concept: recursion, Language: python",
+      "response": {
+        "lesson_length": 3497
+      }
+    },
+    {
+      "test": "Jeeves AI Tutor Practice Endpoint",
+      "status": "\u2705 PASS",
+      "success": true,
+      "details": "Problems length: 4197 chars, Topic: python basics, Difficulty: easy, Count: 3",
+      "response": {
+        "problems_length": 4197
+      }
+    },
+    {
+      "test": "Jeeves AI Tutor Motivate Endpoint",
+      "status": "\u2705 PASS",
+      "success": true,
+      "details": "Message length: 1110 chars, Mood: stuck",
+      "response": {
+        "message_length": 1110
+      }
+    }
+  ]
+}

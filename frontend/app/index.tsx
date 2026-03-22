@@ -39,6 +39,12 @@ import { AdvancedFeaturesModal } from '../features/Advanced/AdvancedFeaturesModa
 import { CodeToAppModal } from '../features/CodeToApp/CodeToAppModal';
 import { ImagineModal } from '../features/Imagine/ImagineModal';
 
+// v11.1 SOTA 2026 Features
+import { DebuggerModal } from '../features/Debugger/DebuggerModal';
+import { MusicPipelineModal } from '../features/Music/MusicPipelineModal';
+import { EducationModal } from '../features/Education/EducationModal';
+import { JeevesModal } from '../features/Jeeves/JeevesModal';
+
 // Types
 import { Language, Template, AIMode } from '../types';
 
@@ -99,6 +105,12 @@ export default function CodeDockApp() {
   const [showAdvancedModal, setShowAdvancedModal] = useState(false);
   const [showCodeToAppModal, setShowCodeToAppModal] = useState(false);
   const [showImagineModal, setShowImagineModal] = useState(false);
+  
+  // v11.1 SOTA 2026 Modal State
+  const [showDebuggerModal, setShowDebuggerModal] = useState(false);
+  const [showMusicPipelineModal, setShowMusicPipelineModal] = useState(false);
+  const [showEducationModal, setShowEducationModal] = useState(false);
+  const [showJeevesModal, setShowJeevesModal] = useState(false);
   
   // Voice Command Handler
   const handleVoiceCommand = useCallback((action: string, params?: any) => {
@@ -585,6 +597,43 @@ export default function CodeDockApp() {
           >
             <Ionicons name="image-outline" size={14} color="#F43F5E" />
             <Text style={[styles.featureChipText, { color: '#F43F5E' }]}>Imagine</Text>
+          </TouchableOpacity>
+          
+          {/* v11.1 SOTA 2026 Features */}
+          {/* AI Debugger Button */}
+          <TouchableOpacity 
+            style={[styles.featureChip, { backgroundColor: '#EF444420' }]} 
+            onPress={() => setShowDebuggerModal(true)}
+          >
+            <Ionicons name="bug-outline" size={14} color="#EF4444" />
+            <Text style={[styles.featureChipText, { color: '#EF4444' }]}>Debug</Text>
+          </TouchableOpacity>
+          
+          {/* Music Pipeline Button */}
+          <TouchableOpacity 
+            style={[styles.featureChip, { backgroundColor: '#8B5CF620' }]} 
+            onPress={() => setShowMusicPipelineModal(true)}
+          >
+            <Ionicons name="musical-notes-outline" size={14} color="#8B5CF6" />
+            <Text style={[styles.featureChipText, { color: '#8B5CF6' }]}>Music</Text>
+          </TouchableOpacity>
+          
+          {/* Interactive Education Button */}
+          <TouchableOpacity 
+            style={[styles.featureChip, { backgroundColor: '#10B98120' }]} 
+            onPress={() => setShowEducationModal(true)}
+          >
+            <Ionicons name="game-controller-outline" size={14} color="#10B981" />
+            <Text style={[styles.featureChipText, { color: '#10B981' }]}>Academy</Text>
+          </TouchableOpacity>
+          
+          {/* Jeeves AI Tutor Button */}
+          <TouchableOpacity 
+            style={[styles.featureChip, { backgroundColor: '#6366F120' }]} 
+            onPress={() => setShowJeevesModal(true)}
+          >
+            <Ionicons name="chatbubbles-outline" size={14} color="#6366F1" />
+            <Text style={[styles.featureChipText, { color: '#6366F1' }]}>Jeeves</Text>
           </TouchableOpacity>
           
           {/* Voice Command Button */}
@@ -1109,6 +1158,48 @@ export default function CodeDockApp() {
         visible={showImagineModal}
         onClose={() => setShowImagineModal(false)}
         colors={colors}
+      />
+
+      {/* v11.1 SOTA 2026 Feature Modals */}
+      {/* AI Debugger Modal */}
+      <DebuggerModal
+        visible={showDebuggerModal}
+        onClose={() => setShowDebuggerModal(false)}
+        colors={colors}
+        currentCode={code}
+        currentLanguage={selectedLanguage?.key}
+        onApplyFix={(fixedCode) => setCode(fixedCode)}
+      />
+
+      {/* Music Pipeline Modal */}
+      <MusicPipelineModal
+        visible={showMusicPipelineModal}
+        onClose={() => setShowMusicPipelineModal(false)}
+        colors={colors}
+      />
+
+      {/* Interactive Education Modal */}
+      <EducationModal
+        visible={showEducationModal}
+        onClose={() => setShowEducationModal(false)}
+        colors={colors}
+        onCodeLoad={(loadedCode, lang) => {
+          setCode(loadedCode);
+          const language = languages.find(l => l.key === lang);
+          if (language) {
+            setSelectedLanguage(language);
+          }
+          setShowEducationModal(false);
+        }}
+      />
+
+      {/* Jeeves AI Tutor Modal */}
+      <JeevesModal
+        visible={showJeevesModal}
+        onClose={() => setShowJeevesModal(false)}
+        colors={colors}
+        currentCode={code}
+        currentLanguage={selectedLanguage?.key}
       />
     </SafeAreaView>
   );

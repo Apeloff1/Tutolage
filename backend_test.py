@@ -88,6 +88,302 @@ def make_request(method: str, endpoint: str, data: Dict = None, timeout: int = 1
     except Exception as e:
         return {"error": str(e)}
 
+def test_ai_pipeline_routes(result: TestResult):
+    """Test NEW AI Pipeline Routes (v11.0.0)"""
+    print(f"\n{Colors.BOLD}{Colors.PURPLE}🤖 TESTING AI PIPELINE ROUTES (NEW){Colors.END}")
+    
+    # Test pipeline info
+    response = make_request("GET", "/pipeline/info")
+    if "error" in response:
+        result.failure("GET /api/pipeline/info - Pipeline system info", response["error"])
+    elif response["status_code"] == 200:
+        data = response["data"]
+        if isinstance(data, dict):
+            result.success("GET /api/pipeline/info - Pipeline system info", 
+                         f"Pipeline info retrieved")
+        else:
+            result.failure("GET /api/pipeline/info - Pipeline system info", "Invalid response format")
+    else:
+        result.failure("GET /api/pipeline/info - Pipeline system info", f"HTTP {response['status_code']}")
+    
+    # Test pipeline providers
+    response = make_request("GET", "/pipeline/providers")
+    if "error" in response:
+        result.failure("GET /api/pipeline/providers - AI providers list", response["error"])
+    elif response["status_code"] == 200:
+        data = response["data"]
+        if isinstance(data, dict) and "providers" in data:
+            providers = data["providers"]
+            result.success("GET /api/pipeline/providers - AI providers list", 
+                         f"Found {len(providers)} AI providers")
+        else:
+            result.failure("GET /api/pipeline/providers - AI providers list", "No providers found")
+    else:
+        result.failure("GET /api/pipeline/providers - AI providers list", f"HTTP {response['status_code']}")
+    
+    # Test text-to-code generation
+    text_to_code_request = {
+        "description": "Create a function that calculates factorial",
+        "language": "python"
+    }
+    response = make_request("POST", "/pipeline/text-to-code", text_to_code_request)
+    if "error" in response:
+        result.failure("POST /api/pipeline/text-to-code - Generate code from description", response["error"])
+    elif response["status_code"] == 200:
+        data = response["data"]
+        if isinstance(data, dict) and "code" in data:
+            result.success("POST /api/pipeline/text-to-code - Generate code from description", 
+                         f"Code generated successfully")
+        else:
+            result.failure("POST /api/pipeline/text-to-code - Generate code from description", "No code generated")
+    else:
+        result.failure("POST /api/pipeline/text-to-code - Generate code from description", f"HTTP {response['status_code']}")
+    
+    # Test code analysis
+    analyze_request = {
+        "code": "def hello(): print('hi')",
+        "analysis_type": "explain",
+        "language": "python"
+    }
+    response = make_request("POST", "/pipeline/analyze", analyze_request)
+    if "error" in response:
+        result.failure("POST /api/pipeline/analyze - Code analysis", response["error"])
+    elif response["status_code"] == 200:
+        data = response["data"]
+        if isinstance(data, dict) and "analysis" in data:
+            result.success("POST /api/pipeline/analyze - Code analysis", 
+                         f"Analysis completed: {data.get('analysis_type', 'N/A')}")
+        else:
+            result.failure("POST /api/pipeline/analyze - Code analysis", "No analysis returned")
+    else:
+        result.failure("POST /api/pipeline/analyze - Code analysis", f"HTTP {response['status_code']}")
+
+def test_curriculum_engine_routes(result: TestResult):
+    """Test NEW Curriculum Engine Routes (v11.0.0)"""
+    print(f"\n{Colors.BOLD}{Colors.BLUE}📚 TESTING CURRICULUM ENGINE ROUTES (NEW){Colors.END}")
+    
+    # Test curriculum info
+    response = make_request("GET", "/curriculum/info")
+    if "error" in response:
+        result.failure("GET /api/curriculum/info - Curriculum info", response["error"])
+    elif response["status_code"] == 200:
+        data = response["data"]
+        if isinstance(data, dict):
+            result.success("GET /api/curriculum/info - Curriculum info", 
+                         f"Curriculum info retrieved")
+        else:
+            result.failure("GET /api/curriculum/info - Curriculum info", "Invalid response format")
+    else:
+        result.failure("GET /api/curriculum/info - Curriculum info", f"HTTP {response['status_code']}")
+    
+    # Test curriculum classes list
+    response = make_request("GET", "/curriculum/classes")
+    if "error" in response:
+        result.failure("GET /api/curriculum/classes - List all classes", response["error"])
+    elif response["status_code"] == 200:
+        data = response["data"]
+        if isinstance(data, dict) and "classes" in data:
+            classes = data["classes"]
+            result.success("GET /api/curriculum/classes - List all classes", 
+                         f"Found {len(classes)} classes")
+        else:
+            result.failure("GET /api/curriculum/classes - List all classes", "No classes found")
+    else:
+        result.failure("GET /api/curriculum/classes - List all classes", f"HTTP {response['status_code']}")
+    
+    # Test data structures class details
+    response = make_request("GET", "/curriculum/classes/data_structures")
+    if "error" in response:
+        result.failure("GET /api/curriculum/classes/data_structures - DS class details", response["error"])
+    elif response["status_code"] == 200:
+        data = response["data"]
+        if isinstance(data, dict) and "class_id" in data:
+            result.success("GET /api/curriculum/classes/data_structures - DS class details", 
+                         f"Class: {data.get('title', 'Data Structures')}")
+        else:
+            result.failure("GET /api/curriculum/classes/data_structures - DS class details", "Invalid class data")
+    else:
+        result.failure("GET /api/curriculum/classes/data_structures - DS class details", f"HTTP {response['status_code']}")
+    
+    # Test OOP class details
+    response = make_request("GET", "/curriculum/classes/oop")
+    if "error" in response:
+        result.failure("GET /api/curriculum/classes/oop - OOP class details", response["error"])
+    elif response["status_code"] == 200:
+        data = response["data"]
+        if isinstance(data, dict) and "class_id" in data:
+            result.success("GET /api/curriculum/classes/oop - OOP class details", 
+                         f"Class: {data.get('title', 'OOP')}")
+        else:
+            result.failure("GET /api/curriculum/classes/oop - OOP class details", "Invalid class data")
+    else:
+        result.failure("GET /api/curriculum/classes/oop - OOP class details", f"HTTP {response['status_code']}")
+    
+    # Test databases class details
+    response = make_request("GET", "/curriculum/classes/databases")
+    if "error" in response:
+        result.failure("GET /api/curriculum/classes/databases - DB class details", response["error"])
+    elif response["status_code"] == 200:
+        data = response["data"]
+        if isinstance(data, dict) and "class_id" in data:
+            result.success("GET /api/curriculum/classes/databases - DB class details", 
+                         f"Class: {data.get('title', 'Databases')}")
+        else:
+            result.failure("GET /api/curriculum/classes/databases - DB class details", "Invalid class data")
+    else:
+        result.failure("GET /api/curriculum/classes/databases - DB class details", f"HTTP {response['status_code']}")
+    
+    # Test week 1 content
+    response = make_request("GET", "/curriculum/classes/data_structures/week/1")
+    if "error" in response:
+        result.failure("GET /api/curriculum/classes/data_structures/week/1 - Week 1 content", response["error"])
+    elif response["status_code"] == 200:
+        data = response["data"]
+        if isinstance(data, dict) and "week" in data:
+            result.success("GET /api/curriculum/classes/data_structures/week/1 - Week 1 content", 
+                         f"Week {data.get('week')} content retrieved")
+        else:
+            result.failure("GET /api/curriculum/classes/data_structures/week/1 - Week 1 content", "Invalid week data")
+    else:
+        result.failure("GET /api/curriculum/classes/data_structures/week/1 - Week 1 content", f"HTTP {response['status_code']}")
+    
+    # Test code examples
+    response = make_request("GET", "/curriculum/classes/data_structures/code-examples")
+    if "error" in response:
+        result.failure("GET /api/curriculum/classes/data_structures/code-examples - Code examples", response["error"])
+    elif response["status_code"] == 200:
+        data = response["data"]
+        if isinstance(data, dict) and "examples" in data:
+            examples = data["examples"]
+            result.success("GET /api/curriculum/classes/data_structures/code-examples - Code examples", 
+                         f"Found {len(examples)} code examples")
+        else:
+            result.failure("GET /api/curriculum/classes/data_structures/code-examples - Code examples", "No examples found")
+    else:
+        result.failure("GET /api/curriculum/classes/data_structures/code-examples - Code examples", f"HTTP {response['status_code']}")
+    
+    # Test start course
+    response = make_request("POST", "/curriculum/progress/start?course_id=data_structures")
+    if "error" in response:
+        result.failure("POST /api/curriculum/progress/start - Start course", response["error"])
+    elif response["status_code"] == 200:
+        data = response["data"]
+        if isinstance(data, dict) and "progress_id" in data:
+            result.success("POST /api/curriculum/progress/start - Start course", 
+                         f"Course started: {data.get('course_id', 'data_structures')}")
+        else:
+            result.failure("POST /api/curriculum/progress/start - Start course", "Course start failed")
+    else:
+        result.failure("POST /api/curriculum/progress/start - Start course", f"HTTP {response['status_code']}")
+    
+    # Test get progress
+    response = make_request("GET", "/curriculum/progress/data_structures")
+    if "error" in response:
+        result.failure("GET /api/curriculum/progress/data_structures - Get progress", response["error"])
+    elif response["status_code"] == 200:
+        data = response["data"]
+        if isinstance(data, dict) and "course_id" in data:
+            result.success("GET /api/curriculum/progress/data_structures - Get progress", 
+                         f"Progress: {data.get('completion_percentage', 0)}%")
+        else:
+            result.failure("GET /api/curriculum/progress/data_structures - Get progress", "No progress data")
+    else:
+        result.failure("GET /api/curriculum/progress/data_structures - Get progress", f"HTTP {response['status_code']}")
+    
+    # Test learning analytics
+    response = make_request("GET", "/curriculum/analytics")
+    if "error" in response:
+        result.failure("GET /api/curriculum/analytics - Learning analytics", response["error"])
+    elif response["status_code"] == 200:
+        data = response["data"]
+        if isinstance(data, dict) and "analytics" in data:
+            result.success("GET /api/curriculum/analytics - Learning analytics", 
+                         f"Analytics retrieved")
+        else:
+            result.failure("GET /api/curriculum/analytics - Learning analytics", "No analytics data")
+    else:
+        result.failure("GET /api/curriculum/analytics - Learning analytics", f"HTTP {response['status_code']}")
+    
+    # Test course recommendations
+    response = make_request("GET", "/curriculum/recommendations")
+    if "error" in response:
+        result.failure("GET /api/curriculum/recommendations - Course recommendations", response["error"])
+    elif response["status_code"] == 200:
+        data = response["data"]
+        if isinstance(data, dict) and "recommendations" in data:
+            recommendations = data["recommendations"]
+            result.success("GET /api/curriculum/recommendations - Course recommendations", 
+                         f"Found {len(recommendations)} recommendations")
+        else:
+            result.failure("GET /api/curriculum/recommendations - Course recommendations", "No recommendations found")
+    else:
+        result.failure("GET /api/curriculum/recommendations - Course recommendations", f"HTTP {response['status_code']}")
+
+def test_existing_core_routes(result: TestResult):
+    """Test existing routes to verify they still work"""
+    print(f"\n{Colors.BOLD}{Colors.GREEN}🔧 TESTING EXISTING CORE ROUTES{Colors.END}")
+    
+    # Test health check
+    response = make_request("GET", "/health")
+    if "error" in response:
+        result.failure("GET /api/health - Health check", response["error"])
+    elif response["status_code"] == 200:
+        data = response["data"]
+        if isinstance(data, dict) and data.get("status") == "healthy":
+            result.success("GET /api/health - Health check", f"Status: {data.get('status')}")
+        else:
+            result.failure("GET /api/health - Health check", f"Expected healthy status, got: {data}")
+    else:
+        result.failure("GET /api/health - Health check", f"HTTP {response['status_code']}")
+    
+    # Test CS Bible
+    response = make_request("GET", "/bible")
+    if "error" in response:
+        result.failure("GET /api/bible - CS Bible curriculum", response["error"])
+    elif response["status_code"] == 200:
+        data = response["data"]
+        if isinstance(data, dict) and "total_years" in data:
+            result.success("GET /api/bible - CS Bible curriculum", 
+                         f"Years: {data.get('total_years')}, Courses: {data.get('total_courses')}")
+        else:
+            result.failure("GET /api/bible - CS Bible curriculum", "Invalid bible data")
+    else:
+        result.failure("GET /api/bible - CS Bible curriculum", f"HTTP {response['status_code']}")
+    
+    # Test languages
+    response = make_request("GET", "/languages")
+    if "error" in response:
+        result.failure("GET /api/languages - Languages list", response["error"])
+    elif response["status_code"] == 200:
+        data = response["data"]
+        if isinstance(data, dict) and "languages" in data:
+            languages = data["languages"]
+            executable_count = sum(1 for lang in languages if isinstance(lang, dict) and lang.get('executable', False))
+            result.success("GET /api/languages - Languages list", 
+                         f"Found {len(languages)} languages, {executable_count} executable")
+        else:
+            result.failure("GET /api/languages - Languages list", "No languages found")
+    else:
+        result.failure("GET /api/languages - Languages list", f"HTTP {response['status_code']}")
+    
+    # Test code execution
+    execute_request = {
+        "code": "print('test')",
+        "language": "python"
+    }
+    response = make_request("POST", "/execute", execute_request)
+    if "error" in response:
+        result.failure("POST /api/execute - Code execution", response["error"])
+    elif response["status_code"] == 200:
+        data = response["data"]
+        if isinstance(data, dict) and "result" in data:
+            result.success("POST /api/execute - Code execution", 
+                         f"Execution status: {data.get('result', {}).get('status', 'Unknown')}")
+        else:
+            result.failure("POST /api/execute - Code execution", "Invalid execution response")
+    else:
+        result.failure("POST /api/execute - Code execution", f"HTTP {response['status_code']}")
+
 def test_health_and_system_routes(result: TestResult):
     """Test Health & System Routes"""
     print(f"\n{Colors.BOLD}{Colors.BLUE}🏥 TESTING HEALTH & SYSTEM ROUTES{Colors.END}")

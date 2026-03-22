@@ -146,8 +146,10 @@ async def generate_image_gemini(prompt: str) -> Dict[str, Any]:
     try:
         # Gemini image generation via text description
         chat = LlmChat(
-            api_key=EMERGENT_LLM_KEY
-        )
+            api_key=EMERGENT_LLM_KEY,
+            session_id=f"codedock-gemini-{uuid.uuid4().hex[:8]}",
+            system_message="You are an expert image description generator. Create vivid, detailed descriptions."
+        ).with_model("google", "gemini-2.0-flash")
         
         image_prompt = f"""Generate a detailed visual description for an image generator:
         

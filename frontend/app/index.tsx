@@ -36,6 +36,8 @@ import { AIPipelineModal } from '../features/AIPipeline/AIPipelineModal';
 import { CurriculumBrowser } from '../features/Curriculum/CurriculumBrowser';
 import { VaultModal } from '../features/Vault/VaultModal';
 import { AdvancedFeaturesModal } from '../features/Advanced/AdvancedFeaturesModal';
+import { CodeToAppModal } from '../features/CodeToApp/CodeToAppModal';
+import { ImagineModal } from '../features/Imagine/ImagineModal';
 
 // Types
 import { Language, Template, AIMode } from '../types';
@@ -95,6 +97,8 @@ export default function CodeDockApp() {
   const [showCurriculumModal, setShowCurriculumModal] = useState(false);
   const [showVaultModal, setShowVaultModal] = useState(false);
   const [showAdvancedModal, setShowAdvancedModal] = useState(false);
+  const [showCodeToAppModal, setShowCodeToAppModal] = useState(false);
+  const [showImagineModal, setShowImagineModal] = useState(false);
   
   // Voice Command Handler
   const handleVoiceCommand = useCallback((action: string, params?: any) => {
@@ -563,6 +567,24 @@ export default function CodeDockApp() {
           >
             <Ionicons name="flask-outline" size={14} color="#A855F7" />
             <Text style={[styles.featureChipText, { color: '#A855F7' }]}>Tools</Text>
+          </TouchableOpacity>
+          
+          {/* v11.0 Code-to-App Button */}
+          <TouchableOpacity 
+            style={[styles.featureChip, { backgroundColor: '#06B6D420' }]} 
+            onPress={() => setShowCodeToAppModal(true)}
+          >
+            <Ionicons name="rocket-outline" size={14} color="#06B6D4" />
+            <Text style={[styles.featureChipText, { color: '#06B6D4' }]}>Build</Text>
+          </TouchableOpacity>
+          
+          {/* v11.0 Imagine (Image Gen) Button */}
+          <TouchableOpacity 
+            style={[styles.featureChip, { backgroundColor: '#F43F5E20' }]} 
+            onPress={() => setShowImagineModal(true)}
+          >
+            <Ionicons name="image-outline" size={14} color="#F43F5E" />
+            <Text style={[styles.featureChipText, { color: '#F43F5E' }]}>Imagine</Text>
           </TouchableOpacity>
           
           {/* Voice Command Button */}
@@ -1071,6 +1093,22 @@ export default function CodeDockApp() {
         colors={colors}
         currentCode={code}
         currentLanguage={selectedLanguage?.key}
+      />
+
+      {/* v11.0 Code-to-App Modal */}
+      <CodeToAppModal
+        visible={showCodeToAppModal}
+        onClose={() => setShowCodeToAppModal(false)}
+        colors={colors}
+        currentCode={code}
+        currentLanguage={selectedLanguage?.key}
+      />
+
+      {/* v11.0 Imagine (Image Generation) Modal */}
+      <ImagineModal
+        visible={showImagineModal}
+        onClose={() => setShowImagineModal(false)}
+        colors={colors}
       />
     </SafeAreaView>
   );

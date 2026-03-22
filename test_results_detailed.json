@@ -1,0 +1,722 @@
+{
+  "timestamp": "2026-03-22T04:38:12.195819",
+  "backend_url": "https://devlearning-hub-1.preview.emergentagent.com/api",
+  "summary": {
+    "total": 10,
+    "passed": 10,
+    "failed": 0,
+    "success_rate": 100.0
+  },
+  "results": [
+    {
+      "test": "Code-to-App Info Endpoint",
+      "status": "\u2705 PASS",
+      "success": true,
+      "details": "Found 7 app types, 4 framework categories",
+      "response": {
+        "name": "CodeDock Code-to-App Pipeline",
+        "version": "11.0.0",
+        "description": "Transform code into production-ready applications",
+        "supported_app_types": [
+          "cli",
+          "web",
+          "api",
+          "mobile",
+          "game",
+          "desktop",
+          "fullstack"
+        ],
+        "supported_platforms": [
+          "web",
+          "ios",
+          "android",
+          "windows",
+          "macos",
+          "linux",
+          "cross-platform"
+        ],
+        "supported_languages": [
+          "python",
+          "javascript",
+          "typescript",
+          "java",
+          "kotlin",
+          "swift",
+          "cpp",
+          "rust",
+          "go"
+        ],
+        "frameworks": {
+          "web": [
+            "react",
+            "vue",
+            "angular",
+            "svelte",
+            "nextjs",
+            "fastapi",
+            "flask",
+            "django",
+            "express"
+          ],
+          "mobile": [
+            "react-native",
+            "flutter",
+            "kotlin",
+            "swift"
+          ],
+          "desktop": [
+            "electron",
+            "tauri",
+            "qt",
+            "tkinter"
+          ],
+          "game": [
+            "pygame",
+            "phaser",
+            "unity",
+            "godot",
+            "love2d"
+          ]
+        },
+        "features": {
+          "code_generation": true,
+          "test_generation": true,
+          "documentation": true,
+          "deployment_config": true,
+          "cicd_pipeline": true,
+          "database_schema": true,
+          "api_documentation": true
+        }
+      }
+    },
+    {
+      "test": "Code-to-App Templates Endpoint",
+      "status": "\u2705 PASS",
+      "success": true,
+      "details": "Found 6 templates (expected >= 6)",
+      "response": {
+        "templates": [
+          {
+            "id": "web-api",
+            "name": "REST API",
+            "description": "Production-ready REST API with authentication",
+            "stack": [
+              "FastAPI",
+              "PostgreSQL",
+              "Docker"
+            ],
+            "features": [
+              "JWT Auth",
+              "CRUD",
+              "Validation",
+              "OpenAPI Docs"
+            ]
+          },
+          {
+            "id": "web-fullstack",
+            "name": "Fullstack Web App",
+            "description": "Complete web application with frontend and backend",
+            "stack": [
+              "Next.js",
+              "FastAPI",
+              "PostgreSQL"
+            ],
+            "features": [
+              "Auth",
+              "Dashboard",
+              "Real-time",
+              "Responsive"
+            ]
+          },
+          {
+            "id": "mobile-app",
+            "name": "Cross-Platform Mobile",
+            "description": "iOS and Android app from single codebase",
+            "stack": [
+              "React Native",
+              "Expo",
+              "Firebase"
+            ],
+            "features": [
+              "Push Notifications",
+              "Offline Mode",
+              "Auth"
+            ]
+          },
+          {
+            "id": "game-2d",
+            "name": "2D Browser Game",
+            "description": "Complete 2D game playable in browser",
+            "stack": [
+              "Phaser",
+              "TypeScript",
+              "Vite"
+            ],
+            "features": [
+              "Physics",
+              "Sprites",
+              "Audio",
+              "Leaderboard"
+            ]
+          },
+          {
+            "id": "cli-tool",
+            "name": "CLI Application",
+            "description": "Command-line tool with rich interface",
+            "stack": [
+              "Python",
+              "Rich",
+              "Click"
+            ],
+            "features": [
+              "Subcommands",
+              "Config",
+              "Progress Bars"
+            ]
+          },
+          {
+            "id": "desktop-app",
+            "name": "Desktop Application",
+            "description": "Cross-platform desktop app",
+            "stack": [
+              "Electron",
+              "React",
+              "SQLite"
+            ],
+            "features": [
+              "Tray Icon",
+              "Auto-Update",
+              "Native Menus"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "test": "Code Enhancement Endpoint",
+      "status": "\u2705 PASS",
+      "success": true,
+      "details": "Enhanced code length: 1466 chars, contains error handling: True",
+      "response": {
+        "enhanced_length": 1466
+      }
+    },
+    {
+      "test": "Code Conversion Endpoint",
+      "status": "\u2705 PASS",
+      "success": true,
+      "details": "Converted to JavaScript: 663 chars, contains JS syntax: True",
+      "response": {
+        "converted_length": 663
+      }
+    },
+    {
+      "test": "Image Generation Info Endpoint",
+      "status": "\u2705 PASS",
+      "success": true,
+      "details": "Found 3 providers: OpenAI gpt-image-1, Gemini Nano Banana, Grok Imagine",
+      "response": {
+        "name": "CodeDock Imagine Pipeline",
+        "version": "11.0.0",
+        "providers": [
+          {
+            "id": "openai",
+            "name": "OpenAI gpt-image-1",
+            "capabilities": [
+              "generation",
+              "variation",
+              "editing"
+            ],
+            "sizes": [
+              "256x256",
+              "512x512",
+              "1024x1024",
+              "1792x1024",
+              "1024x1792"
+            ],
+            "quality": [
+              "standard",
+              "hd"
+            ],
+            "status": "active"
+          },
+          {
+            "id": "gemini",
+            "name": "Gemini Nano Banana",
+            "capabilities": [
+              "generation",
+              "prompt_enhancement"
+            ],
+            "sizes": [
+              "1024x1024"
+            ],
+            "status": "active"
+          },
+          {
+            "id": "grok",
+            "name": "Grok Imagine",
+            "capabilities": [
+              "generation",
+              "prompt_enhancement"
+            ],
+            "sizes": [
+              "1024x1024"
+            ],
+            "status": "active"
+          }
+        ],
+        "styles": [
+          "realistic",
+          "photorealistic",
+          "cartoon",
+          "anime",
+          "watercolor",
+          "oil_painting",
+          "digital_art",
+          "3d_render",
+          "pixel_art",
+          "sketch",
+          "cyberpunk",
+          "fantasy",
+          "sci-fi",
+          "minimalist",
+          "abstract"
+        ],
+        "max_prompt_length": 4000,
+        "max_images_per_request": 4
+      }
+    },
+    {
+      "test": "Image Prompt Enhancement Endpoint",
+      "status": "\u2705 PASS",
+      "success": true,
+      "details": "Enhanced prompt length: 925 chars (original: 5)",
+      "response": {
+        "enhanced_length": 925
+      }
+    },
+    {
+      "test": "Curriculum Info (10 classes check)",
+      "status": "\u2705 PASS",
+      "success": true,
+      "details": "Found 10 classes, 750 hours (expected >= 10 classes)",
+      "response": {
+        "name": "CodeDock Curriculum Engine",
+        "version": "11.0.0",
+        "total_classes": 10,
+        "total_hours": 750,
+        "features": [
+          "Course progression tracking",
+          "Prerequisites management",
+          "Interactive quizzes",
+          "Code exercises with auto-grading",
+          "Completion certificates",
+          "Learning analytics",
+          "Personalized recommendations",
+          "Spaced repetition review"
+        ],
+        "available_classes": [
+          {
+            "id": "ds_complete",
+            "code": "CS 201",
+            "title": "Data Structures & Algorithms",
+            "hours": 75,
+            "weeks": [
+              {
+                "week": 1,
+                "title": "Algorithm Analysis & Complexity",
+                "topics": [
+                  "What are data structures and algorithms?",
+                  "Why algorithm efficiency matters",
+                  "Big-O Notation - Upper bounds",
+                  "Big-Omega (\u03a9) - Lower bounds",
+                  "Big-Theta (\u0398) - Tight bounds",
+                  "Best, Average, and Worst case analysis",
+                  "Space complexity vs Time complexity",
+                  "Amortized analysis introduction"
+                ],
+                "code_examples": [
+                  {
+                    "title": "Complexity Analysis Examples",
+                    "language": "python",
+                    "code": "# O(1) - Constant Time\ndef get_first(arr):\n    \"\"\"Access first element - always one operation\"\"\"\n    return arr[0] if arr else None\n\n# O(n) - Linear Time\ndef find_max(arr):\n    \"\"\"Find maximum - must check each element\"\"\"\n    if not arr:\n        return None\n    max_val = arr[0]\n    for item in arr:  # n iterations\n        if item > max_val:\n            max_val = item\n    return max_val\n\n# O(n\u00b2) - Quadratic Time\ndef has_duplicate_pairs(arr):\n    \"\"\"Check all pairs - nested loops\"\"\"\n    n = len(arr)\n    for i in range(n):          # n iterations\n        for j in range(i+1, n):  # n-1, n-2, ... iterations\n            if arr[i] == arr[j]:\n                return True\n    return False\n\n# O(log n) - Logarithmic Time\ndef binary_search(arr, target):\n    \"\"\"Divide search space in half each time\"\"\"\n    left, right = 0, len(arr) - 1\n    while left <= right:\n        mid = (left + right) // 2\n        if arr[mid] == target:\n            return mid\n        elif arr[mid] < target:\n            left = mid + 1  # Eliminate left half\n        else:\n            right = mid - 1  # Eliminate right half\n    return -1\n\n# O(n log n) - Linearithmic Time\ndef merge_sort(arr):\n    \"\"\"Divide and conquer sorting\"\"\"\n    if len(arr) <= 1:\n        return arr\n    \n    mid = len(arr) // 2\n    left = merge_sort(arr[:mid])   # T(n/2)\n    right = merge_sort(arr[mid:])  # T(n/2)\n    \n    return merge(left, right)       # O(n)\n\ndef merge(left, right):\n    result = []\n    i = j = 0\n    while i < len(left) and j < len(right):\n        if left[i] <= right[j]:\n            result.append(left[i])\n            i += 1\n        else:\n            result.append(right[j])\n            j += 1\n    result.extend(left[i:])\n    result.extend(right[j:])\n    return result\n\n# Complexity Comparison\n\"\"\"\nn        O(1)    O(log n)   O(n)      O(n log n)   O(n\u00b2)        O(2^n)\n10       1       3          10        33           100          1,024\n100      1       7          100       664          10,000       1.27e30\n1,000    1       10         1,000     9,966        1,000,000    \u221e\n10,000   1       13         10,000    132,877      100,000,000  \u221e\n\"\"\""
+                  }
+                ],
+                "exercises": [
+                  "Analyze the complexity of finding the second largest element",
+                  "Prove that O(log n) + O(n) = O(n)",
+                  "Write a function that runs in O(n) but uses O(1) space"
+                ]
+              },
+              {
+                "week": 2,
+                "title": "Arrays & Dynamic Arrays",
+                "topics": [
+                  "Static arrays - fixed size, contiguous memory",
+                  "Dynamic arrays - resizing strategies",
+                  "Amortized analysis of append operations",
+                  "Array slicing and views",
+                  "Multi-dimensional arrays",
+                  "Sparse arrays",
+                  "Circular arrays/buffers",
+                  "Array-based problems and patterns"
+                ],
+                "code_examples": [
+                  {
+                    "title": "Dynamic Array Implementation",
+                    "language": "python",
+                    "code": "class DynamicArray:\n    \"\"\"\n    Dynamic array implementation with amortized O(1) append.\n    \n    Doubles capacity when full (geometric growth).\n    This gives amortized O(1) time for append operations.\n    \"\"\"\n    \n    def __init__(self, initial_capacity=8):\n        self._capacity = initial_capacity\n        self._size = 0\n        self._data = [None] * self._capacity\n    \n    def __len__(self):\n        return self._size\n    \n    def __getitem__(self, index):\n        \"\"\"O(1) random access\"\"\"\n        if not 0 <= index < self._size:\n            raise IndexError(f\"Index {index} out of bounds\")\n        return self._data[index]\n    \n    def __setitem__(self, index, value):\n        \"\"\"O(1) random access modification\"\"\"\n        if not 0 <= index < self._size:\n            raise IndexError(f\"Index {index} out of bounds\")\n        self._data[index] = value\n    \n    def append(self, value):\n        \"\"\"\n        Amortized O(1) append.\n        \n        Worst case O(n) when resize needed, but happens\n        infrequently enough that amortized cost is O(1).\n        \"\"\"\n        if self._size == self._capacity:\n            self._resize(2 * self._capacity)  # Double capacity\n        \n        self._data[self._size] = value\n        self._size += 1\n    \n    def _resize(self, new_capacity):\n        \"\"\"O(n) - copy all elements to new array\"\"\"\n        new_data = [None] * new_capacity\n        for i in range(self._size):\n            new_data[i] = self._data[i]\n        self._data = new_data\n        self._capacity = new_capacity\n    \n    def insert(self, index, value):\n        \"\"\"\n        O(n) - must shift elements.\n        \n        Insert at index 0 is worst case (shift all n elements).\n        Insert at end is O(1) amortized (same as append).\n        \"\"\"\n        if not 0 <= index <= self._size:\n            raise IndexError(f\"Index {index} out of bounds\")\n        \n        if self._size == self._capacity:\n            self._resize(2 * self._capacity)\n        \n        # Shift elements right\n        for i in range(self._size, index, -1):\n            self._data[i] = self._data[i-1]\n        \n        self._data[index] = value\n        self._size += 1\n    \n    def remove(self, index):\n        \"\"\"\n        O(n) - must shift elements.\n        \n        Remove from index 0 is worst case.\n        Remove from end is O(1).\n        \"\"\"\n        if not 0 <= index < self._size:\n            raise IndexError(f\"Index {index} out of bounds\")\n        \n        value = self._data[index]\n        \n        # Shift elements left\n        for i in range(index, self._size - 1):\n            self._data[i] = self._data[i+1]\n        \n        self._data[self._size - 1] = None\n        self._size -= 1\n        \n        # Shrink if too empty (optional)\n        if self._size < self._capacity // 4:\n            self._resize(self._capacity // 2)\n        \n        return value\n    \n    def __repr__(self):\n        return f\"DynamicArray({[self._data[i] for i in range(self._size)]})\"\n\n\n# Classic Array Problems\n\ndef two_sum(nums, target):\n    \"\"\"\n    Find two numbers that add to target.\n    O(n) time, O(n) space using hash map.\n    \"\"\"\n    seen = {}\n    for i, num in enumerate(nums):\n        complement = target - num\n        if complement in seen:\n            return [seen[complement], i]\n        seen[num] = i\n    return []\n\n\ndef max_subarray_sum(arr):\n    \"\"\"\n    Kadane's Algorithm - Maximum subarray sum.\n    O(n) time, O(1) space.\n    \"\"\"\n    if not arr:\n        return 0\n    \n    max_sum = current_sum = arr[0]\n    \n    for num in arr[1:]:\n        current_sum = max(num, current_sum + num)\n        max_sum = max(max_sum, current_sum)\n    \n    return max_sum\n\n\ndef rotate_array(arr, k):\n    \"\"\"\n    Rotate array right by k positions.\n    O(n) time, O(1) space using reversal.\n    \"\"\"\n    n = len(arr)\n    k = k % n  # Handle k > n\n    \n    def reverse(start, end):\n        while start < end:\n            arr[start], arr[end] = arr[end], arr[start]\n            start += 1\n            end -= 1\n    \n    # Reverse entire array\n    reverse(0, n - 1)\n    # Reverse first k elements\n    reverse(0, k - 1)\n    # Reverse remaining elements\n    reverse(k, n - 1)\n    \n    return arr"
+                  }
+                ]
+              },
+              {
+                "week": 3,
+                "title": "Linked Lists",
+                "topics": [
+                  "Singly linked lists",
+                  "Doubly linked lists",
+                  "Circular linked lists",
+                  "Sentinel/dummy nodes",
+                  "Two-pointer techniques",
+                  "Floyd's cycle detection",
+                  "Reversing linked lists",
+                  "Merge operations"
+                ],
+                "code_examples": [
+                  {
+                    "title": "Complete Linked List Implementation",
+                    "language": "python",
+                    "code": "class ListNode:\n    \"\"\"Node for singly linked list\"\"\"\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n    \n    def __repr__(self):\n        return f\"ListNode({self.val})\"\n\n\nclass DoublyListNode:\n    \"\"\"Node for doubly linked list\"\"\"\n    def __init__(self, val=0, prev=None, next=None):\n        self.val = val\n        self.prev = prev\n        self.next = next\n\n\nclass LinkedList:\n    \"\"\"\n    Singly Linked List with comprehensive operations.\n    \n    Time Complexities:\n    - Access by index: O(n)\n    - Insert at head: O(1)\n    - Insert at tail: O(1) with tail pointer\n    - Delete by value: O(n)\n    - Search: O(n)\n    \"\"\"\n    \n    def __init__(self):\n        self.head = None\n        self.tail = None\n        self._size = 0\n    \n    def __len__(self):\n        return self._size\n    \n    def is_empty(self):\n        return self._size == 0\n    \n    def append(self, val):\n        \"\"\"Add to end - O(1)\"\"\"\n        new_node = ListNode(val)\n        \n        if self.is_empty():\n            self.head = self.tail = new_node\n        else:\n            self.tail.next = new_node\n            self.tail = new_node\n        \n        self._size += 1\n    \n    def prepend(self, val):\n        \"\"\"Add to beginning - O(1)\"\"\"\n        new_node = ListNode(val)\n        new_node.next = self.head\n        self.head = new_node\n        \n        if self.tail is None:\n            self.tail = new_node\n        \n        self._size += 1\n    \n    def insert_at(self, index, val):\n        \"\"\"Insert at specific index - O(n)\"\"\"\n        if index < 0 or index > self._size:\n            raise IndexError(\"Index out of bounds\")\n        \n        if index == 0:\n            self.prepend(val)\n        elif index == self._size:\n            self.append(val)\n        else:\n            new_node = ListNode(val)\n            current = self.head\n            \n            for _ in range(index - 1):\n                current = current.next\n            \n            new_node.next = current.next\n            current.next = new_node\n            self._size += 1\n    \n    def delete_at(self, index):\n        \"\"\"Delete at specific index - O(n)\"\"\"\n        if index < 0 or index >= self._size:\n            raise IndexError(\"Index out of bounds\")\n        \n        if index == 0:\n            val = self.head.val\n            self.head = self.head.next\n            if self.head is None:\n                self.tail = None\n        else:\n            current = self.head\n            for _ in range(index - 1):\n                current = current.next\n            \n            val = current.next.val\n            current.next = current.next.next\n            \n            if current.next is None:\n                self.tail = current\n        \n        self._size -= 1\n        return val\n    \n    def find(self, val):\n        \"\"\"Find index of value - O(n)\"\"\"\n        current = self.head\n        index = 0\n        \n        while current:\n            if current.val == val:\n                return index\n            current = current.next\n            index += 1\n        \n        return -1\n    \n    def reverse(self):\n        \"\"\"Reverse in place - O(n) time, O(1) space\"\"\"\n        prev = None\n        current = self.head\n        self.tail = self.head\n        \n        while current:\n            next_node = current.next\n            current.next = prev\n            prev = current\n            current = next_node\n        \n        self.head = prev\n    \n    def to_list(self):\n        \"\"\"Convert to Python list - O(n)\"\"\"\n        result = []\n        current = self.head\n        while current:\n            result.append(current.val)\n            current = current.next\n        return result\n    \n    def __repr__(self):\n        return f\"LinkedList({self.to_list()})\"\n\n\n# Classic Linked List Algorithms\n\ndef has_cycle(head):\n    \"\"\"\n    Floyd's Cycle Detection (Tortoise and Hare).\n    O(n) time, O(1) space.\n    \"\"\"\n    if not head:\n        return False\n    \n    slow = fast = head\n    \n    while fast and fast.next:\n        slow = slow.next        # Move 1 step\n        fast = fast.next.next   # Move 2 steps\n        \n        if slow == fast:\n            return True\n    \n    return False\n\n\ndef find_cycle_start(head):\n    \"\"\"\n    Find the start of cycle (if exists).\n    O(n) time, O(1) space.\n    \"\"\"\n    if not head:\n        return None\n    \n    slow = fast = head\n    \n    # Find meeting point\n    while fast and fast.next:\n        slow = slow.next\n        fast = fast.next.next\n        if slow == fast:\n            break\n    else:\n        return None  # No cycle\n    \n    # Find cycle start\n    slow = head\n    while slow != fast:\n        slow = slow.next\n        fast = fast.next\n    \n    return slow\n\n\ndef merge_sorted_lists(l1, l2):\n    \"\"\"\n    Merge two sorted linked lists.\n    O(n + m) time, O(1) space.\n    \"\"\"\n    dummy = ListNode(0)\n    current = dummy\n    \n    while l1 and l2:\n        if l1.val <= l2.val:\n            current.next = l1\n            l1 = l1.next\n        else:\n            current.next = l2\n            l2 = l2.next\n        current = current.next\n    \n    current.next = l1 or l2\n    \n    return dummy.next\n\n\ndef find_middle(head):\n    \"\"\"\n    Find middle node using slow/fast pointers.\n    O(n) time, O(1) space.\n    \"\"\"\n    slow = fast = head\n    \n    while fast and fast.next:\n        slow = slow.next\n        fast = fast.next.next\n    \n    return slow\n\n\ndef reverse_between(head, left, right):\n    \"\"\"\n    Reverse nodes between positions left and right.\n    O(n) time, O(1) space.\n    \"\"\"\n    if not head or left == right:\n        return head\n    \n    dummy = ListNode(0, head)\n    prev = dummy\n    \n    # Move to position before left\n    for _ in range(left - 1):\n        prev = prev.next\n    \n    # Reverse from left to right\n    current = prev.next\n    for _ in range(right - left):\n        next_node = current.next\n        current.next = next_node.next\n        next_node.next = prev.next\n        prev.next = next_node\n    \n    return dummy.next"
+                  }
+                ]
+              },
+              {
+                "week": 4,
+                "title": "Stacks & Queues",
+                "topics": [
+                  "Stack ADT - LIFO principle",
+                  "Queue ADT - FIFO principle",
+                  "Array-based implementations",
+                  "Linked list implementations",
+                  "Deque (Double-ended queue)",
+                  "Priority Queue introduction",
+                  "Monotonic stacks and queues",
+                  "Stack-based expression evaluation"
+                ],
+                "code_examples": [
+                  {
+                    "title": "Stack and Queue Implementations",
+                    "language": "python",
+                    "code": "from collections import deque\n\nclass Stack:\n    \"\"\"\n    LIFO Stack implementation.\n    All operations O(1).\n    \"\"\"\n    \n    def __init__(self):\n        self._items = []\n    \n    def push(self, item):\n        \"\"\"Add item to top\"\"\"\n        self._items.append(item)\n    \n    def pop(self):\n        \"\"\"Remove and return top item\"\"\"\n        if self.is_empty():\n            raise IndexError(\"Stack is empty\")\n        return self._items.pop()\n    \n    def peek(self):\n        \"\"\"Return top item without removing\"\"\"\n        if self.is_empty():\n            raise IndexError(\"Stack is empty\")\n        return self._items[-1]\n    \n    def is_empty(self):\n        return len(self._items) == 0\n    \n    def __len__(self):\n        return len(self._items)\n\n\nclass Queue:\n    \"\"\"\n    FIFO Queue implementation using deque.\n    All operations O(1).\n    \"\"\"\n    \n    def __init__(self):\n        self._items = deque()\n    \n    def enqueue(self, item):\n        \"\"\"Add item to back\"\"\"\n        self._items.append(item)\n    \n    def dequeue(self):\n        \"\"\"Remove and return front item\"\"\"\n        if self.is_empty():\n            raise IndexError(\"Queue is empty\")\n        return self._items.popleft()\n    \n    def front(self):\n        \"\"\"Return front item without removing\"\"\"\n        if self.is_empty():\n            raise IndexError(\"Queue is empty\")\n        return self._items[0]\n    \n    def is_empty(self):\n        return len(self._items) == 0\n    \n    def __len__(self):\n        return len(self._items)\n\n\nclass MinStack:\n    \"\"\"\n    Stack that supports getMin() in O(1).\n    Uses auxiliary stack to track minimums.\n    \"\"\"\n    \n    def __init__(self):\n        self.stack = []\n        self.min_stack = []\n    \n    def push(self, val):\n        self.stack.append(val)\n        if not self.min_stack or val <= self.min_stack[-1]:\n            self.min_stack.append(val)\n    \n    def pop(self):\n        val = self.stack.pop()\n        if val == self.min_stack[-1]:\n            self.min_stack.pop()\n        return val\n    \n    def top(self):\n        return self.stack[-1]\n    \n    def getMin(self):\n        return self.min_stack[-1]\n\n\n# Classic Stack/Queue Problems\n\ndef valid_parentheses(s):\n    \"\"\"\n    Check if parentheses are balanced.\n    O(n) time, O(n) space.\n    \"\"\"\n    stack = []\n    mapping = {\")\": \"(\", \"}\": \"{\", \"]\": \"[\"}\n    \n    for char in s:\n        if char in mapping:\n            if not stack or stack.pop() != mapping[char]:\n                return False\n        else:\n            stack.append(char)\n    \n    return len(stack) == 0\n\n\ndef evaluate_rpn(tokens):\n    \"\"\"\n    Evaluate Reverse Polish Notation.\n    O(n) time, O(n) space.\n    \"\"\"\n    stack = []\n    operators = {\n        \"+\": lambda a, b: a + b,\n        \"-\": lambda a, b: a - b,\n        \"*\": lambda a, b: a * b,\n        \"/\": lambda a, b: int(a / b)  # Truncate toward zero\n    }\n    \n    for token in tokens:\n        if token in operators:\n            b, a = stack.pop(), stack.pop()\n            stack.append(operators[token](a, b))\n        else:\n            stack.append(int(token))\n    \n    return stack[0]\n\n\ndef daily_temperatures(temperatures):\n    \"\"\"\n    Find days until warmer temperature.\n    Monotonic decreasing stack approach.\n    O(n) time, O(n) space.\n    \"\"\"\n    n = len(temperatures)\n    result = [0] * n\n    stack = []  # Stack of indices\n    \n    for i in range(n):\n        # Pop while current temp is warmer\n        while stack and temperatures[i] > temperatures[stack[-1]]:\n            prev_index = stack.pop()\n            result[prev_index] = i - prev_index\n        \n        stack.append(i)\n    \n    return result\n\n\ndef sliding_window_maximum(nums, k):\n    \"\"\"\n    Maximum in each sliding window of size k.\n    Monotonic decreasing deque approach.\n    O(n) time, O(k) space.\n    \"\"\"\n    from collections import deque\n    \n    result = []\n    dq = deque()  # Store indices\n    \n    for i in range(len(nums)):\n        # Remove indices outside window\n        while dq and dq[0] < i - k + 1:\n            dq.popleft()\n        \n        # Remove smaller elements\n        while dq and nums[dq[-1]] < nums[i]:\n            dq.pop()\n        \n        dq.append(i)\n        \n        # Window is complete\n        if i >= k - 1:\n            result.append(nums[dq[0]])\n    \n    return result"
+                  }
+                ]
+              },
+              {
+                "week": 5,
+                "title": "Binary Trees & Binary Search Trees",
+                "topics": [
+                  "Tree terminology and properties",
+                  "Binary tree representations",
+                  "Tree traversals (preorder, inorder, postorder, level-order)",
+                  "Binary Search Tree property",
+                  "BST operations (insert, delete, search)",
+                  "BST validation",
+                  "Tree height and balance",
+                  "Recursive vs iterative approaches"
+                ],
+                "code_examples": [
+                  {
+                    "title": "Binary Search Tree Implementation",
+                    "language": "python",
+                    "code": "class TreeNode:\n    \"\"\"Binary tree node\"\"\"\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\n\nclass BinarySearchTree:\n    \"\"\"\n    Binary Search Tree with all standard operations.\n    \n    BST Property: For each node N:\n    - All values in left subtree < N.val\n    - All values in right subtree > N.val\n    \n    Average case: O(log n) for all operations\n    Worst case (unbalanced): O(n)\n    \"\"\"\n    \n    def __init__(self):\n        self.root = None\n    \n    def insert(self, val):\n        \"\"\"Insert value maintaining BST property\"\"\"\n        self.root = self._insert_recursive(self.root, val)\n    \n    def _insert_recursive(self, node, val):\n        if not node:\n            return TreeNode(val)\n        \n        if val < node.val:\n            node.left = self._insert_recursive(node.left, val)\n        elif val > node.val:\n            node.right = self._insert_recursive(node.right, val)\n        # Duplicate values not inserted\n        \n        return node\n    \n    def search(self, val):\n        \"\"\"Search for value - O(log n) average\"\"\"\n        return self._search_recursive(self.root, val)\n    \n    def _search_recursive(self, node, val):\n        if not node:\n            return None\n        \n        if val == node.val:\n            return node\n        elif val < node.val:\n            return self._search_recursive(node.left, val)\n        else:\n            return self._search_recursive(node.right, val)\n    \n    def delete(self, val):\n        \"\"\"Delete value from BST\"\"\"\n        self.root = self._delete_recursive(self.root, val)\n    \n    def _delete_recursive(self, node, val):\n        if not node:\n            return None\n        \n        if val < node.val:\n            node.left = self._delete_recursive(node.left, val)\n        elif val > node.val:\n            node.right = self._delete_recursive(node.right, val)\n        else:\n            # Node to delete found\n            \n            # Case 1: Leaf node\n            if not node.left and not node.right:\n                return None\n            \n            # Case 2: One child\n            if not node.left:\n                return node.right\n            if not node.right:\n                return node.left\n            \n            # Case 3: Two children\n            # Find inorder successor (smallest in right subtree)\n            successor = self._find_min(node.right)\n            node.val = successor.val\n            node.right = self._delete_recursive(node.right, successor.val)\n        \n        return node\n    \n    def _find_min(self, node):\n        \"\"\"Find minimum value node\"\"\"\n        while node.left:\n            node = node.left\n        return node\n    \n    def _find_max(self, node):\n        \"\"\"Find maximum value node\"\"\"\n        while node.right:\n            node = node.right\n        return node\n\n\n# Tree Traversals\n\ndef inorder_traversal(root):\n    \"\"\"Left -> Root -> Right (gives sorted order for BST)\"\"\"\n    result = []\n    \n    def inorder(node):\n        if node:\n            inorder(node.left)\n            result.append(node.val)\n            inorder(node.right)\n    \n    inorder(root)\n    return result\n\n\ndef preorder_traversal(root):\n    \"\"\"Root -> Left -> Right\"\"\"\n    result = []\n    \n    def preorder(node):\n        if node:\n            result.append(node.val)\n            preorder(node.left)\n            preorder(node.right)\n    \n    preorder(root)\n    return result\n\n\ndef postorder_traversal(root):\n    \"\"\"Left -> Right -> Root\"\"\"\n    result = []\n    \n    def postorder(node):\n        if node:\n            postorder(node.left)\n            postorder(node.right)\n            result.append(node.val)\n    \n    postorder(root)\n    return result\n\n\ndef level_order_traversal(root):\n    \"\"\"BFS - Level by level\"\"\"\n    if not root:\n        return []\n    \n    from collections import deque\n    \n    result = []\n    queue = deque([root])\n    \n    while queue:\n        level = []\n        level_size = len(queue)\n        \n        for _ in range(level_size):\n            node = queue.popleft()\n            level.append(node.val)\n            \n            if node.left:\n                queue.append(node.left)\n            if node.right:\n                queue.append(node.right)\n        \n        result.append(level)\n    \n    return result\n\n\n# Classic Tree Problems\n\ndef is_valid_bst(root):\n    \"\"\"\n    Validate BST property.\n    O(n) time, O(h) space.\n    \"\"\"\n    def validate(node, min_val, max_val):\n        if not node:\n            return True\n        \n        if node.val <= min_val or node.val >= max_val:\n            return False\n        \n        return (validate(node.left, min_val, node.val) and\n                validate(node.right, node.val, max_val))\n    \n    return validate(root, float(\"-inf\"), float(\"inf\"))\n\n\ndef max_depth(root):\n    \"\"\"Tree height/maximum depth\"\"\"\n    if not root:\n        return 0\n    return 1 + max(max_depth(root.left), max_depth(root.right))\n\n\ndef is_balanced(root):\n    \"\"\"\n    Check if tree is height-balanced.\n    A tree is balanced if heights of subtrees differ by at most 1.\n    \"\"\"\n    def check(node):\n        if not node:\n            return 0\n        \n        left = check(node.left)\n        right = check(node.right)\n        \n        if left == -1 or right == -1 or abs(left - right) > 1:\n            return -1\n        \n        return 1 + max(left, right)\n    \n    return check(root) != -1\n\n\ndef lowest_common_ancestor(root, p, q):\n    \"\"\"\n    Find LCA of two nodes in BST.\n    O(log n) average using BST property.\n    \"\"\"\n    while root:\n        if p.val < root.val and q.val < root.val:\n            root = root.left\n        elif p.val > root.val and q.val > root.val:\n            root = root.right\n        else:\n            return root\n    \n    return None"
+                  }
+                ]
+              },
+              {
+                "week": 6,
+                "title": "Heaps & Priority Queues",
+                "topics": [
+                  "Heap property (min-heap, max-heap)",
+                  "Array representation of heaps",
+                  "Heapify operations",
+                  "Insert and extract operations",
+                  "Build heap from array",
+                  "Heap sort algorithm",
+                  "Priority queue ADT",
+                  "Applications: Top-K, Median finding"
+                ],
+                "code_examples": [
+                  {
+                    "title": "Binary Heap Implementation",
+                    "language": "python",
+                    "code": "class MinHeap:\n    \"\"\"\n    Binary Min-Heap implementation.\n    \n    Heap Property: Parent <= Children\n    \n    Array representation:\n    - Parent of i: (i - 1) // 2\n    - Left child of i: 2*i + 1\n    - Right child of i: 2*i + 2\n    \n    Time Complexities:\n    - Insert: O(log n)\n    - Extract min: O(log n)\n    - Get min: O(1)\n    - Build heap: O(n)\n    \"\"\"\n    \n    def __init__(self):\n        self.heap = []\n    \n    def __len__(self):\n        return len(self.heap)\n    \n    def is_empty(self):\n        return len(self.heap) == 0\n    \n    def _parent(self, i):\n        return (i - 1) // 2\n    \n    def _left_child(self, i):\n        return 2 * i + 1\n    \n    def _right_child(self, i):\n        return 2 * i + 2\n    \n    def _swap(self, i, j):\n        self.heap[i], self.heap[j] = self.heap[j], self.heap[i]\n    \n    def _sift_up(self, i):\n        \"\"\"Restore heap property upward\"\"\"\n        while i > 0 and self.heap[self._parent(i)] > self.heap[i]:\n            self._swap(i, self._parent(i))\n            i = self._parent(i)\n    \n    def _sift_down(self, i):\n        \"\"\"Restore heap property downward\"\"\"\n        min_index = i\n        size = len(self.heap)\n        \n        left = self._left_child(i)\n        if left < size and self.heap[left] < self.heap[min_index]:\n            min_index = left\n        \n        right = self._right_child(i)\n        if right < size and self.heap[right] < self.heap[min_index]:\n            min_index = right\n        \n        if min_index != i:\n            self._swap(i, min_index)\n            self._sift_down(min_index)\n    \n    def insert(self, val):\n        \"\"\"Insert value - O(log n)\"\"\"\n        self.heap.append(val)\n        self._sift_up(len(self.heap) - 1)\n    \n    def extract_min(self):\n        \"\"\"Remove and return minimum - O(log n)\"\"\"\n        if self.is_empty():\n            raise IndexError(\"Heap is empty\")\n        \n        min_val = self.heap[0]\n        \n        # Move last element to root\n        self.heap[0] = self.heap[-1]\n        self.heap.pop()\n        \n        # Restore heap property\n        if self.heap:\n            self._sift_down(0)\n        \n        return min_val\n    \n    def peek(self):\n        \"\"\"Return minimum without removing - O(1)\"\"\"\n        if self.is_empty():\n            raise IndexError(\"Heap is empty\")\n        return self.heap[0]\n    \n    @classmethod\n    def heapify(cls, arr):\n        \"\"\"\n        Build heap from array - O(n)\n        \n        Start from last non-leaf node and sift down.\n        \"\"\"\n        heap = cls()\n        heap.heap = arr[:]\n        \n        # Start from last non-leaf node\n        for i in range(len(arr) // 2 - 1, -1, -1):\n            heap._sift_down(i)\n        \n        return heap\n\n\ndef heap_sort(arr):\n    \"\"\"\n    Heap Sort - O(n log n) time, O(1) space.\n    \n    1. Build max-heap\n    2. Repeatedly extract max and place at end\n    \"\"\"\n    def heapify(arr, n, i):\n        largest = i\n        left = 2 * i + 1\n        right = 2 * i + 2\n        \n        if left < n and arr[left] > arr[largest]:\n            largest = left\n        if right < n and arr[right] > arr[largest]:\n            largest = right\n        \n        if largest != i:\n            arr[i], arr[largest] = arr[largest], arr[i]\n            heapify(arr, n, largest)\n    \n    n = len(arr)\n    \n    # Build max-heap\n    for i in range(n // 2 - 1, -1, -1):\n        heapify(arr, n, i)\n    \n    # Extract elements\n    for i in range(n - 1, 0, -1):\n        arr[0], arr[i] = arr[i], arr[0]\n        heapify(arr, i, 0)\n    \n    return arr\n\n\n# Classic Heap Problems\n\ndef find_kth_largest(nums, k):\n    \"\"\"\n    Find kth largest using min-heap of size k.\n    O(n log k) time, O(k) space.\n    \"\"\"\n    import heapq\n    \n    # Keep k largest elements (min at top)\n    heap = []\n    \n    for num in nums:\n        if len(heap) < k:\n            heapq.heappush(heap, num)\n        elif num > heap[0]:\n            heapq.heapreplace(heap, num)  # Pop min, push num\n    \n    return heap[0]\n\n\nclass MedianFinder:\n    \"\"\"\n    Find median from data stream.\n    Use two heaps: max-heap for left half, min-heap for right half.\n    \"\"\"\n    \n    def __init__(self):\n        import heapq\n        self.left = []   # Max-heap (negate values)\n        self.right = []  # Min-heap\n    \n    def addNum(self, num):\n        import heapq\n        \n        # Add to appropriate heap\n        if not self.left or num <= -self.left[0]:\n            heapq.heappush(self.left, -num)\n        else:\n            heapq.heappush(self.right, num)\n        \n        # Balance heaps (left can have at most 1 more)\n        if len(self.left) > len(self.right) + 1:\n            heapq.heappush(self.right, -heapq.heappop(self.left))\n        elif len(self.right) > len(self.left):\n            heapq.heappush(self.left, -heapq.heappop(self.right))\n    \n    def findMedian(self):\n        if len(self.left) > len(self.right):\n            return -self.left[0]\n        return (-self.left[0] + self.right[0]) / 2\n\n\ndef merge_k_sorted_lists(lists):\n    \"\"\"\n    Merge k sorted linked lists using min-heap.\n    O(n log k) time, where n = total nodes.\n    \"\"\"\n    import heapq\n    \n    heap = []\n    \n    # Add first node from each list\n    for i, lst in enumerate(lists):\n        if lst:\n            heapq.heappush(heap, (lst.val, i, lst))\n    \n    dummy = ListNode(0)\n    current = dummy\n    \n    while heap:\n        val, i, node = heapq.heappop(heap)\n        current.next = node\n        current = current.next\n        \n        if node.next:\n            heapq.heappush(heap, (node.next.val, i, node.next))\n    \n    return dummy.next"
+                  }
+                ]
+              },
+              {
+                "week": 7,
+                "title": "Hash Tables - Part 1",
+                "topics": [
+                  "Hash function design principles",
+                  "Collision resolution: Chaining",
+                  "Collision resolution: Open addressing",
+                  "Linear probing, Quadratic probing",
+                  "Double hashing",
+                  "Load factor and rehashing",
+                  "Hash table analysis"
+                ]
+              },
+              {
+                "week": 8,
+                "title": "Hash Tables - Part 2 & Applications",
+                "topics": [
+                  "Perfect hashing",
+                  "Cuckoo hashing",
+                  "Bloom filters",
+                  "Count-min sketch",
+                  "Hash table applications",
+                  "Designing hash functions for custom objects",
+                  "Consistent hashing"
+                ],
+                "code_examples": [
+                  {
+                    "title": "Hash Table Implementation",
+                    "language": "python",
+                    "code": "class HashTable:\n    \"\"\"\n    Hash Table with chaining for collision resolution.\n    \n    Average case: O(1) for all operations\n    Worst case: O(n) when many collisions\n    \n    Load factor \u03b1 = n/m (items/buckets)\n    Keep \u03b1 < 0.75 for good performance\n    \"\"\"\n    \n    def __init__(self, initial_capacity=16):\n        self.capacity = initial_capacity\n        self.size = 0\n        self.buckets = [[] for _ in range(self.capacity)]\n        self.LOAD_FACTOR_THRESHOLD = 0.75\n    \n    def _hash(self, key):\n        \"\"\"Hash function - maps key to bucket index\"\"\"\n        return hash(key) % self.capacity\n    \n    def _resize(self):\n        \"\"\"Double capacity and rehash all items\"\"\"\n        old_buckets = self.buckets\n        self.capacity *= 2\n        self.buckets = [[] for _ in range(self.capacity)]\n        self.size = 0\n        \n        for bucket in old_buckets:\n            for key, value in bucket:\n                self.put(key, value)\n    \n    def put(self, key, value):\n        \"\"\"Insert or update key-value pair\"\"\"\n        # Check load factor\n        if self.size / self.capacity >= self.LOAD_FACTOR_THRESHOLD:\n            self._resize()\n        \n        index = self._hash(key)\n        bucket = self.buckets[index]\n        \n        # Update if key exists\n        for i, (k, v) in enumerate(bucket):\n            if k == key:\n                bucket[i] = (key, value)\n                return\n        \n        # Insert new key\n        bucket.append((key, value))\n        self.size += 1\n    \n    def get(self, key, default=None):\n        \"\"\"Retrieve value by key\"\"\"\n        index = self._hash(key)\n        bucket = self.buckets[index]\n        \n        for k, v in bucket:\n            if k == key:\n                return v\n        \n        return default\n    \n    def remove(self, key):\n        \"\"\"Remove key-value pair\"\"\"\n        index = self._hash(key)\n        bucket = self.buckets[index]\n        \n        for i, (k, v) in enumerate(bucket):\n            if k == key:\n                del bucket[i]\n                self.size -= 1\n                return v\n        \n        raise KeyError(key)\n    \n    def __contains__(self, key):\n        \"\"\"Check if key exists\"\"\"\n        index = self._hash(key)\n        bucket = self.buckets[index]\n        return any(k == key for k, v in bucket)\n    \n    def __len__(self):\n        return self.size\n    \n    def keys(self):\n        \"\"\"Return all keys\"\"\"\n        for bucket in self.buckets:\n            for k, v in bucket:\n                yield k\n    \n    def values(self):\n        \"\"\"Return all values\"\"\"\n        for bucket in self.buckets:\n            for k, v in bucket:\n                yield v\n    \n    def items(self):\n        \"\"\"Return all key-value pairs\"\"\"\n        for bucket in self.buckets:\n            for item in bucket:\n                yield item\n\n\nclass HashTableOpenAddressing:\n    \"\"\"\n    Hash Table with open addressing (linear probing).\n    \"\"\"\n    \n    DELETED = object()  # Tombstone marker\n    \n    def __init__(self, initial_capacity=16):\n        self.capacity = initial_capacity\n        self.size = 0\n        self.keys = [None] * self.capacity\n        self.values = [None] * self.capacity\n    \n    def _hash(self, key):\n        return hash(key) % self.capacity\n    \n    def _probe(self, key):\n        \"\"\"Linear probing - find slot for key\"\"\"\n        index = self._hash(key)\n        \n        while self.keys[index] is not None:\n            if self.keys[index] == key:\n                return index\n            if self.keys[index] is self.DELETED:\n                # Can insert here\n                return index\n            \n            index = (index + 1) % self.capacity\n        \n        return index\n    \n    def put(self, key, value):\n        if self.size / self.capacity >= 0.5:\n            self._resize()\n        \n        index = self._probe(key)\n        \n        if self.keys[index] is None or self.keys[index] is self.DELETED:\n            self.size += 1\n        \n        self.keys[index] = key\n        self.values[index] = value\n    \n    def get(self, key, default=None):\n        index = self._hash(key)\n        \n        while self.keys[index] is not None:\n            if self.keys[index] == key:\n                return self.values[index]\n            index = (index + 1) % self.capacity\n        \n        return default\n    \n    def remove(self, key):\n        index = self._hash(key)\n        \n        while self.keys[index] is not None:\n            if self.keys[index] == key:\n                value = self.values[index]\n                self.keys[index] = self.DELETED\n                self.values[index] = None\n                self.size -= 1\n                return value\n            index = (index + 1) % self.capacity\n        \n        raise KeyError(key)\n    \n    def _resize(self):\n        old_keys = self.keys\n        old_values = self.values\n        \n        self.capacity *= 2\n        self.keys = [None] * self.capacity\n        self.values = [None] * self.capacity\n        self.size = 0\n        \n        for i, key in enumerate(old_keys):\n            if key is not None and key is not self.DELETED:\n                self.put(key, old_values[i])\n\n\n# Hash Table Applications\n\ndef two_sum_hash(nums, target):\n    \"\"\"O(n) using hash table\"\"\"\n    seen = {}\n    for i, num in enumerate(nums):\n        complement = target - num\n        if complement in seen:\n            return [seen[complement], i]\n        seen[num] = i\n    return []\n\n\ndef group_anagrams(strs):\n    \"\"\"Group strings that are anagrams\"\"\"\n    from collections import defaultdict\n    \n    groups = defaultdict(list)\n    \n    for s in strs:\n        # Use sorted string as key\n        key = tuple(sorted(s))\n        groups[key].append(s)\n    \n    return list(groups.values())\n\n\ndef longest_consecutive_sequence(nums):\n    \"\"\"\n    Find longest consecutive sequence.\n    O(n) using hash set.\n    \"\"\"\n    num_set = set(nums)\n    longest = 0\n    \n    for num in num_set:\n        # Only start counting from sequence start\n        if num - 1 not in num_set:\n            current_num = num\n            current_length = 1\n            \n            while current_num + 1 in num_set:\n                current_num += 1\n                current_length += 1\n            \n            longest = max(longest, current_length)\n    \n    return longest\n\n\ndef subarray_sum_equals_k(nums, k):\n    \"\"\"\n    Count subarrays with sum = k.\n    O(n) using prefix sum + hash map.\n    \"\"\"\n    from collections import defaultdict\n    \n    count = 0\n    prefix_sum = 0\n    sum_count = defaultdict(int)\n    sum_count[0] = 1  # Empty prefix\n    \n    for num in nums:\n        prefix_sum += num\n        \n        # Check if (prefix_sum - k) exists\n        count += sum_count[prefix_sum - k]\n        \n        sum_count[prefix_sum] += 1\n    \n    return count"
+                  }
+                ]
+              },
+              {
+                "week": 9,
+                "title": "Graph Fundamentals & Traversals",
+                "topics": [
+                  "Graph terminology",
+                  "Graph representations (adjacency list, matrix)",
+                  "Breadth-First Search (BFS)",
+                  "Depth-First Search (DFS)",
+                  "Connected components",
+                  "Cycle detection",
+                  "Topological sorting"
+                ]
+              },
+              {
+                "week": 10,
+                "title": "Graph Algorithms",
+                "topics": [
+                  "Shortest paths: Dijkstra's algorithm",
+                  "Shortest paths: Bellman-Ford",
+                  "All-pairs shortest paths: Floyd-Warshall",
+                  "Minimum Spanning Trees: Prim's and Kruskal's",
+                  "Union-Find data structure",
+                  "Network flow introduction"
+                ],
+                "code_examples": [
+                  {
+                    "title": "Graph Algorithms",
+                    "language": "python",
+                    "code": "from collections import defaultdict, deque\nimport heapq\n\nclass Graph:\n    \"\"\"\n    Graph implementation using adjacency list.\n    Supports both directed and undirected graphs.\n    \"\"\"\n    \n    def __init__(self, directed=False):\n        self.graph = defaultdict(list)\n        self.directed = directed\n    \n    def add_edge(self, u, v, weight=1):\n        \"\"\"Add edge u -> v with optional weight\"\"\"\n        self.graph[u].append((v, weight))\n        if not self.directed:\n            self.graph[v].append((u, weight))\n    \n    def add_vertex(self, v):\n        \"\"\"Add isolated vertex\"\"\"\n        if v not in self.graph:\n            self.graph[v] = []\n    \n    def get_vertices(self):\n        \"\"\"Return all vertices\"\"\"\n        return list(self.graph.keys())\n    \n    def get_neighbors(self, v):\n        \"\"\"Return neighbors of vertex v\"\"\"\n        return self.graph[v]\n\n\ndef bfs(graph, start):\n    \"\"\"\n    Breadth-First Search.\n    O(V + E) time and space.\n    \n    Applications:\n    - Shortest path in unweighted graph\n    - Level-order traversal\n    - Finding connected components\n    \"\"\"\n    visited = set()\n    queue = deque([start])\n    visited.add(start)\n    result = []\n    \n    while queue:\n        vertex = queue.popleft()\n        result.append(vertex)\n        \n        for neighbor, _ in graph.get_neighbors(vertex):\n            if neighbor not in visited:\n                visited.add(neighbor)\n                queue.append(neighbor)\n    \n    return result\n\n\ndef dfs(graph, start, visited=None):\n    \"\"\"\n    Depth-First Search (recursive).\n    O(V + E) time, O(V) space.\n    \n    Applications:\n    - Cycle detection\n    - Topological sorting\n    - Finding strongly connected components\n    \"\"\"\n    if visited is None:\n        visited = set()\n    \n    visited.add(start)\n    result = [start]\n    \n    for neighbor, _ in graph.get_neighbors(start):\n        if neighbor not in visited:\n            result.extend(dfs(graph, neighbor, visited))\n    \n    return result\n\n\ndef dfs_iterative(graph, start):\n    \"\"\"DFS using explicit stack\"\"\"\n    visited = set()\n    stack = [start]\n    result = []\n    \n    while stack:\n        vertex = stack.pop()\n        \n        if vertex not in visited:\n            visited.add(vertex)\n            result.append(vertex)\n            \n            for neighbor, _ in graph.get_neighbors(vertex):\n                if neighbor not in visited:\n                    stack.append(neighbor)\n    \n    return result\n\n\ndef dijkstra(graph, start):\n    \"\"\"\n    Dijkstra's Shortest Path Algorithm.\n    O((V + E) log V) with binary heap.\n    \n    Works for non-negative edge weights only.\n    \"\"\"\n    distances = {v: float('inf') for v in graph.get_vertices()}\n    distances[start] = 0\n    predecessors = {v: None for v in graph.get_vertices()}\n    \n    # Min-heap: (distance, vertex)\n    heap = [(0, start)]\n    visited = set()\n    \n    while heap:\n        dist, u = heapq.heappop(heap)\n        \n        if u in visited:\n            continue\n        visited.add(u)\n        \n        for v, weight in graph.get_neighbors(u):\n            if v not in visited:\n                new_dist = dist + weight\n                \n                if new_dist < distances[v]:\n                    distances[v] = new_dist\n                    predecessors[v] = u\n                    heapq.heappush(heap, (new_dist, v))\n    \n    return distances, predecessors\n\n\ndef bellman_ford(graph, start):\n    \"\"\"\n    Bellman-Ford Algorithm.\n    O(V * E) time.\n    \n    Works with negative edge weights.\n    Can detect negative cycles.\n    \"\"\"\n    vertices = graph.get_vertices()\n    distances = {v: float('inf') for v in vertices}\n    distances[start] = 0\n    \n    # Relax edges V-1 times\n    for _ in range(len(vertices) - 1):\n        for u in vertices:\n            for v, weight in graph.get_neighbors(u):\n                if distances[u] + weight < distances[v]:\n                    distances[v] = distances[u] + weight\n    \n    # Check for negative cycles\n    for u in vertices:\n        for v, weight in graph.get_neighbors(u):\n            if distances[u] + weight < distances[v]:\n                raise ValueError(\"Graph contains negative cycle\")\n    \n    return distances\n\n\ndef topological_sort(graph):\n    \"\"\"\n    Topological Sort using Kahn's Algorithm (BFS).\n    O(V + E) time.\n    \n    For DAGs only. Returns order such that\n    for every edge u->v, u comes before v.\n    \"\"\"\n    # Calculate in-degrees\n    in_degree = defaultdict(int)\n    for u in graph.get_vertices():\n        for v, _ in graph.get_neighbors(u):\n            in_degree[v] += 1\n    \n    # Start with vertices having no incoming edges\n    queue = deque([v for v in graph.get_vertices() if in_degree[v] == 0])\n    result = []\n    \n    while queue:\n        u = queue.popleft()\n        result.append(u)\n        \n        for v, _ in graph.get_neighbors(u):\n            in_degree[v] -= 1\n            if in_degree[v] == 0:\n                queue.append(v)\n    \n    if len(result) != len(graph.get_vertices()):\n        raise ValueError(\"Graph has cycle - no topological order\")\n    \n    return result\n\n\nclass UnionFind:\n    \"\"\"\n    Union-Find (Disjoint Set Union) data structure.\n    \n    With path compression and union by rank:\n    - Find: O(\u03b1(n)) \u2248 O(1) amortized\n    - Union: O(\u03b1(n)) \u2248 O(1) amortized\n    \n    Applications:\n    - Kruskal's MST\n    - Connected components\n    - Cycle detection\n    \"\"\"\n    \n    def __init__(self, n):\n        self.parent = list(range(n))\n        self.rank = [0] * n\n        self.count = n  # Number of components\n    \n    def find(self, x):\n        \"\"\"Find with path compression\"\"\"\n        if self.parent[x] != x:\n            self.parent[x] = self.find(self.parent[x])\n        return self.parent[x]\n    \n    def union(self, x, y):\n        \"\"\"Union by rank\"\"\"\n        root_x = self.find(x)\n        root_y = self.find(y)\n        \n        if root_x == root_y:\n            return False  # Already in same set\n        \n        # Attach smaller tree to larger tree\n        if self.rank[root_x] < self.rank[root_y]:\n            self.parent[root_x] = root_y\n        elif self.rank[root_x] > self.rank[root_y]:\n            self.parent[root_y] = root_x\n        else:\n            self.parent[root_y] = root_x\n            self.rank[root_x] += 1\n        \n        self.count -= 1\n        return True\n    \n    def connected(self, x, y):\n        \"\"\"Check if x and y are in same component\"\"\"\n        return self.find(x) == self.find(y)\n\n\ndef kruskal_mst(edges, n):\n    \"\"\"\n    Kruskal's Minimum Spanning Tree Algorithm.\n    O(E log E) time.\n    \n    edges: list of (weight, u, v)\n    n: number of vertices\n    \"\"\"\n    # Sort edges by weight\n    edges.sort()\n    \n    uf = UnionFind(n)\n    mst = []\n    mst_weight = 0\n    \n    for weight, u, v in edges:\n        if uf.union(u, v):\n            mst.append((u, v, weight))\n            mst_weight += weight\n            \n            if len(mst) == n - 1:\n                break\n    \n    return mst, mst_weight"
+                  }
+                ]
+              },
+              {
+                "week": 11,
+                "title": "Sorting Algorithms",
+                "topics": [
+                  "Comparison-based sorting lower bound",
+                  "Quick Sort and partitioning",
+                  "Merge Sort",
+                  "Heap Sort",
+                  "Counting Sort, Radix Sort, Bucket Sort",
+                  "Stability in sorting",
+                  "External sorting"
+                ]
+              },
+              {
+                "week": 12,
+                "title": "Searching & Advanced Techniques",
+                "topics": [
+                  "Binary search variations",
+                  "Ternary search",
+                  "Exponential search",
+                  "Search in rotated arrays",
+                  "Interpolation search",
+                  "Pattern matching algorithms"
+                ]
+              },
+              {
+                "week": 13,
+                "title": "Dynamic Programming - Part 1",
+                "topics": [
+                  "DP principles: Optimal substructure, overlapping subproblems",
+                  "Memoization (top-down)",
+                  "Tabulation (bottom-up)",
+                  "1D DP problems",
+                  "Fibonacci, climbing stairs",
+                  "House robber, coin change"
+                ]
+              },
+              {
+                "week": 14,
+                "title": "Dynamic Programming - Part 2",
+                "topics": [
+                  "2D DP problems",
+                  "Grid-based DP",
+                  "String DP (LCS, Edit Distance)",
+                  "Knapsack problems",
+                  "Matrix chain multiplication",
+                  "DP optimization techniques"
+                ],
+                "code_examples": [
+                  {
+                    "title": "Dynamic Programming Patterns",
+                    "language": "python",
+                    "code": "# 1D DP PROBLEMS\n\ndef fibonacci(n):\n    \"\"\"\n    Fibonacci with memoization and tabulation.\n    \"\"\"\n    # Memoization (top-down)\n    def fib_memo(n, memo={}):\n        if n in memo:\n            return memo[n]\n        if n <= 1:\n            return n\n        memo[n] = fib_memo(n-1, memo) + fib_memo(n-2, memo)\n        return memo[n]\n    \n    # Tabulation (bottom-up)\n    def fib_tab(n):\n        if n <= 1:\n            return n\n        dp = [0] * (n + 1)\n        dp[1] = 1\n        for i in range(2, n + 1):\n            dp[i] = dp[i-1] + dp[i-2]\n        return dp[n]\n    \n    # Space optimized\n    def fib_opt(n):\n        if n <= 1:\n            return n\n        prev, curr = 0, 1\n        for _ in range(2, n + 1):\n            prev, curr = curr, prev + curr\n        return curr\n    \n    return fib_opt(n)\n\n\ndef coin_change(coins, amount):\n    \"\"\"\n    Minimum coins to make amount.\n    O(n * amount) time, O(amount) space.\n    \"\"\"\n    dp = [float('inf')] * (amount + 1)\n    dp[0] = 0\n    \n    for i in range(1, amount + 1):\n        for coin in coins:\n            if coin <= i and dp[i - coin] + 1 < dp[i]:\n                dp[i] = dp[i - coin] + 1\n    \n    return dp[amount] if dp[amount] != float('inf') else -1\n\n\ndef longest_increasing_subsequence(nums):\n    \"\"\"\n    LIS length.\n    O(n log n) using binary search.\n    \"\"\"\n    from bisect import bisect_left\n    \n    tails = []\n    \n    for num in nums:\n        pos = bisect_left(tails, num)\n        if pos == len(tails):\n            tails.append(num)\n        else:\n            tails[pos] = num\n    \n    return len(tails)\n\n\ndef house_robber(nums):\n    \"\"\"\n    Maximum money without robbing adjacent houses.\n    O(n) time, O(1) space.\n    \"\"\"\n    if not nums:\n        return 0\n    if len(nums) == 1:\n        return nums[0]\n    \n    prev2, prev1 = 0, nums[0]\n    \n    for i in range(1, len(nums)):\n        current = max(prev1, prev2 + nums[i])\n        prev2, prev1 = prev1, current\n    \n    return prev1\n\n\n# 2D DP PROBLEMS\n\ndef longest_common_subsequence(text1, text2):\n    \"\"\"\n    LCS length.\n    O(m * n) time and space.\n    \"\"\"\n    m, n = len(text1), len(text2)\n    dp = [[0] * (n + 1) for _ in range(m + 1)]\n    \n    for i in range(1, m + 1):\n        for j in range(1, n + 1):\n            if text1[i-1] == text2[j-1]:\n                dp[i][j] = dp[i-1][j-1] + 1\n            else:\n                dp[i][j] = max(dp[i-1][j], dp[i][j-1])\n    \n    return dp[m][n]\n\n\ndef edit_distance(word1, word2):\n    \"\"\"\n    Minimum edit operations (insert, delete, replace).\n    O(m * n) time and space.\n    \"\"\"\n    m, n = len(word1), len(word2)\n    dp = [[0] * (n + 1) for _ in range(m + 1)]\n    \n    # Base cases\n    for i in range(m + 1):\n        dp[i][0] = i\n    for j in range(n + 1):\n        dp[0][j] = j\n    \n    for i in range(1, m + 1):\n        for j in range(1, n + 1):\n            if word1[i-1] == word2[j-1]:\n                dp[i][j] = dp[i-1][j-1]\n            else:\n                dp[i][j] = 1 + min(\n                    dp[i-1][j],      # Delete\n                    dp[i][j-1],      # Insert\n                    dp[i-1][j-1]     # Replace\n                )\n    \n    return dp[m][n]\n\n\ndef knapsack_01(weights, values, capacity):\n    \"\"\"\n    0/1 Knapsack - maximize value within weight capacity.\n    O(n * capacity) time and space.\n    \"\"\"\n    n = len(weights)\n    dp = [[0] * (capacity + 1) for _ in range(n + 1)]\n    \n    for i in range(1, n + 1):\n        for w in range(capacity + 1):\n            # Don't take item i\n            dp[i][w] = dp[i-1][w]\n            \n            # Take item i if it fits\n            if weights[i-1] <= w:\n                dp[i][w] = max(\n                    dp[i][w],\n                    dp[i-1][w - weights[i-1]] + values[i-1]\n                )\n    \n    return dp[n][capacity]\n\n\ndef unique_paths(m, n):\n    \"\"\"\n    Count paths from top-left to bottom-right.\n    Can only move right or down.\n    O(m * n) time, O(n) space.\n    \"\"\"\n    dp = [1] * n\n    \n    for _ in range(1, m):\n        for j in range(1, n):\n            dp[j] += dp[j-1]\n    \n    return dp[n-1]\n\n\ndef max_profit_stock(prices):\n    \"\"\"\n    Best time to buy and sell stock.\n    O(n) time, O(1) space.\n    \"\"\"\n    if not prices:\n        return 0\n    \n    min_price = prices[0]\n    max_profit = 0\n    \n    for price in prices:\n        min_price = min(min_price, price)\n        max_profit = max(max_profit, price - min_price)\n    \n    return max_profit"
+                  }
+                ]
+              },
+              {
+                "week": 15,
+                "title": "Advanced Topics & Final Review",
+                "topics": [
+                  "Tries (Prefix trees)",
+                  "Segment trees",
+                  "Fenwick trees (Binary Indexed Trees)",
+                  "Advanced string algorithms",
+                  "Computational geometry basics",
+                  "Final review and exam preparation"
+                ]
+              }
+            ]
+          },
+          {
+            "id": "oop_complete",
+            "code": "CS 202",
+            "title": "Object-Oriented Programming & Design",
+            "hours": 75,
+            "weeks": 15
+          },
+          {
+            "id": "db_complete",
+            "code": "CS 203",
+            "title": "Database Systems",
+            "hours": 75,
+            "weeks": 15
+          },
+          {
+            "id": "os_complete",
+            "code": "CS 301",
+            "title": "Operating Systems",
+            "hours": 75,
+            "weeks": 15
+          },
+          {
+            "id": "networks_complete",
+            "code": "CS 302",
+            "title": "Computer Networks",
+            "hours": 75,
+            "weeks": 15
+          },
+          {
+            "id": "compilers_complete",
+            "code": "CS 303",
+            "title": "Compiler Design",
+            "hours": 75,
+            "weeks": 15
+          },
+          {
+            "id": "gamedev_fundamentals",
+            "code": "GAME 101",
+            "title": "Game Development Fundamentals",
+            "hours": 75,
+            "weeks": 15
+          },
+          {
+            "id": "game_engine",
+            "code": "GAME 201",
+            "title": "Game Engine Architecture",
+            "hours": 75,
+            "weeks": 15
+          },
+          {
+            "id": "graphics_programming",
+            "code": "GAME 202",
+            "title": "Graphics Programming",
+            "hours": 75,
+            "weeks": 15
+          },
+          {
+            "id": "game_ai_physics",
+            "code": "GAME 203",
+            "title": "Game AI & Physics",
+            "hours": 75,
+            "weeks": 15
+          }
+        ]
+      }
+    },
+    {
+      "test": "Vault Info Endpoint",
+      "status": "\u2705 PASS",
+      "success": true,
+      "details": "Found 4 vaults (expected >= 4)",
+      "response": {
+        "name": "CodeDock Vault System",
+        "version": "11.0.0",
+        "vaults": {
+          "code_blocks": {
+            "count": 3,
+            "description": "Store and organize code snippets, functions, and algorithms"
+          },
+          "assets": {
+            "count": 0,
+            "description": "Store images, documents, and media files"
+          },
+          "database_schemas": {
+            "count": 0,
+            "description": "Store database designs, schemas, and SQL scripts"
+          },
+          "learning_data": {
+            "count": 2,
+            "description": "Store notes, bookmarks, and learning progress"
+          }
+        },
+        "activity_logs": 19,
+        "features": [
+          "Full-text search",
+          "Tagging system",
+          "Version history",
+          "Activity logging",
+          "Import/Export",
+          "Sharing capabilities"
+        ]
+      }
+    },
+    {
+      "test": "AI Pipeline Text-to-Code",
+      "status": "\u2705 PASS",
+      "success": true,
+      "details": "Generated 1726 chars of code, contains function definition: True",
+      "response": {
+        "code_length": 1726
+      }
+    },
+    {
+      "test": "Health Check Endpoint",
+      "status": "\u2705 PASS",
+      "success": true,
+      "details": "Health status: healthy",
+      "response": {
+        "status": "healthy",
+        "uptime_seconds": 488.4307999610901,
+        "ai_available": true,
+        "features_enabled": [
+          "teaching_mode",
+          "advanced_panel",
+          "ai_suggestions",
+          "custom_languages",
+          "expansion_dock"
+        ]
+      }
+    }
+  ]
+}

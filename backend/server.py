@@ -54,6 +54,8 @@ from routes.ai import router as ai_router
 from routes.ai_pipeline import router as ai_pipeline_router
 from routes.curriculum import router as curriculum_router
 from routes.vault import router as vault_router
+from routes.code_to_app_pipeline import router as code_to_app_router
+from routes.image_generation import router as imagine_router
 
 # Import the 15-Year CS Bible Curriculum (for backward compatibility)
 from cs_bible import CS_BIBLE, get_year_info, get_course, get_all_courses, get_curriculum_stats
@@ -6343,3 +6345,5 @@ app.include_router(ai_router, prefix="/api")
 app.include_router(ai_pipeline_router, prefix="/api")
 app.include_router(curriculum_router, prefix="/api")
 app.include_router(vault_router, prefix="/api")
+app.include_router(code_to_app_router, prefix="/api")
+app.include_router(imagine_router, prefix="/api")

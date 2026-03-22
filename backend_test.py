@@ -1,1139 +1,323 @@
 #!/usr/bin/env python3
 """
-CodeDock v11.0.0 Ultimate Coding Platform - Comprehensive Backend API Testing
-Testing AI Pipeline Routes, Curriculum Engine Routes, and existing endpoints.
+CodeDock v11.0.0 Backend API Testing Suite
+Testing new features: Code-to-App Pipeline, Image Generation Pipeline, and existing v11 APIs
 """
 
-import requests
+import asyncio
+import aiohttp
 import json
-import time
-from typing import Dict, Any, List
 import sys
+from datetime import datetime
+from typing import Dict, Any, List
 
-# Backend URL from frontend .env
-BACKEND_URL = "https://devlearning-hub-1.preview.emergentagent.com"
-API_BASE = f"{BACKEND_URL}/api"
-
-class Colors:
-    GREEN = '\033[92m'
-    RED = '\033[91m'
-    YELLOW = '\033[93m'
-    BLUE = '\033[94m'
-    PURPLE = '\033[95m'
-    CYAN = '\033[96m'
-    WHITE = '\033[97m'
-    BOLD = '\033[1m'
-    END = '\033[0m'
+# Backend URL from frontend/.env
+BACKEND_URL = "https://devlearning-hub-1.preview.emergentagent.com/api"
 
 class TestResult:
     def __init__(self):
         self.passed = 0
         self.failed = 0
-        self.errors = []
-        
-    def success(self, test_name: str, details: str = ""):
-        self.passed += 1
-        print(f"{Colors.GREEN}✅ {test_name}{Colors.END}")
+        self.results = []
+    
+    def add_result(self, test_name: str, success: bool, details: str = "", response_data: Any = None):
+        status = "✅ PASS" if success else "❌ FAIL"
+        self.results.append({
+            "test": test_name,
+            "status": status,
+            "success": success,
+            "details": details,
+            "response": response_data
+        })
+        if success:
+            self.passed += 1
+        else:
+            self.failed += 1
+        print(f"{status} | {test_name}")
         if details:
-            print(f"   {Colors.CYAN}{details}{Colors.END}")
-            
-    def failure(self, test_name: str, error: str):
-        self.failed += 1
-        self.errors.append(f"{test_name}: {error}")
-        print(f"{Colors.RED}❌ {test_name}{Colors.END}")
-        print(f"   {Colors.RED}Error: {error}{Colors.END}")
-        
+            print(f"      {details}")
+    
     def summary(self):
         total = self.passed + self.failed
         success_rate = (self.passed / total * 100) if total > 0 else 0
-        
-        print(f"\n{Colors.BOLD}{'='*60}{Colors.END}")
-        print(f"{Colors.BOLD}TEST SUMMARY{Colors.END}")
-        print(f"{Colors.BOLD}{'='*60}{Colors.END}")
+        print(f"\n{'='*80}")
+        print(f"CODEDOCK v11.0.0 BACKEND TESTING COMPLETE")
+        print(f"{'='*80}")
         print(f"Total Tests: {total}")
-        print(f"{Colors.GREEN}Passed: {self.passed}{Colors.END}")
-        print(f"{Colors.RED}Failed: {self.failed}{Colors.END}")
-        print(f"Success Rate: {Colors.GREEN if success_rate >= 80 else Colors.YELLOW}{success_rate:.1f}%{Colors.END}")
+        print(f"Passed: {self.passed}")
+        print(f"Failed: {self.failed}")
+        print(f"Success Rate: {success_rate:.1f}%")
+        print(f"{'='*80}")
         
-        if self.errors:
-            print(f"\n{Colors.RED}FAILED TESTS:{Colors.END}")
-            for error in self.errors:
-                print(f"  • {error}")
+        if self.failed > 0:
+            print(f"\n❌ FAILED TESTS:")
+            for result in self.results:
+                if not result["success"]:
+                    print(f"  - {result['test']}: {result['details']}")
+        
+        return success_rate >= 80.0
 
-def make_request(method: str, endpoint: str, data: Dict = None, timeout: int = 10) -> Dict[str, Any]:
+async def make_request(session: aiohttp.ClientSession, method: str, endpoint: str, 
+                      data: Dict = None, timeout: int = 30) -> tuple[bool, Dict, str]:
     """Make HTTP request with error handling"""
+    url = f"{BACKEND_URL}{endpoint}"
     try:
-        url = f"{API_BASE}{endpoint}"
-        
-        if method.upper() == "GET":
-            response = requests.get(url, timeout=timeout)
-        elif method.upper() == "POST":
-            response = requests.post(url, json=data, timeout=timeout)
-        elif method.upper() == "PUT":
-            response = requests.put(url, json=data, timeout=timeout)
-        elif method.upper() == "DELETE":
-            response = requests.delete(url, timeout=timeout)
-        else:
-            raise ValueError(f"Unsupported method: {method}")
+        async with session.request(
+            method, 
+            url, 
+            json=data if data else None,
+            timeout=aiohttp.ClientTimeout(total=timeout)
+        ) as response:
+            response_text = await response.text()
             
-        return {
-            "status_code": response.status_code,
-            "data": response.json() if response.headers.get('content-type', '').startswith('application/json') else response.text,
-            "headers": dict(response.headers)
-        }
-    except requests.exceptions.Timeout:
-        return {"error": "Request timeout"}
-    except requests.exceptions.ConnectionError:
-        return {"error": "Connection error"}
+            if response.status == 200:
+                try:
+                    response_data = json.loads(response_text)
+                    return True, response_data, f"Status: {response.status}"
+                except json.JSONDecodeError:
+                    return True, {"raw_response": response_text}, f"Status: {response.status} (non-JSON)"
+            else:
+                return False, {"error": response_text}, f"HTTP {response.status}: {response_text[:200]}"
+                
+    except asyncio.TimeoutError:
+        return False, {}, f"Request timeout after {timeout}s"
     except Exception as e:
-        return {"error": str(e)}
+        return False, {}, f"Request error: {str(e)}"
 
-def test_ai_pipeline_routes(result: TestResult):
-    """Test NEW AI Pipeline Routes (v11.0.0)"""
-    print(f"\n{Colors.BOLD}{Colors.PURPLE}🤖 TESTING AI PIPELINE ROUTES (NEW){Colors.END}")
+async def test_code_to_app_pipeline(session: aiohttp.ClientSession, results: TestResult):
+    """Test Code-to-App Pipeline endpoints"""
+    print(f"\n🔧 TESTING CODE-TO-APP PIPELINE")
+    print("-" * 50)
     
-    # Test pipeline info
-    response = make_request("GET", "/pipeline/info")
-    if "error" in response:
-        result.failure("GET /api/pipeline/info - Pipeline system info", response["error"])
-    elif response["status_code"] == 200:
-        data = response["data"]
-        if isinstance(data, dict):
-            result.success("GET /api/pipeline/info - Pipeline system info", 
-                         f"Pipeline info retrieved")
-        else:
-            result.failure("GET /api/pipeline/info - Pipeline system info", "Invalid response format")
+    # Test 1: GET /api/code-to-app/info
+    success, data, details = await make_request(session, "GET", "/code-to-app/info")
+    if success and "supported_app_types" in data:
+        app_types = data.get("supported_app_types", [])
+        frameworks = data.get("frameworks", {})
+        expected_types = ["cli", "web", "api", "mobile", "game", "desktop", "fullstack"]
+        has_expected = all(t in app_types for t in expected_types)
+        results.add_result(
+            "Code-to-App Info Endpoint", 
+            has_expected,
+            f"Found {len(app_types)} app types, {len(frameworks)} framework categories",
+            data
+        )
     else:
-        result.failure("GET /api/pipeline/info - Pipeline system info", f"HTTP {response['status_code']}")
+        results.add_result("Code-to-App Info Endpoint", False, details)
     
-    # Test pipeline providers
-    response = make_request("GET", "/pipeline/providers")
-    if "error" in response:
-        result.failure("GET /api/pipeline/providers - AI providers list", response["error"])
-    elif response["status_code"] == 200:
-        data = response["data"]
-        if isinstance(data, dict) and "providers" in data:
-            providers = data["providers"]
-            result.success("GET /api/pipeline/providers - AI providers list", 
-                         f"Found {len(providers)} AI providers")
-        else:
-            result.failure("GET /api/pipeline/providers - AI providers list", "No providers found")
+    # Test 2: GET /api/code-to-app/templates
+    success, data, details = await make_request(session, "GET", "/code-to-app/templates")
+    if success and "templates" in data:
+        templates = data.get("templates", [])
+        expected_count = 6  # Based on the code
+        results.add_result(
+            "Code-to-App Templates Endpoint",
+            len(templates) >= expected_count,
+            f"Found {len(templates)} templates (expected >= {expected_count})",
+            data
+        )
     else:
-        result.failure("GET /api/pipeline/providers - AI providers list", f"HTTP {response['status_code']}")
+        results.add_result("Code-to-App Templates Endpoint", False, details)
     
-    # Test text-to-code generation
-    text_to_code_request = {
-        "description": "Create a function that calculates factorial",
-        "language": "python"
-    }
-    response = make_request("POST", "/pipeline/text-to-code", text_to_code_request)
-    if "error" in response:
-        result.failure("POST /api/pipeline/text-to-code - Generate code from description", response["error"])
-    elif response["status_code"] == 200:
-        data = response["data"]
-        if isinstance(data, dict) and "result" in data and "code" in data["result"]:
-            result.success("POST /api/pipeline/text-to-code - Generate code from description", 
-                         f"Code generated successfully")
-        else:
-            result.failure("POST /api/pipeline/text-to-code - Generate code from description", "No code generated")
-    else:
-        result.failure("POST /api/pipeline/text-to-code - Generate code from description", f"HTTP {response['status_code']}")
-    
-    # Test code analysis
-    analyze_request = {
-        "code": "def hello(): print('hi')",
-        "analysis_type": "explain",
-        "language": "python"
-    }
-    response = make_request("POST", "/pipeline/analyze", analyze_request)
-    if "error" in response:
-        result.failure("POST /api/pipeline/analyze - Code analysis", response["error"])
-    elif response["status_code"] == 200:
-        data = response["data"]
-        if isinstance(data, dict) and "result" in data and "analysis" in data["result"]:
-            result.success("POST /api/pipeline/analyze - Code analysis", 
-                         f"Analysis completed: {data.get('pipeline_type', 'N/A')}")
-        else:
-            result.failure("POST /api/pipeline/analyze - Code analysis", "No analysis returned")
-    else:
-        result.failure("POST /api/pipeline/analyze - Code analysis", f"HTTP {response['status_code']}")
-
-def test_curriculum_engine_routes(result: TestResult):
-    """Test NEW Curriculum Engine Routes (v11.0.0)"""
-    print(f"\n{Colors.BOLD}{Colors.BLUE}📚 TESTING CURRICULUM ENGINE ROUTES (NEW){Colors.END}")
-    
-    # Test curriculum info
-    response = make_request("GET", "/curriculum/info")
-    if "error" in response:
-        result.failure("GET /api/curriculum/info - Curriculum info", response["error"])
-    elif response["status_code"] == 200:
-        data = response["data"]
-        if isinstance(data, dict):
-            result.success("GET /api/curriculum/info - Curriculum info", 
-                         f"Curriculum info retrieved")
-        else:
-            result.failure("GET /api/curriculum/info - Curriculum info", "Invalid response format")
-    else:
-        result.failure("GET /api/curriculum/info - Curriculum info", f"HTTP {response['status_code']}")
-    
-    # Test curriculum classes list
-    response = make_request("GET", "/curriculum/classes")
-    if "error" in response:
-        result.failure("GET /api/curriculum/classes - List all classes", response["error"])
-    elif response["status_code"] == 200:
-        data = response["data"]
-        if isinstance(data, dict) and "classes" in data:
-            classes = data["classes"]
-            result.success("GET /api/curriculum/classes - List all classes", 
-                         f"Found {len(classes)} classes")
-        else:
-            result.failure("GET /api/curriculum/classes - List all classes", "No classes found")
-    else:
-        result.failure("GET /api/curriculum/classes - List all classes", f"HTTP {response['status_code']}")
-    
-    # Test data structures class details
-    response = make_request("GET", "/curriculum/classes/data_structures")
-    if "error" in response:
-        result.failure("GET /api/curriculum/classes/data_structures - DS class details", response["error"])
-    elif response["status_code"] == 200:
-        data = response["data"]
-        if isinstance(data, dict) and "class_id" in data:
-            result.success("GET /api/curriculum/classes/data_structures - DS class details", 
-                         f"Class: {data.get('title', 'Data Structures')}")
-        else:
-            result.failure("GET /api/curriculum/classes/data_structures - DS class details", "Invalid class data")
-    else:
-        result.failure("GET /api/curriculum/classes/data_structures - DS class details", f"HTTP {response['status_code']}")
-    
-    # Test OOP class details
-    response = make_request("GET", "/curriculum/classes/oop")
-    if "error" in response:
-        result.failure("GET /api/curriculum/classes/oop - OOP class details", response["error"])
-    elif response["status_code"] == 200:
-        data = response["data"]
-        if isinstance(data, dict) and "class_id" in data:
-            result.success("GET /api/curriculum/classes/oop - OOP class details", 
-                         f"Class: {data.get('title', 'OOP')}")
-        else:
-            result.failure("GET /api/curriculum/classes/oop - OOP class details", "Invalid class data")
-    else:
-        result.failure("GET /api/curriculum/classes/oop - OOP class details", f"HTTP {response['status_code']}")
-    
-    # Test databases class details
-    response = make_request("GET", "/curriculum/classes/databases")
-    if "error" in response:
-        result.failure("GET /api/curriculum/classes/databases - DB class details", response["error"])
-    elif response["status_code"] == 200:
-        data = response["data"]
-        if isinstance(data, dict) and "class_id" in data:
-            result.success("GET /api/curriculum/classes/databases - DB class details", 
-                         f"Class: {data.get('title', 'Databases')}")
-        else:
-            result.failure("GET /api/curriculum/classes/databases - DB class details", "Invalid class data")
-    else:
-        result.failure("GET /api/curriculum/classes/databases - DB class details", f"HTTP {response['status_code']}")
-    
-    # Test week 1 content
-    response = make_request("GET", "/curriculum/classes/data_structures/week/1")
-    if "error" in response:
-        result.failure("GET /api/curriculum/classes/data_structures/week/1 - Week 1 content", response["error"])
-    elif response["status_code"] == 200:
-        data = response["data"]
-        if isinstance(data, dict) and "week" in data:
-            result.success("GET /api/curriculum/classes/data_structures/week/1 - Week 1 content", 
-                         f"Week {data.get('week')} content retrieved")
-        else:
-            result.failure("GET /api/curriculum/classes/data_structures/week/1 - Week 1 content", "Invalid week data")
-    else:
-        result.failure("GET /api/curriculum/classes/data_structures/week/1 - Week 1 content", f"HTTP {response['status_code']}")
-    
-    # Test code examples
-    response = make_request("GET", "/curriculum/classes/data_structures/code-examples")
-    if "error" in response:
-        result.failure("GET /api/curriculum/classes/data_structures/code-examples - Code examples", response["error"])
-    elif response["status_code"] == 200:
-        data = response["data"]
-        if isinstance(data, dict) and "examples" in data:
-            examples = data["examples"]
-            result.success("GET /api/curriculum/classes/data_structures/code-examples - Code examples", 
-                         f"Found {len(examples)} code examples")
-        else:
-            result.failure("GET /api/curriculum/classes/data_structures/code-examples - Code examples", "No examples found")
-    else:
-        result.failure("GET /api/curriculum/classes/data_structures/code-examples - Code examples", f"HTTP {response['status_code']}")
-    
-    # Test start course
-    response = make_request("POST", "/curriculum/progress/start?course_id=data_structures")
-    if "error" in response:
-        result.failure("POST /api/curriculum/progress/start - Start course", response["error"])
-    elif response["status_code"] == 200:
-        data = response["data"]
-        if isinstance(data, dict) and "progress_id" in data:
-            result.success("POST /api/curriculum/progress/start - Start course", 
-                         f"Course started: {data.get('course_id', 'data_structures')}")
-        else:
-            result.failure("POST /api/curriculum/progress/start - Start course", "Course start failed")
-    else:
-        result.failure("POST /api/curriculum/progress/start - Start course", f"HTTP {response['status_code']}")
-    
-    # Test get progress
-    response = make_request("GET", "/curriculum/progress/data_structures")
-    if "error" in response:
-        result.failure("GET /api/curriculum/progress/data_structures - Get progress", response["error"])
-    elif response["status_code"] == 200:
-        data = response["data"]
-        if isinstance(data, dict) and "course_id" in data:
-            result.success("GET /api/curriculum/progress/data_structures - Get progress", 
-                         f"Progress: {data.get('completion_percentage', 0)}%")
-        else:
-            result.failure("GET /api/curriculum/progress/data_structures - Get progress", "No progress data")
-    else:
-        result.failure("GET /api/curriculum/progress/data_structures - Get progress", f"HTTP {response['status_code']}")
-    
-    # Test learning analytics
-    response = make_request("GET", "/curriculum/analytics")
-    if "error" in response:
-        result.failure("GET /api/curriculum/analytics - Learning analytics", response["error"])
-    elif response["status_code"] == 200:
-        data = response["data"]
-        if isinstance(data, dict) and "analytics" in data:
-            result.success("GET /api/curriculum/analytics - Learning analytics", 
-                         f"Analytics retrieved")
-        else:
-            result.failure("GET /api/curriculum/analytics - Learning analytics", "No analytics data")
-    else:
-        result.failure("GET /api/curriculum/analytics - Learning analytics", f"HTTP {response['status_code']}")
-    
-    # Test course recommendations
-    response = make_request("GET", "/curriculum/recommendations")
-    if "error" in response:
-        result.failure("GET /api/curriculum/recommendations - Course recommendations", response["error"])
-    elif response["status_code"] == 200:
-        data = response["data"]
-        if isinstance(data, dict) and "recommendations" in data:
-            recommendations = data["recommendations"]
-            result.success("GET /api/curriculum/recommendations - Course recommendations", 
-                         f"Found {len(recommendations)} recommendations")
-        else:
-            result.failure("GET /api/curriculum/recommendations - Course recommendations", "No recommendations found")
-    else:
-        result.failure("GET /api/curriculum/recommendations - Course recommendations", f"HTTP {response['status_code']}")
-
-def test_vault_system_routes(result: TestResult):
-    """Test NEW Vault System Routes (v11.0.0) - Priority High"""
-    print(f"\n{Colors.BOLD}{Colors.PURPLE}🏦 TESTING VAULT SYSTEM ROUTES (NEW v11.0.0){Colors.END}")
-    
-    # Test vault info - should return stats for 4 vaults
-    response = make_request("GET", "/vault/info")
-    if "error" in response:
-        result.failure("GET /api/vault/info - Vault system info", response["error"])
-    elif response["status_code"] == 200:
-        data = response["data"]
-        if isinstance(data, dict):
-            result.success("GET /api/vault/info - Vault system info", 
-                         f"Vault info retrieved - 4 vaults (code_blocks, assets, database_schemas, learning_data)")
-        else:
-            result.failure("GET /api/vault/info - Vault system info", "Invalid response format")
-    else:
-        result.failure("GET /api/vault/info - Vault system info", f"HTTP {response['status_code']}")
-    
-    # Test Code Block Vault - CREATE
-    code_block_data = {
-        "title": "Fibonacci Calculator",
-        "description": "Recursive fibonacci function implementation",
-        "code": "def fibonacci(n):\n    if n <= 1:\n        return n\n    return fibonacci(n-1) + fibonacci(n-2)",
+    # Test 3: POST /api/code-to-app/enhance
+    enhance_payload = {
+        "code": "def hello(): print('hello')",
         "language": "python",
-        "tags": ["algorithm", "recursion", "math"],
-        "category": "algorithms"
+        "enhancements": ["error_handling", "typing"]
     }
-    response = make_request("POST", "/vault/code", code_block_data)
-    created_code_id = None
-    if "error" in response:
-        result.failure("POST /api/vault/code - Create code block", response["error"])
-    elif response["status_code"] == 200:
-        data = response["data"]
-        if isinstance(data, dict) and "id" in data:
-            created_code_id = data["id"]
-            result.success("POST /api/vault/code - Create code block", 
-                         f"Code block created: {data.get('title', 'N/A')}")
-        else:
-            result.failure("POST /api/vault/code - Create code block", "No ID returned")
+    success, data, details = await make_request(session, "POST", "/code-to-app/enhance", enhance_payload)
+    if success and "enhanced_code" in data:
+        enhanced = data.get("enhanced_code", "")
+        has_enhancements = "try" in enhanced.lower() or "except" in enhanced.lower()
+        results.add_result(
+            "Code Enhancement Endpoint",
+            has_enhancements,
+            f"Enhanced code length: {len(enhanced)} chars, contains error handling: {has_enhancements}",
+            {"enhanced_length": len(enhanced)}
+        )
     else:
-        result.failure("POST /api/vault/code - Create code block", f"HTTP {response['status_code']}")
+        results.add_result("Code Enhancement Endpoint", False, details)
     
-    # Test Code Block Vault - LIST
-    response = make_request("GET", "/vault/code")
-    if "error" in response:
-        result.failure("GET /api/vault/code - List code blocks", response["error"])
-    elif response["status_code"] == 200:
-        data = response["data"]
-        if isinstance(data, dict) and "blocks" in data:  # Changed from "code_blocks" to "blocks"
-            blocks = data["blocks"]
-            result.success("GET /api/vault/code - List code blocks", 
-                         f"Found {len(blocks)} code blocks")
-        else:
-            result.failure("GET /api/vault/code - List code blocks", "No code blocks found")
+    # Test 4: POST /api/code-to-app/convert
+    convert_payload = {
+        "code": "def add(a, b): return a + b",
+        "from_language": "python",
+        "to_language": "javascript"
+    }
+    success, data, details = await make_request(session, "POST", "/code-to-app/convert", convert_payload)
+    if success and "converted" in data:
+        converted = data.get("converted", {}).get("code", "")
+        is_js = "function" in converted.lower() or "=>" in converted
+        results.add_result(
+            "Code Conversion Endpoint",
+            is_js,
+            f"Converted to JavaScript: {len(converted)} chars, contains JS syntax: {is_js}",
+            {"converted_length": len(converted)}
+        )
     else:
-        result.failure("GET /api/vault/code - List code blocks", f"HTTP {response['status_code']}")
+        results.add_result("Code Conversion Endpoint", False, details)
+
+async def test_image_generation_pipeline(session: aiohttp.ClientSession, results: TestResult):
+    """Test Image Generation Pipeline endpoints"""
+    print(f"\n🎨 TESTING IMAGE GENERATION PIPELINE")
+    print("-" * 50)
     
-    # Test Code Block Vault - GET specific block (if we created one)
-    if created_code_id:
-        response = make_request("GET", f"/vault/code/{created_code_id}")
-        if "error" in response:
-            result.failure(f"GET /api/vault/code/{created_code_id} - Get specific code block", response["error"])
-        elif response["status_code"] == 200:
-            data = response["data"]
-            if isinstance(data, dict) and "id" in data:
-                result.success(f"GET /api/vault/code/{created_code_id} - Get specific code block", 
-                             f"Retrieved: {data.get('title', 'N/A')}")
-            else:
-                result.failure(f"GET /api/vault/code/{created_code_id} - Get specific code block", "Invalid block data")
-        else:
-            result.failure(f"GET /api/vault/code/{created_code_id} - Get specific code block", f"HTTP {response['status_code']}")
+    # Test 1: GET /api/imagine/info
+    success, data, details = await make_request(session, "GET", "/imagine/info")
+    if success and "providers" in data:
+        providers = data.get("providers", [])
+        provider_names = [p.get("name", "") for p in providers]
+        expected_providers = ["OpenAI gpt-image-1", "Gemini Nano Banana", "Grok Imagine"]
+        has_expected = len(providers) >= 3
+        results.add_result(
+            "Image Generation Info Endpoint",
+            has_expected,
+            f"Found {len(providers)} providers: {', '.join(provider_names)}",
+            data
+        )
+    else:
+        results.add_result("Image Generation Info Endpoint", False, details)
+    
+    # Test 2: POST /api/imagine/enhance-prompt (using query parameters)
+    success, data, details = await make_request(session, "POST", "/imagine/enhance-prompt?prompt=a cat&style=realistic&provider=openai", None, timeout=45)
+    if success and "enhanced_prompt" in data:
+        enhanced = data.get("enhanced_prompt", "")
+        original_prompt = "a cat"
+        is_enhanced = len(enhanced) > len(original_prompt) * 2
+        results.add_result(
+            "Image Prompt Enhancement Endpoint",
+            is_enhanced,
+            f"Enhanced prompt length: {len(enhanced)} chars (original: {len(original_prompt)})",
+            {"enhanced_length": len(enhanced)}
+        )
+    else:
+        results.add_result("Image Prompt Enhancement Endpoint", False, details)
+
+async def test_existing_v11_apis(session: aiohttp.ClientSession, results: TestResult):
+    """Test existing v11 APIs to ensure they still work"""
+    print(f"\n🔍 TESTING EXISTING v11 APIs")
+    print("-" * 50)
+    
+    # Test 1: GET /api/curriculum/info (should show 10 classes)
+    success, data, details = await make_request(session, "GET", "/curriculum/info")
+    if success:
+        classes_count = data.get("total_classes", 0)
+        total_hours = data.get("total_hours", 0)
+        expected_classes = 10
+        results.add_result(
+            "Curriculum Info (10 classes check)",
+            classes_count >= expected_classes,
+            f"Found {classes_count} classes, {total_hours} hours (expected >= {expected_classes} classes)",
+            data
+        )
+    else:
+        results.add_result("Curriculum Info (10 classes check)", False, details)
+    
+    # Test 2: GET /api/vault/info (should show vault stats)
+    success, data, details = await make_request(session, "GET", "/vault/info")
+    if success:
+        vaults = data.get("vaults", {})
+        vault_count = len(vaults)
+        expected_vaults = 4  # code_blocks, assets, database_schemas, learning_data
+        results.add_result(
+            "Vault Info Endpoint",
+            vault_count >= expected_vaults,
+            f"Found {vault_count} vaults (expected >= {expected_vaults})",
+            data
+        )
+    else:
+        results.add_result("Vault Info Endpoint", False, details)
+    
+    # Test 3: POST /api/pipeline/text-to-code (basic text to code generation)
+    text_to_code_payload = {
+        "description": "Create a simple hello world function",
+        "language": "python",
+        "provider": "openai"
+    }
+    success, data, details = await make_request(session, "POST", "/pipeline/text-to-code", text_to_code_payload, timeout=45)
+    if success and ("generated_code" in data or "result" in data):
+        # Handle different response structures
+        code = data.get("generated_code") or data.get("result", {}).get("code", "")
+        has_function = "def" in code.lower() or "function" in code.lower()
+        results.add_result(
+            "AI Pipeline Text-to-Code",
+            has_function,
+            f"Generated {len(code)} chars of code, contains function definition: {has_function}",
+            {"code_length": len(code)}
+        )
+    else:
+        results.add_result("AI Pipeline Text-to-Code", False, details)
+    
+    # Test 4: GET /api/health
+    success, data, details = await make_request(session, "GET", "/health")
+    if success:
+        status = data.get("status", "")
+        is_healthy = status == "healthy"
+        results.add_result(
+            "Health Check Endpoint",
+            is_healthy,
+            f"Health status: {status}",
+            data
+        )
+    else:
+        results.add_result("Health Check Endpoint", False, details)
+
+async def main():
+    """Main testing function"""
+    print("🚀 CODEDOCK v11.0.0 BACKEND API TESTING")
+    print("=" * 80)
+    print(f"Backend URL: {BACKEND_URL}")
+    print(f"Test Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    print("=" * 80)
+    
+    results = TestResult()
+    
+    # Create HTTP session with proper headers
+    connector = aiohttp.TCPConnector(limit=10, limit_per_host=5)
+    timeout = aiohttp.ClientTimeout(total=60)
+    
+    async with aiohttp.ClientSession(
+        connector=connector,
+        timeout=timeout,
+        headers={
+            "Content-Type": "application/json",
+            "User-Agent": "CodeDock-Testing-Agent/11.0.0"
+        }
+    ) as session:
         
-        # Test Code Block Vault - UPDATE
-        update_data = {
-            "title": "Optimized Fibonacci Calculator",
-            "description": "Memoized fibonacci function for better performance",
-            "code": "def fibonacci(n, memo={}):\n    if n in memo:\n        return memo[n]\n    if n <= 1:\n        return n\n    memo[n] = fibonacci(n-1, memo) + fibonacci(n-2, memo)\n    return memo[n]",
-            "language": "python",
-            "tags": ["algorithm", "recursion", "optimization", "memoization"],
-            "category": "algorithms"
-        }
-        response = make_request("PUT", f"/vault/code/{created_code_id}", update_data)
-        if "error" in response:
-            result.failure(f"PUT /api/vault/code/{created_code_id} - Update code block", response["error"])
-        elif response["status_code"] == 200:
-            data = response["data"]
-            if isinstance(data, dict):
-                result.success(f"PUT /api/vault/code/{created_code_id} - Update code block", 
-                             f"Updated: {data.get('title', 'N/A')}")
-            else:
-                result.failure(f"PUT /api/vault/code/{created_code_id} - Update code block", "Invalid response")
-        else:
-            result.failure(f"PUT /api/vault/code/{created_code_id} - Update code block", f"HTTP {response['status_code']}")
+        # Test all new features
+        await test_code_to_app_pipeline(session, results)
+        await test_image_generation_pipeline(session, results)
+        await test_existing_v11_apis(session, results)
     
-    # Test Asset Vault - CREATE
-    asset_data = {
-        "name": "Algorithm Flowchart",
-        "description": "Visual representation of sorting algorithms",
-        "asset_type": "image",
-        "tags": ["visualization", "algorithms", "sorting"],
-        "metadata": {
-            "format": "png",
-            "size": "1024x768",
-            "created_by": "system"
-        }
-    }
-    response = make_request("POST", "/vault/asset", asset_data)
-    created_asset_id = None
-    if "error" in response:
-        result.failure("POST /api/vault/asset - Create asset", response["error"])
-    elif response["status_code"] == 200:
-        data = response["data"]
-        if isinstance(data, dict) and "id" in data:
-            created_asset_id = data["id"]
-            result.success("POST /api/vault/asset - Create asset", 
-                         f"Asset created: {data.get('name', 'N/A')}")
-        else:
-            result.failure("POST /api/vault/asset - Create asset", "No ID returned")
-    else:
-        result.failure("POST /api/vault/asset - Create asset", f"HTTP {response['status_code']}")
+    # Print final summary
+    success = results.summary()
     
-    # Test Asset Vault - LIST
-    response = make_request("GET", "/vault/asset")
-    if "error" in response:
-        result.failure("GET /api/vault/asset - List assets", response["error"])
-    elif response["status_code"] == 200:
-        data = response["data"]
-        if isinstance(data, dict) and "assets" in data:
-            assets = data["assets"]
-            result.success("GET /api/vault/asset - List assets", 
-                         f"Found {len(assets)} assets")
-        else:
-            result.failure("GET /api/vault/asset - List assets", "No assets found")
-    else:
-        result.failure("GET /api/vault/asset - List assets", f"HTTP {response['status_code']}")
-    
-    # Test Asset Vault - GET specific asset (if we created one)
-    if created_asset_id:
-        response = make_request("GET", f"/vault/asset/{created_asset_id}")
-        if "error" in response:
-            result.failure(f"GET /api/vault/asset/{created_asset_id} - Get specific asset", response["error"])
-        elif response["status_code"] == 200:
-            data = response["data"]
-            if isinstance(data, dict) and "id" in data:
-                result.success(f"GET /api/vault/asset/{created_asset_id} - Get specific asset", 
-                             f"Retrieved: {data.get('name', 'N/A')}")
-            else:
-                result.failure(f"GET /api/vault/asset/{created_asset_id} - Get specific asset", "Invalid asset data")
-        else:
-            result.failure(f"GET /api/vault/asset/{created_asset_id} - Get specific asset", f"HTTP {response['status_code']}")
-    
-    # Test Database Vault - CREATE
-    database_data = {
-        "name": "E-commerce Database Schema",
-        "description": "Complete schema for online store application",
-        "schema_type": "relational",
-        "tables": [
-            {
-                "name": "users",
-                "columns": ["id", "email", "password_hash", "created_at"],
-                "primary_key": "id"
+    # Save detailed results
+    with open("/app/test_results_detailed.json", "w") as f:
+        json.dump({
+            "timestamp": datetime.now().isoformat(),
+            "backend_url": BACKEND_URL,
+            "summary": {
+                "total": results.passed + results.failed,
+                "passed": results.passed,
+                "failed": results.failed,
+                "success_rate": (results.passed / (results.passed + results.failed) * 100) if (results.passed + results.failed) > 0 else 0
             },
-            {
-                "name": "products",
-                "columns": ["id", "name", "price", "description", "stock"],
-                "primary_key": "id"
-            }
-        ],
-        "relationships": [
-            {
-                "from_table": "orders",
-                "to_table": "users",
-                "type": "many_to_one"
-            }
-        ],
-        "tags": ["ecommerce", "relational", "postgresql"]
-    }
-    response = make_request("POST", "/vault/database", database_data)
-    created_db_id = None
-    if "error" in response:
-        result.failure("POST /api/vault/database - Create database schema", response["error"])
-    elif response["status_code"] == 200:
-        data = response["data"]
-        if isinstance(data, dict) and "id" in data:
-            created_db_id = data["id"]
-            result.success("POST /api/vault/database - Create database schema", 
-                         f"Schema created: {data.get('name', 'N/A')}")
-        else:
-            result.failure("POST /api/vault/database - Create database schema", "No ID returned")
-    else:
-        result.failure("POST /api/vault/database - Create database schema", f"HTTP {response['status_code']}")
+            "results": results.results
+        }, f, indent=2)
     
-    # Test Database Vault - LIST
-    response = make_request("GET", "/vault/database")
-    if "error" in response:
-        result.failure("GET /api/vault/database - List database schemas", response["error"])
-    elif response["status_code"] == 200:
-        data = response["data"]
-        if isinstance(data, dict) and "schemas" in data:
-            schemas = data["schemas"]
-            result.success("GET /api/vault/database - List database schemas", 
-                         f"Found {len(schemas)} schemas")
-        else:
-            result.failure("GET /api/vault/database - List database schemas", "No schemas found")
-    else:
-        result.failure("GET /api/vault/database - List database schemas", f"HTTP {response['status_code']}")
+    print(f"\n📄 Detailed results saved to: /app/test_results_detailed.json")
     
-    # Test Database Vault - GET specific schema (if we created one)
-    if created_db_id:
-        response = make_request("GET", f"/vault/database/{created_db_id}")
-        if "error" in response:
-            result.failure(f"GET /api/vault/database/{created_db_id} - Get specific schema", response["error"])
-        elif response["status_code"] == 200:
-            data = response["data"]
-            if isinstance(data, dict) and "id" in data:
-                result.success(f"GET /api/vault/database/{created_db_id} - Get specific schema", 
-                             f"Retrieved: {data.get('name', 'N/A')}")
-            else:
-                result.failure(f"GET /api/vault/database/{created_db_id} - Get specific schema", "Invalid schema data")
-        else:
-            result.failure(f"GET /api/vault/database/{created_db_id} - Get specific schema", f"HTTP {response['status_code']}")
-    
-    # Test Learning Vault - CREATE
-    learning_data = {
-        "data_type": "note",
-        "title": "Big O Notation Fundamentals",
-        "content": "Big O notation describes the upper bound of algorithm complexity. Common complexities: O(1) constant, O(log n) logarithmic, O(n) linear, O(n log n) linearithmic, O(n²) quadratic, O(2^n) exponential.",
-        "metadata": {
-            "subject": "algorithms",
-            "difficulty": "intermediate",
-            "estimated_read_time": "5 minutes"
-        }
-    }
-    response = make_request("POST", "/vault/learning", learning_data)
-    created_learning_id = None
-    if "error" in response:
-        result.failure("POST /api/vault/learning - Create learning data", response["error"])
-    elif response["status_code"] == 200:
-        data = response["data"]
-        if isinstance(data, dict) and "id" in data:
-            created_learning_id = data["id"]
-            result.success("POST /api/vault/learning - Create learning data", 
-                         f"Learning data created: {data.get('title', 'N/A')}")
-        else:
-            result.failure("POST /api/vault/learning - Create learning data", "No ID returned")
-    else:
-        result.failure("POST /api/vault/learning - Create learning data", f"HTTP {response['status_code']}")
-    
-    # Test Learning Vault - LIST
-    response = make_request("GET", "/vault/learning")
-    if "error" in response:
-        result.failure("GET /api/vault/learning - List learning data", response["error"])
-    elif response["status_code"] == 200:
-        data = response["data"]
-        if isinstance(data, dict) and "items" in data:  # Changed from "learning_data" to "items"
-            learning_items = data["items"]
-            result.success("GET /api/vault/learning - List learning data", 
-                         f"Found {len(learning_items)} learning items")
-        else:
-            result.failure("GET /api/vault/learning - List learning data", "No learning data found")
-    else:
-        result.failure("GET /api/vault/learning - List learning data", f"HTTP {response['status_code']}")
-    
-    # Test Learning Vault - GET specific data (if we created one)
-    if created_learning_id:
-        response = make_request("GET", f"/vault/learning/{created_learning_id}")
-        if "error" in response:
-            result.failure(f"GET /api/vault/learning/{created_learning_id} - Get specific learning data", response["error"])
-        elif response["status_code"] == 200:
-            data = response["data"]
-            if isinstance(data, dict) and "id" in data:
-                result.success(f"GET /api/vault/learning/{created_learning_id} - Get specific learning data", 
-                             f"Retrieved: {data.get('title', 'N/A')}")
-            else:
-                result.failure(f"GET /api/vault/learning/{created_learning_id} - Get specific learning data", "Invalid learning data")
-        else:
-            result.failure(f"GET /api/vault/learning/{created_learning_id} - Get specific learning data", f"HTTP {response['status_code']}")
-    
-    # Test Vault Activity Log
-    response = make_request("GET", "/vault/activity")
-    if "error" in response:
-        result.failure("GET /api/vault/activity - Get activity log", response["error"])
-    elif response["status_code"] == 200:
-        data = response["data"]
-        if isinstance(data, dict) and "logs" in data:  # Changed from "activities" to "logs"
-            activities = data["logs"]
-            result.success("GET /api/vault/activity - Get activity log", 
-                         f"Found {len(activities)} activity entries")
-        else:
-            result.failure("GET /api/vault/activity - Get activity log", "No activity data found")
-    else:
-        result.failure("GET /api/vault/activity - Get activity log", f"HTTP {response['status_code']}")
-    
-    # Test Vault Comprehensive Stats
-    response = make_request("GET", "/vault/stats")
-    if "error" in response:
-        result.failure("GET /api/vault/stats - Get comprehensive stats", response["error"])
-    elif response["status_code"] == 200:
-        data = response["data"]
-        if isinstance(data, dict):
-            result.success("GET /api/vault/stats - Get comprehensive stats", 
-                         f"Stats retrieved for all vault types")
-        else:
-            result.failure("GET /api/vault/stats - Get comprehensive stats", "Invalid stats data")
-    else:
-        result.failure("GET /api/vault/stats - Get comprehensive stats", f"HTTP {response['status_code']}")
-    
-    # Clean up - Delete created items
-    if created_code_id:
-        response = make_request("DELETE", f"/vault/code/{created_code_id}")
-        if response.get("status_code") == 200:
-            result.success(f"DELETE /api/vault/code/{created_code_id} - Delete code block", "Code block deleted")
-        else:
-            result.failure(f"DELETE /api/vault/code/{created_code_id} - Delete code block", f"HTTP {response.get('status_code', 'Error')}")
-    
-    if created_asset_id:
-        response = make_request("DELETE", f"/vault/asset/{created_asset_id}")
-        if response.get("status_code") == 200:
-            result.success(f"DELETE /api/vault/asset/{created_asset_id} - Delete asset", "Asset deleted")
-        else:
-            result.failure(f"DELETE /api/vault/asset/{created_asset_id} - Delete asset", f"HTTP {response.get('status_code', 'Error')}")
-    
-    if created_db_id:
-        response = make_request("DELETE", f"/vault/database/{created_db_id}")
-        if response.get("status_code") == 200:
-            result.success(f"DELETE /api/vault/database/{created_db_id} - Delete database schema", "Schema deleted")
-        else:
-            result.failure(f"DELETE /api/vault/database/{created_db_id} - Delete database schema", f"HTTP {response.get('status_code', 'Error')}")
-
-def test_curriculum_engine_upgraded(result: TestResult):
-    """Test UPGRADED Curriculum Engine Routes (v11.0.0) - Should now have 10 classes"""
-    print(f"\n{Colors.BOLD}{Colors.BLUE}📚 TESTING UPGRADED CURRICULUM ENGINE (10 CLASSES){Colors.END}")
-    
-    # Test curriculum info - should now return 10 classes, 750 hours
-    response = make_request("GET", "/curriculum/info")
-    if "error" in response:
-        result.failure("GET /api/curriculum/info - Curriculum info (10 classes)", response["error"])
-    elif response["status_code"] == 200:
-        data = response["data"]
-        if isinstance(data, dict):
-            total_classes = data.get("total_classes", 0)
-            total_hours = data.get("total_hours", 0)
-            if total_classes == 10 and total_hours == 750:
-                result.success("GET /api/curriculum/info - Curriculum info (10 classes)", 
-                             f"✅ UPGRADED: {total_classes} classes, {total_hours} hours")
-            else:
-                result.failure("GET /api/curriculum/info - Curriculum info (10 classes)", 
-                             f"Expected 10 classes/750 hours, got {total_classes} classes/{total_hours} hours")
-        else:
-            result.failure("GET /api/curriculum/info - Curriculum info (10 classes)", "Invalid response format")
-    else:
-        result.failure("GET /api/curriculum/info - Curriculum info (10 classes)", f"HTTP {response['status_code']}")
-    
-    # Test that all 10 courses are accessible
-    expected_courses = [
-        "data_structures", "oop", "databases", "operating_systems", "networks",
-        "compilers", "gamedev_fundamentals", "game_engine", "graphics_programming", "game_ai_physics"
-    ]
-    
-    for course in expected_courses:
-        response = make_request("GET", f"/curriculum/classes/{course}")
-        if "error" in response:
-            result.failure(f"GET /api/curriculum/classes/{course} - {course.replace('_', ' ').title()} class", response["error"])
-        elif response["status_code"] == 200:
-            data = response["data"]
-            if isinstance(data, dict) and "id" in data:  # Changed from "class_id" to "id"
-                result.success(f"GET /api/curriculum/classes/{course} - {course.replace('_', ' ').title()} class", 
-                             f"✅ Course accessible: {data.get('title', course)}")
-            else:
-                result.failure(f"GET /api/curriculum/classes/{course} - {course.replace('_', ' ').title()} class", "Invalid class data")
-        else:
-            result.failure(f"GET /api/curriculum/classes/{course} - {course.replace('_', ' ').title()} class", f"HTTP {response['status_code']}")
-
-def test_existing_core_routes(result: TestResult):
-    """Test existing routes to verify they still work"""
-    print(f"\n{Colors.BOLD}{Colors.GREEN}🔧 TESTING EXISTING CORE ROUTES{Colors.END}")
-    
-    # Test health check
-    response = make_request("GET", "/health")
-    if "error" in response:
-        result.failure("GET /api/health - Health check", response["error"])
-    elif response["status_code"] == 200:
-        data = response["data"]
-        if isinstance(data, dict) and data.get("status") == "healthy":
-            result.success("GET /api/health - Health check", f"Status: {data.get('status')}")
-        else:
-            result.failure("GET /api/health - Health check", f"Expected healthy status, got: {data}")
-    else:
-        result.failure("GET /api/health - Health check", f"HTTP {response['status_code']}")
-    
-    # Test CS Bible
-    response = make_request("GET", "/bible")
-    if "error" in response:
-        result.failure("GET /api/bible - CS Bible curriculum", response["error"])
-    elif response["status_code"] == 200:
-        data = response["data"]
-        if isinstance(data, dict) and "total_years" in data:
-            result.success("GET /api/bible - CS Bible curriculum", 
-                         f"Years: {data.get('total_years')}, Courses: {data.get('total_courses')}")
-        else:
-            result.failure("GET /api/bible - CS Bible curriculum", "Invalid bible data")
-    else:
-        result.failure("GET /api/bible - CS Bible curriculum", f"HTTP {response['status_code']}")
-    
-    # Test languages
-    response = make_request("GET", "/languages")
-    if "error" in response:
-        result.failure("GET /api/languages - Languages list", response["error"])
-    elif response["status_code"] == 200:
-        data = response["data"]
-        if isinstance(data, dict) and "languages" in data:
-            languages = data["languages"]
-            executable_count = sum(1 for lang in languages if isinstance(lang, dict) and lang.get('executable', False))
-            result.success("GET /api/languages - Languages list", 
-                         f"Found {len(languages)} languages, {executable_count} executable")
-        else:
-            result.failure("GET /api/languages - Languages list", "No languages found")
-    else:
-        result.failure("GET /api/languages - Languages list", f"HTTP {response['status_code']}")
-    
-    # Test code execution
-    execute_request = {
-        "code": "print('test')",
-        "language": "python"
-    }
-    response = make_request("POST", "/execute", execute_request)
-    if "error" in response:
-        result.failure("POST /api/execute - Code execution", response["error"])
-    elif response["status_code"] == 200:
-        data = response["data"]
-        if isinstance(data, dict) and "result" in data:
-            result.success("POST /api/execute - Code execution", 
-                         f"Execution status: {data.get('result', {}).get('status', 'Unknown')}")
-        else:
-            result.failure("POST /api/execute - Code execution", "Invalid execution response")
-    else:
-        result.failure("POST /api/execute - Code execution", f"HTTP {response['status_code']}")
-
-def test_health_and_system_routes(result: TestResult):
-    """Test Health & System Routes"""
-    print(f"\n{Colors.BOLD}{Colors.BLUE}🏥 TESTING HEALTH & SYSTEM ROUTES{Colors.END}")
-    
-    # Test root info endpoint
-    response = make_request("GET", "/")
-    if "error" in response:
-        result.failure("GET /api/ - Root info", response["error"])
-    elif response["status_code"] == 200:
-        data = response["data"]
-        if isinstance(data, dict) and data.get("version") == "10.0.0":
-            result.success("GET /api/ - Root info", f"Version: {data.get('version')}, Codename: {data.get('codename', 'N/A')}")
-        else:
-            result.failure("GET /api/ - Root info", f"Expected version 10.0.0, got: {data.get('version') if isinstance(data, dict) else 'Invalid response'}")
-    else:
-        result.failure("GET /api/ - Root info", f"HTTP {response['status_code']}")
-    
-    # Test health check
-    response = make_request("GET", "/health")
-    if "error" in response:
-        result.failure("GET /api/health - Health check", response["error"])
-    elif response["status_code"] == 200:
-        data = response["data"]
-        if isinstance(data, dict) and data.get("status") == "healthy":
-            result.success("GET /api/health - Health check", f"Status: {data.get('status')}")
-        else:
-            result.failure("GET /api/health - Health check", f"Expected healthy status, got: {data}")
-    else:
-        result.failure("GET /api/health - Health check", f"HTTP {response['status_code']}")
-    
-    # Test readiness probe
-    response = make_request("GET", "/readiness")
-    if "error" in response:
-        result.failure("GET /api/readiness - Readiness probe", response["error"])
-    elif response["status_code"] == 200:
-        result.success("GET /api/readiness - Readiness probe", "Kubernetes readiness OK")
-    else:
-        result.failure("GET /api/readiness - Readiness probe", f"HTTP {response['status_code']}")
-    
-    # Test liveness probe
-    response = make_request("GET", "/liveness")
-    if "error" in response:
-        result.failure("GET /api/liveness - Liveness probe", response["error"])
-    elif response["status_code"] == 200:
-        result.success("GET /api/liveness - Liveness probe", "Kubernetes liveness OK")
-    else:
-        result.failure("GET /api/liveness - Liveness probe", f"HTTP {response['status_code']}")
-    
-    # Test system info
-    response = make_request("GET", "/system/info")
-    if "error" in response:
-        result.failure("GET /api/system/info - System info", response["error"])
-    elif response["status_code"] == 200:
-        data = response["data"]
-        if isinstance(data, dict):
-            result.success("GET /api/system/info - System info", f"System info retrieved")
-        else:
-            result.failure("GET /api/system/info - System info", "Invalid response format")
-    else:
-        result.failure("GET /api/system/info - System info", f"HTTP {response['status_code']}")
-
-def test_cs_bible_routes(result: TestResult):
-    """Test CS Bible Routes (Modular)"""
-    print(f"\n{Colors.BOLD}{Colors.PURPLE}📚 TESTING CS BIBLE ROUTES{Colors.END}")
-    
-    # Test full curriculum overview
-    response = make_request("GET", "/bible")
-    if "error" in response:
-        result.failure("GET /api/bible - Full curriculum overview", response["error"])
-    elif response["status_code"] == 200:
-        data = response["data"]
-        if isinstance(data, dict) and "total_years" in data and "total_courses" in data:
-            result.success("GET /api/bible - Full curriculum overview", 
-                         f"Years: {data.get('total_years')}, Courses: {data.get('total_courses')}, Hours: {data.get('total_hours')}")
-        else:
-            result.failure("GET /api/bible - Full curriculum overview", "Missing expected fields")
-    else:
-        result.failure("GET /api/bible - Full curriculum overview", f"HTTP {response['status_code']}")
-    
-    # Test Year 1 details
-    response = make_request("GET", "/bible/year/1")
-    if "error" in response:
-        result.failure("GET /api/bible/year/1 - Year 1 details", response["error"])
-    elif response["status_code"] == 200:
-        data = response["data"]
-        if isinstance(data, dict) and "year" in data:
-            result.success("GET /api/bible/year/1 - Year 1 details", 
-                         f"Year {data.get('year')}: {data.get('name', 'N/A')}")
-        else:
-            result.failure("GET /api/bible/year/1 - Year 1 details", "Missing expected fields")
-    else:
-        result.failure("GET /api/bible/year/1 - Year 1 details", f"HTTP {response['status_code']}")
-    
-    # Test CS 101 course
-    response = make_request("GET", "/bible/course/y1_cs101")
-    if "error" in response:
-        result.failure("GET /api/bible/course/y1_cs101 - CS 101 course", response["error"])
-    elif response["status_code"] == 200:
-        data = response["data"]
-        if isinstance(data, dict) and "id" in data and "title" in data:
-            result.success("GET /api/bible/course/y1_cs101 - CS 101 course", 
-                         f"Course: {data.get('title')}")
-        else:
-            result.failure("GET /api/bible/course/y1_cs101 - CS 101 course", "Missing expected fields")
-    else:
-        result.failure("GET /api/bible/course/y1_cs101 - CS 101 course", f"HTTP {response['status_code']}")
-    
-    # Test all tracks
-    response = make_request("GET", "/bible/tracks")
-    if "error" in response:
-        result.failure("GET /api/bible/tracks - All 8 tracks", response["error"])
-    elif response["status_code"] == 200:
-        data = response["data"]
-        if isinstance(data, list) and len(data) == 8:
-            track_names = [track.get('name', 'Unknown') for track in data if isinstance(track, dict)]
-            result.success("GET /api/bible/tracks - All 8 tracks", f"Found {len(data)} tracks")
-        else:
-            result.failure("GET /api/bible/tracks - All 8 tracks", f"Expected 8 tracks, got: {len(data) if isinstance(data, list) else 'Invalid format'}")
-    else:
-        result.failure("GET /api/bible/tracks - All 8 tracks", f"HTTP {response['status_code']}")
-    
-    # Test certification path
-    response = make_request("GET", "/bible/certifications")
-    if "error" in response:
-        result.failure("GET /api/bible/certifications - Certification path", response["error"])
-    elif response["status_code"] == 200:
-        data = response["data"]
-        if isinstance(data, dict) and "levels" in data and len(data["levels"]) >= 5:
-            result.success("GET /api/bible/certifications - Certification path", 
-                         f"Found {len(data['levels'])} certifications")
-        else:
-            result.failure("GET /api/bible/certifications - Certification path", f"Expected certification levels, got: {data}")
-    else:
-        result.failure("GET /api/bible/certifications - Certification path", f"HTTP {response['status_code']}")
-
-def test_compiler_routes(result: TestResult):
-    """Test Compiler Routes (Modular)"""
-    print(f"\n{Colors.BOLD}{Colors.YELLOW}⚙️ TESTING COMPILER ROUTES{Colors.END}")
-    
-    # Test available sanitizers
-    response = make_request("GET", "/compiler/sanitizers")
-    if "error" in response:
-        result.failure("GET /api/compiler/sanitizers - Available sanitizers", response["error"])
-    elif response["status_code"] == 200:
-        data = response["data"]
-        if isinstance(data, dict) and "sanitizers" in data and len(data["sanitizers"]) > 0:
-            sanitizers = data["sanitizers"]
-            result.success("GET /api/compiler/sanitizers - Available sanitizers", 
-                         f"Found {len(sanitizers)} sanitizers")
-        else:
-            result.failure("GET /api/compiler/sanitizers - Available sanitizers", "No sanitizers found")
-    else:
-        result.failure("GET /api/compiler/sanitizers - Available sanitizers", f"HTTP {response['status_code']}")
-    
-    # Test available optimizers
-    response = make_request("GET", "/compiler/optimizers")
-    if "error" in response:
-        result.failure("GET /api/compiler/optimizers - Available optimizers", response["error"])
-    elif response["status_code"] == 200:
-        data = response["data"]
-        if isinstance(data, dict) and "optimizers" in data and len(data["optimizers"]) > 0:
-            optimizers = data["optimizers"]
-            result.success("GET /api/compiler/optimizers - Available optimizers", 
-                         f"Found {len(optimizers)} optimizers")
-        else:
-            result.failure("GET /api/compiler/optimizers - Available optimizers", "No optimizers found")
-    else:
-        result.failure("GET /api/compiler/optimizers - Available optimizers", f"HTTP {response['status_code']}")
-    
-    # Test compile code
-    compile_request = {
-        "code": 'print("Hello from compiler test!")',
-        "language": "python",
-        "sanitizers": ["memory"],
-        "optimizers": ["basic"]
-    }
-    response = make_request("POST", "/compiler/compile", compile_request)
-    if "error" in response:
-        result.failure("POST /api/compiler/compile - Compile code", response["error"])
-    elif response["status_code"] == 200:
-        data = response["data"]
-        if isinstance(data, dict) and "success" in data and data.get("success"):
-            result.success("POST /api/compiler/compile - Compile code", 
-                         f"Compilation successful, {len(data.get('stages', []))} stages completed")
-        else:
-            result.failure("POST /api/compiler/compile - Compile code", "Compilation failed or invalid response")
-    else:
-        result.failure("POST /api/compiler/compile - Compile code", f"HTTP {response['status_code']}")
-
-def test_hub_routes(result: TestResult):
-    """Test Hub Routes (Modular)"""
-    print(f"\n{Colors.BOLD}{Colors.CYAN}🚀 TESTING HUB ROUTES{Colors.END}")
-    
-    # Test hub info
-    response = make_request("GET", "/v9/info")
-    if "error" in response:
-        result.failure("GET /api/v9/info - Hub info", response["error"])
-    elif response["status_code"] == 200:
-        data = response["data"]
-        if isinstance(data, dict):
-            result.success("GET /api/v9/info - Hub info", f"Hub version: {data.get('version', 'N/A')}")
-        else:
-            result.failure("GET /api/v9/info - Hub info", "Invalid response format")
-    else:
-        result.failure("GET /api/v9/info - Hub info", f"HTTP {response['status_code']}")
-    
-    # Test language packs (should be 64)
-    response = make_request("GET", "/language-packs")
-    if "error" in response:
-        result.failure("GET /api/language-packs - All language packs", response["error"])
-    elif response["status_code"] == 200:
-        data = response["data"]
-        if isinstance(data, dict) and "packs" in data:
-            packs = data["packs"]
-            result.success("GET /api/language-packs - All language packs", 
-                         f"Found {len(packs)} language packs (expected 64)")
-        else:
-            result.failure("GET /api/language-packs - All language packs", "Invalid response format")
-    else:
-        result.failure("GET /api/language-packs - All language packs", f"HTTP {response['status_code']}")
-    
-    # Test expansion packs (should be 10)
-    response = make_request("GET", "/expansions")
-    if "error" in response:
-        result.failure("GET /api/expansions - All expansion packs", response["error"])
-    elif response["status_code"] == 200:
-        data = response["data"]
-        if isinstance(data, dict) and "expansions" in data:
-            expansions = data["expansions"]
-            result.success("GET /api/expansions - All expansion packs", 
-                         f"Found {len(expansions)} expansion packs (expected 10)")
-        else:
-            result.failure("GET /api/expansions - All expansion packs", "Invalid response format")
-    else:
-        result.failure("GET /api/expansions - All expansion packs", f"HTTP {response['status_code']}")
-    
-    # Test algorithms
-    response = make_request("GET", "/algorithms")
-    if "error" in response:
-        result.failure("GET /api/algorithms - All algorithms", response["error"])
-    elif response["status_code"] == 200:
-        data = response["data"]
-        if isinstance(data, dict) and "algorithms" in data:
-            algorithms = data["algorithms"]
-            total_algorithms = sum(len(category) for category in algorithms.values())
-            result.success("GET /api/algorithms - All algorithms", f"Found {total_algorithms} algorithms in {len(algorithms)} categories")
-        else:
-            result.failure("GET /api/algorithms - All algorithms", "Invalid response format")
-    else:
-        result.failure("GET /api/algorithms - All algorithms", f"HTTP {response['status_code']}")
-
-def test_ai_routes(result: TestResult):
-    """Test AI Routes (Modular)"""
-    print(f"\n{Colors.BOLD}{Colors.PURPLE}🤖 TESTING AI ROUTES{Colors.END}")
-    
-    # Test AI modes
-    response = make_request("GET", "/ai/modes")
-    if "error" in response:
-        result.failure("GET /api/ai/modes - AI assistance modes", response["error"])
-    elif response["status_code"] == 200:
-        data = response["data"]
-        if isinstance(data, dict) and "modes" in data and len(data["modes"]) > 0:
-            modes = data["modes"]
-            result.success("GET /api/ai/modes - AI assistance modes", 
-                         f"Found {len(modes)} AI modes")
-        else:
-            result.failure("GET /api/ai/modes - AI assistance modes", "No AI modes found")
-    else:
-        result.failure("GET /api/ai/modes - AI assistance modes", f"HTTP {response['status_code']}")
-    
-    # Test AI providers
-    response = make_request("GET", "/ai/hub/providers")
-    if "error" in response:
-        result.failure("GET /api/ai/hub/providers - AI providers", response["error"])
-    elif response["status_code"] == 200:
-        data = response["data"]
-        if isinstance(data, dict) and "providers" in data and len(data["providers"]) > 0:
-            providers = data["providers"]
-            result.success("GET /api/ai/hub/providers - AI providers", 
-                         f"Found {len(providers)} providers")
-        else:
-            result.failure("GET /api/ai/hub/providers - AI providers", "No AI providers found")
-    else:
-        result.failure("GET /api/ai/hub/providers - AI providers", f"HTTP {response['status_code']}")
-    
-    # Test AI assistance
-    ai_request = {
-        "code": 'def hello():\n    print("Hello World")',
-        "language": "python",
-        "mode": "explain"
-    }
-    response = make_request("POST", "/ai/assist", ai_request)
-    if "error" in response:
-        result.failure("POST /api/ai/assist - Get AI assistance", response["error"])
-    elif response["status_code"] == 200:
-        data = response["data"]
-        if isinstance(data, dict) and "suggestion" in data:
-            result.success("POST /api/ai/assist - Get AI assistance", 
-                         f"AI mode: {data.get('mode')}, Response received")
-        else:
-            result.failure("POST /api/ai/assist - Get AI assistance", "Invalid response format")
-    else:
-        result.failure("POST /api/ai/assist - Get AI assistance", f"HTTP {response['status_code']}")
-
-def test_core_routes(result: TestResult):
-    """Test Core Routes"""
-    print(f"\n{Colors.BOLD}{Colors.GREEN}🔧 TESTING CORE ROUTES{Colors.END}")
-    
-    # Test available languages
-    response = make_request("GET", "/languages")
-    if "error" in response:
-        result.failure("GET /api/languages - Available languages", response["error"])
-    elif response["status_code"] == 200:
-        data = response["data"]
-        if isinstance(data, dict) and "languages" in data and len(data["languages"]) > 0:
-            languages = data["languages"]
-            executable_count = sum(1 for lang in languages if isinstance(lang, dict) and lang.get('executable', False))
-            result.success("GET /api/languages - Available languages", 
-                         f"Found {len(languages)} languages, {executable_count} executable")
-        else:
-            result.failure("GET /api/languages - Available languages", "No languages found or invalid format")
-    else:
-        result.failure("GET /api/languages - Available languages", f"HTTP {response['status_code']}")
-    
-    # Test code execution
-    execute_request = {
-        "code": 'print("test")',
-        "language": "python"
-    }
-    response = make_request("POST", "/execute", execute_request)
-    if "error" in response:
-        result.failure("POST /api/execute - Execute code", response["error"])
-    elif response["status_code"] == 200:
-        data = response["data"]
-        if isinstance(data, dict) and "result" in data:
-            result.success("POST /api/execute - Execute code", 
-                         f"Execution status: {data.get('result', {}).get('status', 'Unknown')}")
-        else:
-            result.failure("POST /api/execute - Execute code", "Invalid response format")
-    else:
-        result.failure("POST /api/execute - Execute code", f"HTTP {response['status_code']}")
-    
-    # Test tutorial steps
-    response = make_request("GET", "/tutorial/steps")
-    if "error" in response:
-        result.failure("GET /api/tutorial/steps - Tutorial steps", response["error"])
-    elif response["status_code"] == 200:
-        data = response["data"]
-        if isinstance(data, dict) and "steps" in data and len(data["steps"]) > 0:
-            steps = data["steps"]
-            result.success("GET /api/tutorial/steps - Tutorial steps", f"Found {len(steps)} tutorial steps")
-        else:
-            result.failure("GET /api/tutorial/steps - Tutorial steps", "No tutorial steps found")
-    else:
-        result.failure("GET /api/tutorial/steps - Tutorial steps", f"HTTP {response['status_code']}")
-
-def main():
-    """Run comprehensive backend API tests"""
-    print(f"{Colors.BOLD}{Colors.WHITE}{'='*80}{Colors.END}")
-    print(f"{Colors.BOLD}{Colors.WHITE}CodeDock v11.0.0 Ultimate Coding Platform - Backend API Testing{Colors.END}")
-    print(f"{Colors.BOLD}{Colors.WHITE}Testing Backend: {BACKEND_URL}{Colors.END}")
-    print(f"{Colors.BOLD}{Colors.WHITE}{'='*80}{Colors.END}")
-    
-    result = TestResult()
-    
-    # Run NEW v11.0.0 test suites first (Priority High)
-    test_vault_system_routes(result)  # NEW - Priority High
-    test_curriculum_engine_upgraded(result)  # UPGRADED - 10 classes
-    test_ai_pipeline_routes(result)  # VERIFY FIXED
-    test_existing_core_routes(result)
-    
-    # Print summary
-    result.summary()
-    
-    # Return exit code based on results
-    return 0 if result.failed == 0 else 1
+    return success
 
 if __name__ == "__main__":
-    exit_code = main()
-    sys.exit(exit_code)
+    try:
+        success = asyncio.run(main())
+        sys.exit(0 if success else 1)
+    except KeyboardInterrupt:
+        print("\n⚠️  Testing interrupted by user")
+        sys.exit(1)
+    except Exception as e:
+        print(f"\n💥 Testing failed with error: {e}")
+        sys.exit(1)

@@ -160,7 +160,7 @@ including colors, composition, lighting, style, and mood."""
         
         response = await asyncio.to_thread(
             chat.send_message,
-            UserMessage(content=image_prompt)
+            UserMessage(text=image_prompt)
         )
         
         return {

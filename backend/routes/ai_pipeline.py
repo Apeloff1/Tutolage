@@ -14,12 +14,18 @@ from pydantic import BaseModel, Field
 from typing import Optional, List, Dict, Any, Literal
 from datetime import datetime
 from enum import Enum
+from pathlib import Path
+from dotenv import load_dotenv
 import uuid
 import base64
 import asyncio
 import os
 import json
 import hashlib
+
+# Load environment
+ROOT_DIR = Path(__file__).parent.parent
+load_dotenv(ROOT_DIR / '.env')
 
 # AI Integrations
 from emergentintegrations.llm.chat import LlmChat, UserMessage

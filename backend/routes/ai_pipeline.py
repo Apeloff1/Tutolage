@@ -101,18 +101,16 @@ async def call_gpt4o(prompt: str, system_prompt: str = None, max_tokens: int = 4
     """Call GPT-4o via Emergent LLM Key"""
     try:
         chat = LlmChat(
-            api_key=EMERGENT_LLM_KEY,
-            model="gpt-4o"
+            api_key=EMERGENT_LLM_KEY
         )
         
-        messages = []
+        full_prompt = prompt
         if system_prompt:
-            messages.append({"role": "system", "content": system_prompt})
-        messages.append({"role": "user", "content": prompt})
+            full_prompt = f"{system_prompt}\n\n{prompt}"
         
         response = await asyncio.to_thread(
             chat.send_message,
-            UserMessage(content=prompt)
+            UserMessage(content=full_prompt)
         )
         
         return response.content if hasattr(response, 'content') else str(response)

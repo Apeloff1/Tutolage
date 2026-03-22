@@ -209,6 +209,8 @@ async def create_code_block(block: CodeBlockCreate, user_id: str = "default_user
     await code_vault.insert_one(doc)
     await log_activity("create", VaultType.CODE, block_id, user_id, {"title": block.title})
     
+    # Remove MongoDB _id for JSON serialization
+    doc.pop("_id", None)
     return {"status": "created", "id": block_id, "block": doc}
 
 @router.get("/code")
@@ -344,6 +346,8 @@ async def create_asset(asset: AssetCreate, user_id: str = "default_user"):
     await asset_vault.insert_one(doc)
     await log_activity("create", VaultType.ASSET, asset_id, user_id, {"name": asset.name, "type": asset.asset_type})
     
+    # Remove MongoDB _id for JSON serialization
+    doc.pop("_id", None)
     return {"status": "created", "id": asset_id, "asset": {**doc, "content_base64": "[STORED]" if asset.content_base64 else None}}
 
 @router.get("/asset")
@@ -438,6 +442,8 @@ async def create_database_schema(schema: DatabaseSchemaCreate, user_id: str = "d
     await database_vault.insert_one(doc)
     await log_activity("create", VaultType.DATABASE, schema_id, user_id, {"name": schema.name})
     
+    # Remove MongoDB _id for JSON serialization
+    doc.pop("_id", None)
     return {"status": "created", "id": schema_id, "schema": doc}
 
 @router.get("/database")
@@ -522,6 +528,8 @@ async def create_learning_data(data: LearningDataCreate, user_id: str = "default
     await learning_vault.insert_one(doc)
     await log_activity("create", VaultType.LEARNING, data_id, user_id, {"type": data.data_type, "title": data.title})
     
+    # Remove MongoDB _id for JSON serialization
+    doc.pop("_id", None)
     return {"status": "created", "id": data_id, "data": doc}
 
 @router.get("/learning")

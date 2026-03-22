@@ -2352,10 +2352,33 @@ Learn to design, implement, and optimize database solutions for real-world appli
 # COMPLETE CS CLASSES REGISTRY
 # ============================================================================
 
+# Import advanced classes
+from cs_classes_advanced import (
+    OPERATING_SYSTEMS_COURSE,
+    COMPUTER_NETWORKS_COURSE,
+    COMPILER_DESIGN_COURSE,
+    GAME_DEV_FUNDAMENTALS_COURSE,
+    GAME_ENGINE_COURSE,
+    GRAPHICS_PROGRAMMING_COURSE,
+    GAME_AI_PHYSICS_COURSE
+)
+
 CS_CLASSES = {
+    # Core CS Courses
     "data_structures": DATA_STRUCTURES_COURSE,
     "oop": OOP_COURSE,
-    "databases": DATABASE_COURSE
+    "databases": DATABASE_COURSE,
+    
+    # Advanced CS Courses
+    "operating_systems": OPERATING_SYSTEMS_COURSE,
+    "networks": COMPUTER_NETWORKS_COURSE,
+    "compilers": COMPILER_DESIGN_COURSE,
+    
+    # Game Development Track
+    "gamedev_fundamentals": GAME_DEV_FUNDAMENTALS_COURSE,
+    "game_engine": GAME_ENGINE_COURSE,
+    "graphics_programming": GRAPHICS_PROGRAMMING_COURSE,
+    "game_ai_physics": GAME_AI_PHYSICS_COURSE
 }
 
 def get_class(class_id: str) -> dict:

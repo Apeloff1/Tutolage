@@ -1,40 +1,49 @@
 <analysis>
 
 <original_problem_statement>
-The user wants to build a feature-rich, mobile-first code compiler application named CodeDock. The project has evolved through several major versions and feature requests.
+The user wants to continue the massive expansion of the CodeDock application, transforming it into an Ultimate Coding Platform.
 
-- **Initial MVP &amp; Expansions:** A mobile code compiler with multiple languages, AI assistance, a Coding Bible tutorial, and ambient music.
-- **Massive Refactoring:** A request to refactor the frontend from a single monolithic file into a modern, component-based architecture.
-- **Quantum Compiler Suite (v6.0.0):** An ambitious request to add a god-tier compiler interface with features like Agentic Compilation (AI-powered analysis), Sanitizers (memory, thread, behavior), and advanced Optimizers (LTO, PGO). The UI for this was implemented.
-- **Ultimate Galaxy Edition (v7.0.0):** A further expansion request for even more advanced features, including an Interactive Compiler Pipeline Visualizer, Git-like versioning (Starlog), a Learning Intelligence Dashboard, and a Voice Command Interface. The UI for these was implemented.
-- **Multiplayer &amp; Real Backend (v8.0.0):** Implemented real-time multiplayer collaboration using Y.js and a real, functional compilation backend, replacing previous mock data.
-- **Ultimate Hub (v9.0.0):** A massive backend and frontend expansion to create an Ultimate Hub with language packs, expansion packs, an algorithm browser, and an AI Lab for generating feature suggestions using GPT-4o.
-- **Current Request:** Expand the Coding Bible into a massive, 15-year multi-class computer science curriculum, covering topics from fundamentals to PhD-level research.
+The initial request for this session was to build a 15-year Computer Science curriculum and stabilize the development environment. This has evolved into a much larger set of requirements:
 
-PRODUCT REQUIREMENTS: The application should be the most technically impressive, educationally powerful, and delightfully immersive compiler in the known galaxy, designed to impress even god-tier coders with 15+ years of experience. It should be self-improving via AI and highly extensible.
+**Latest User Requests (v11.0 and beyond):**
+1.  **Full AI Asset Pipeline:** Create a comprehensive set of AI APIs, including:
+    *   Text-to-Asset generation (code, images, etc.).
+    *   Integrate OpenAI, Gemini, and Grok (including the new Imagine API).
+    *   Build a full code to program/app/game pipeline system.
+2.  **Massive Educational Expansion:**
+    *   Expand the Computer Science curriculum to include in-depth, advanced classes on Data Structures, OOP, and Databases.
+    *   Add a new Game Coding Specializations track.
+    *   Build a Curriculum Engine to manage and serve this content.
+3.  **Content & Asset Vaults:**
+    *   Create a Database Vault, a Code Block Vault, and an Asset Vault.
+    *   Ensure all work is logged and catalogued.
+4.  **Platform Expansion:**
+    *   Expand the scope of the mobile app to be a full coding experience for mobile and PC.
+
+PRODUCT REQUIREMENTS: The application should be the most technically impressive, educationally powerful, and delightfully immersive compiler in the known galaxy, designed to impress even god-tier coders with 15+ years of experience. It should be self-improving via AI and highly extensible. The latest requests push this vision even further towards a comprehensive, AI-driven development and learning ecosystem.
 </original_problem_statement>
 
 **User's preferred language**: English
 
 **what currently exists?**
-The application is a highly advanced mobile code editor (Expo/React Native) with a powerful FastAPI backend.
+The backend has been significantly enhanced and refactored. The application is now at a conceptual **v11.0**.
 
-**Key Functional Features:**
-- **Real-Time Multiplayer:** Fully functional real-time collaboration using Y.js and WebRTC.
-- **Quantum Compiler Suite:** A sophisticated compiler interface connected to a **real backend**. It provides detailed code analysis, sanitizer results, optimizer toggles, and AI-driven performance suggestions.
-- **Ultimate Hub:** A new section of the app featuring:
-    - **Language & Expansion Pack Browsers:** UI connected to a backend that serves 64 language packs and 10 expansion packs.
-    - **Algorithm Browser:** UI connected to a backend serving details on 35+ compilation algorithms.
-    - **AI Feature Lab:** A modal that connects to the backend, which in turn queries GPT-4o to generate real, context-aware feature suggestions for the app itself.
-- **Advanced Backend Endpoints:** The backend has functional (but not fully UI-integrated) endpoints for Git-like versioning (Starlog), hardware-accurate benchmark simulation, and formal verification.
+- **Production-Ready Backend Refactor:** The previously monolithic  (over 6,000 lines) has been successfully refactored into a modular, production-ready architecture using FastAPI's . Logic is now separated into , , and .
+- **Completed 15-Year CS Bible (v10.0):** The massive 15-year computer science curriculum has been fully implemented in  and is served via dedicated, tested API endpoints.
+- **Functional AI Pipeline (v11.0):** A new  route has been created and debugged. It successfully handles text-to-code generation using the  library and the  for GPT-4o. The foundation is laid for other AI models.
+- **Scaffolding for New Features (v11.0):** New files and data structures have been created to support the latest user requests:
+    - : Contains new courses for Data Structures, OOP, and Databases.
+    - : Contains new Game Development specialization courses.
+    - : A new router to serve all curriculum content.
+    - : A new, placeholder router for the vault system.
 
-The agent has just begun the latest user request: building a massive 15-year computer science curriculum. A new file, , has been created to house this extensive data.
+The frontend is stable and functional but **does not yet have any UI** to interact with the new v11 features (AI Pipeline, new CS classes, vaults).
 
 **Last working item**:
-    - Last item agent was working: Building a massive 15-year Computer Science curriculum to replace the existing Compilation Bible. The agent created a new file  to store the large data structure, with the intention of importing it into the main  file.
+    - Last item agent was working: Integrating the newly created advanced CS classes (from ) and the base CS classes (from ) into the curriculum system. The agent was in the middle of editing  and  to merge and serve all the new course data. It had also just created the placeholder file for the Vault system.
     - Status: IN PROGRESS
     - Agent Testing Done: N
-    - Which testing method agent to use? backend testing agent. Once the new curriculum is implemented, the agent must test the  endpoints to ensure they serve the new, complex data structure correctly.
+    - Which testing method agent to use? backend testing agent. After the new classes and vaults are integrated, all endpoints under  and  must be thoroughly tested.
     - User Testing Done: N
 
 **All Pending/In progress Issue list**:
@@ -42,60 +51,138 @@ The agent has just begun the latest user request: building a massive 15-year com
 
   Issues Detail:
   - Issue 1: 
-     - **Description**: The development environment's Expo/Ngrok tunnel is extremely unstable, frequently leading to Cloudflare 520 errors. This severely hinders frontend development and verification, consuming a significant amount of time in restarts and debugging. The user has explicitly requested to Stabilize tunnels.
-     - **Attempted fixes**: The agent has repeatedly restarted Expo, cleared the cache, and used the . The core issue appears to be the Metro bundler process crashing or failing to bind to port 3000 within the container, which the tunnel relies on.
+     - **Description**: The development environment's Expo/Ngrok tunnel is unstable, frequently failing to start the Metro bundler or connect properly. This was the first issue encountered in the session and remains unresolved, requiring repeated restarts and checks. The user explicitly requested to Stabilize tunnels.
+     - **Attempted fixes**: The agent has repeatedly restarted the 
+  Usage: expo [command] [options]
+
+  Options:
+  
+    -V, --version                     output the version number
+    --non-interactive                 Fail, if an interactive prompt would be required to continue.
+    -h, --help                        output usage information
+  
+  Commands:
+
+    init [name]                       Create a new Expo project
+    start [path]                      Start a local dev server for the app
+    start:web [path]                  Start a Webpack dev server for the web app
+    export [path]                     Export the static files of the app for hosting it on a web server
+    install [packages...]             Install a module or other package to a project
+    run:android [path]                Run the Android app binary locally
+    run:ios [path]                    Run the iOS app binary locally
+    send [path]                       Share the project's URL to an email address
+
+    login                             Login to an Expo account
+    logout                            Logout of an Expo account
+    register                          Sign up for a new Expo account
+    whoami                            Return the currently authenticated account
+
+    client:install:ios                Install Expo Go for iOS on the simulator
+    client:install:android            Install Expo Go for Android on a connected device or emulator
+
+    config [path]                     Show the project config
+    doctor [path]                     Diagnose issues with the project
+    upgrade [sdk-version]             Upgrade the project packages and config for the given SDK version
+
+    customize:web [path]              Eject the default web files for customization
+    prebuild [path]                   Create native iOS and Android project files before building natively.
+                                      Learn more: https://docs.expo.dev/workflow/customizing/
+
+    build:web [path]                  Build the web app for production
+
+    credentials:manager [path]        Superseded by eas credentials in eas-cli
+
+    url [path]                        Log a URL for opening the project in Expo Go
+    url:ipa [path]                    Log the download URL for the standalone iOS binary
+    url:apk [path]                    Log the download URL for the standalone Android binary
+
+    webhooks [path]                   List all webhooks for a project
+    webhooks:add [path]               Add a webhook to a project
+    webhooks:remove [path]            Delete a webhook
+    webhooks:update [path]            Update an existing webhook
+
+    build:ios [path]                  Superseded by eas build in eas-cli
+    build:android [path]              Superseded by eas build in eas-cli
+    build:status [path]               Superseded by eas build:list in eas-cli
+    eject [path]                      Superseded by expo prebuild
+    fetch:ios:certs [path]            Superseded by eas credentials in eas-cli
+    fetch:android:keystore [path]     Superseded by eas credentials in eas-cli
+    fetch:android:hashes [path]       Superseded by eas credentials in eas-cli
+    fetch:android:upload-cert [path]  Superseded by eas credentials in eas-cli
+    publish [path]                    Superseded by eas update in eas-cli
+    publish:set [path]                Superseded by eas update:republish in eas-cli
+    publish:rollback [path]           Superseded by eas update:republish in eas-cli
+    publish:history [path]            Superseded by eas update:list in eas-cli
+    publish:details [path]            Superseded by eas update:view in eas-cli
+    push:android:upload [path]        Superseded by eas credentials in eas-cli
+    push:android:show [path]          Superseded by eas credentials in eas-cli
+    push:android:clear [path]         Superseded by eas credentials in eas-cli
+    upload:android [path]             Superseded by eas submit in eas-cli
+    upload:ios [path]                 Superseded by eas submit in eas-cli
+    client:ios [path]                 Superseded by Expo Dev Clients
+
+[03:51:03]   Run a command with --help for more info 💡
+[03:51:03]     $ expo start --help
+[03:51:03] service via backend                          STOPPED   Mar 22 03:51 AM
+code-server                      STOPPED   Not started
+expo                             STOPPED   Mar 22 03:51 AM
+mongodb                          RUNNING   pid 122, uptime 0:00:05
+nginx-code-proxy                 RUNNING   pid 118, uptime 0:00:05
+supervisor> . This is a temporary workaround, not a fix.
      - **Next debug checklist**: 
-        1. Investigate the supervisor logs () for the root cause of Metro bundler crashes.
-        2. Check for potential memory or resource limits within the container that might be killing the process.
-        3. Before trusting the Tunnel connected message, always verify the Metro bundler is responsive locally using .
-     - Why fix this issue and what will be achieved with the fix? A stable development environment is critical for development velocity and will eliminate the single biggest bottleneck in the current workflow.
+        1. Investigate the supervisor logs ( and ) for the root cause of Metro bundler crashes immediately after a failed start.
+        2. Check for port conflicts or resource limitations within the container.
+        3. Use  to verify Metro's responsiveness before relying on the tunnel status.
+     - Why fix this issue and what will be achieved with the fix? Fixing this is critical for any frontend development. It will eliminate the biggest bottleneck and source of wasted time in the current workflow.
      - Status:  NOT STARTED
      - Is recurring issue? Y
      - Should Test frontend/backend/both after fix? frontend
      - Blocked on other issue: None.
 
 **In progress Task List**:
-  - Task 1: (P0) Implement the 15-Year Computer Science Bible
+  - Task 1: (P0) Complete Integration of Advanced CS Classes & Vault System
      - **Where to resume**: 
-        1. Populate the newly created file  with the comprehensive 15-year curriculum data structure.
-        2. Modify  to import the  dictionary from .
-        3. Replace the old  variable with the new, imported one.
-        4. Thoroughly test the updated bible API endpoints (, ) to ensure they handle the massive new dataset correctly.
-     - What will be achieved with this? This will fulfill a key user request, transforming the app's educational component into an unparalleled, university-level resource.
+        1. Finish modifying  to correctly import and merge the  from .
+        2. Finish updating  to serve the complete, merged list of all courses.
+        3. Populate  with the actual API logic for the Database, Code Block, and Asset vaults.
+        4. Integrate the new  into the main  file.
+        5. Run the  agent to test all new  and  endpoints.
+     - What will be achieved with this? This will complete the backend implementation for two of the user's major new feature requests.
      - Status:  IN PROGRESS
      - Should Test frontend/backend/both after fix? backend
      - Blocked on something: None.
 
 **Upcoming and Future Tasks**
   Upcoming Tasks:
-    - **(P1) Connect UI to Advanced Backend Features:** The backend has several powerful features that are not yet accessible from the UI.
-        - **Starlog Version Control:** Integrate the  endpoints into the editor UI.
-        - **Benchmark Simulator:** Create a UI to trigger and display results from .
-        - **Formal Verification:** Build a UI to interact with the  sandbox.
-        - **Learning Dashboard:** Connect the existing UI to the  endpoint to show real user progress.
-    - **(P2) Enhance Ultimate Hub Frontend:**
-        - **Algorithm Visualizer:** Connect the  component to the  endpoint to display dynamic visualizations.
-        - **Bible Reader:** Enhance the  component to support the new 15-year curriculum's nested structure (Years > Courses > Chapters > Lessons).
+    - **(P0) Build Frontend for v11 Features:** Create the UI to interact with all the new backend functionality.
+        - **AI Pipeline UI:** A screen to input prompts for text-to-code and text-to-image and display the results.
+        - **Curriculum Browser UI:** Update the existing Bible UI to handle the new, much larger and more structured set of courses (including Game Dev, OOP, DBs).
+        - **Vaults UI:** A new section in the app to browse and manage the Database, Code Block, and Asset vaults.
+    - **(P1) Implement Code-to-App Pipeline:** Design and build the backend logic and API for the full code to program/app/game pipeline system. This is a major, complex feature.
+    - **(P2) Connect UI to Advanced Backend Features (from v8):** The UI still lacks integration for several existing backend features:
+        - **Starlog Version Control:** Integrate the  endpoints.
+        - **Benchmark Simulator:** UI for .
+        - **Formal Verification:** UI for .
 
   Future Tasks:
-    - **Self-Implementing AI:** Build the logic for the app to act on the suggestions from the AI Feature Lab, potentially using an LLM to write and apply code patches.
-    - **Predictive Self-Upgrading:** Evolve the AI to predict user needs and proactively suggest or implement upgrades.
-    - **Import/Export:** Implement functionality to import and export user projects and settings.
-    - **Full Filetype Support:** Ensure the editor and backend fully support all 64 advertised language packs.
+    - **AI Expansion:** Integrate Grok and Gemini Imagine APIs into the AI pipeline.
+    - **Self-Implementing AI:** Build logic for the app to act on AI-generated suggestions.
+    - **PC Experience:** Adapt the UI and features for a full desktop/PC experience.
+    - **Full Filetype Support:** Ensure the editor fully supports all 64 advertised language packs.
 
 **Completed work in this session**
-- **Real Compilation Backend (v8.0.0):** Created and connected a functional backend for the Quantum Compiler Suite, replacing all mock data with live analysis results from FastAPI endpoints.
-- **Multiplayer Collaboration (v8.0.0):** Successfully integrated and tested the full real-time collaboration feature using Y.js.
-- **Ultimate Hub Backend (v9.0.0):** Massively expanded  to include a rich set of APIs for language packs, expansion packs, algorithms, and an AI-powered feature suggestion system using GPT-4o.
-- **Ultimate Hub Frontend (v9.0.0):** Built and integrated a new Ultimate Hub modal that browses content from the new backend APIs, and an AI Lab modal that displays real-time feature suggestions from GPT-4o.
-- **Technical Debt Management:** Fixed numerous TypeScript errors and correctly identified the recurring Expo/Ngrok tunnel instability as a major blocker.
+- **Production Backend Refactor (DONE):** Successfully modularized the entire FastAPI backend from one massive  file into a clean, scalable structure with separate routers for each feature area (, , , , etc.).
+- **15-Year CS Bible Implementation (v10.0) (DONE):** Created, integrated, and tested a massive data structure and corresponding API for a comprehensive computer science curriculum.
+- **AI Pipeline Implementation (v11.0) (DONE):** Built and debugged a functional text-to-code generation API endpoint () that correctly uses the Emergent LLM Key.
+- **Scaffolding for v11 Expansion (DONE):** Created all the necessary files (, , , ) for the next wave of features.
+- **AI Integration Bug Fixes (DONE):** Successfully debugged a series of issues with the  library, including missing arguments (, ), incorrect parameter names ( vs ), and missing environment variable loading ().
 
 **Earlier issues found/mentioned but not fixed**
-   - The root cause of the Expo/Ngrok tunnel instability has not been resolved. It is a persistent and time-consuming problem that was specifically mentioned by the user to be fixed.
+   - **Issue 1**: The root cause of the Expo/Ngrok tunnel instability has not been resolved. The agent only uses a workaround (restarting the service) and has not performed a deep diagnosis to fix it permanently, despite the user's request.
 
 **Known issue recurrence from previous fork**
   - Issue recurrence in previous fork: Expo Tunnel Connectivity.
-  - Recurrence count: High (occurred dozens of times in this session).
+  - Recurrence count: High (occurred multiple times, causing delays).
   - Status: NOT STARTED (Workaround of restarting is used).
 
 **Code Architecture**
@@ -104,63 +191,79 @@ The agent has just begun the latest user request: building a massive 15-year com
 **Key Technical Concepts**
 - **Frontend**: Expo (React Native), TypeScript.
 - **Backend**: FastAPI (Python), MongoDB.
-- **Real-time**: Y.js, y-webrtc.
-- **AI/LLM**: GPT-4o integration on the backend for generating feature suggestions.
-- **Architecture**: Structured Monolith. Feature logic is encapsulated, but global state in  is becoming complex.
+- **Architecture**: Modular Monolith. The backend is now highly organized with FastAPI's  to separate concerns.
+- **AI/LLM**: GPT-4o integration via  library and .
 
 **key DB schema**
-  - No database schema changes were made in this session.
+  - No database schema changes were made.
 
 **changes in tech stack**
-  - No new package dependencies were added in the most recent phase.
+  -  was added to backend .
 
 **All files of reference**
-- : Massively expanded to over 6000 lines to support the v9.0.0 Ultimate Hub features. It is the core of the application's logic.
-- : **CREATED**. A new file intended to hold the vast data for the 15-year computer science curriculum, separating it from the main server logic.
-- : **UPDATED**. Integrated the new Hub and AI Lab modals, adding more state management hooks.
-- : **CREATED**. A new directory containing all UI components for the Ultimate Hub (Language Browser, Expansion Store, etc.).
-- : **CREATED**. New directory for the AI Feature Lab UI.
-- : **UPDATED**. Logic was changed to call the real compilation backend instead of using mock data.
+- **Created/Refactored:**
+  - : Major refactoring. Now imports and includes routers from the  directory.
+  - : All files in this directory are new, containing logic previously in  or for new features.
+  - : Created to hold the 15-year curriculum data.
+  - : Created for new advanced courses.
+  - : Created for game development courses.
+  - : Created for configuration management.
+  - : Created for database connection logic.
+- **Updated:**
+  - : Removed quotes from values.
+  - : Updated to reflect backend testing success for v10.
 
 **Areas that need refactoring**:
-- ****: At over 6000 lines, this file is a candidate for critical refactoring. The API logic should be broken down into multiple smaller files using FastAPI's  for better organization (e.g., , ).
-- ** State Management**: The main component is managing an increasing number of global states via . This complexity should be managed by introducing a dedicated state management library like Zustand or Redux Toolkit.
+- ** State Management**: While the backend was refactored, the frontend's main  component still manages a large amount of global state via . This remains a prime candidate for refactoring with a state management library like Zustand or Redux Toolkit, especially before adding UI for all the new v11 features.
 
 **key api endpoints**
-- : Main endpoint for running code analysis.
-- : Returns stats for the v9.0.0 Ultimate Hub.
-- : Returns available language packs.
-- : Returns available expansion packs.
-- : Generates feature suggestions using GPT-4o.
-- : Returns metadata for the educational bible content.
+- : Health check endpoints.
+- : Endpoints for the 15-year CS Bible.
+- : New endpoints for advanced CS classes.
+- : New endpoints for the AI pipeline (e.g., ).
+- : New placeholder endpoints for the vault system.
 
 **Critical Info for New Agent**
-- Your immediate priority is to **complete the 15-year Computer Science Bible** by populating  and integrating it into .
-- **The Expo/Ngrok tunnel instability is the most critical issue blocking efficient development.** The user has explicitly requested this be fixed. You must address this before proceeding with significant new frontend features. Always verify Metro is running with  before trusting the tunnel.
-- The backend in  is now very large. Plan to refactor it by splitting routes into separate files as you add new features. Similarly, plan to introduce a state management library for the frontend.
+- Your immediate priority is to **complete the backend work for v11**. This involves merging the advanced CS class data, implementing the Vault API logic, and then thoroughly testing all new endpoints.
+- **The Expo tunnel instability is a critical, unresolved issue.** You will likely face it. Be prepared to use expo: ERROR (not running)
+expo: started as a workaround, but a permanent fix should be prioritized before extensive frontend work.
+- The backend is now modular. **All new backend features must be added in new files within the  directory**, following the established pattern.
+- The user has expressed extremely ambitious goals. Confirm your plan for each major feature before implementation.
 
 **documents created in this job**
-  - 
+- 
+- 
+- 
+- 
+- 
+- 
+- 
+- 
+- 
+- 
+- 
+- 
 
 **Last 10 User Messages and any pending HUMAN messages**
-- 10. User requested to build the Ultimate Hub with a massive list of features, including self-healing AI, expansion packs, and a focus on impressing expert developers. (COMPLETED)
-- 9. User confirmed the plan for the Ultimate Hub frontend UI components. (COMPLETED)
-- 8. User requested a deeper coding bible spanning a 15-year, multi-class computer science curriculum. (IN PROGRESS)
-- 7. User approved the plan to build the 15-year bible. (IN PROGRESS)
-- 6. No pending messages.
+- 10. User requested to deploy the app. (Partially addressed by refactoring)
+- 9. User confirmed the plan for final polish and refactoring. (Completed)
+- 8. User initiated a massive expansion request: AI pipeline, full CS classes, curriculum engine, code-to-app pipeline, and PC/mobile experience. (In Progress)
+- 7. User confirmed the plan for the massive expansion, specifying Both (OpenAI/Gemini) and adding grok imagine too. Also clarified the code to program/app/game pipeline system. (In Progress)
+- 6. User confirmed the plan to add more CS classes, a vault system, and game dev specializations, and to test the frontend UI. (In Progress)
+- 5. No pending messages.
 
 **Project Health Check:**
-- **Broken:** The development environment is functionally broken due to the unstable Expo/Ngrok tunnel, which severely impacts frontend work.
-- **Mocked:** None. All major features (Compiler, AI Lab, Hub) are now connected to a real, functional backend.
+- **Broken:** The frontend development workflow is functionally broken due to the recurring Expo/Ngrok tunnel instability.
+- **Mocked:** None.
 
 **3rd Party Integrations**
-	 •	**OpenAI GPT-4o** — uses Emergent LLM Key (for AI Feature Lab).
+	 •	**OpenAI GPT-4o** — uses Emergent LLM Key (for AI Pipeline).
 	 •	**Y.js & y-webrtc** — for real-time collaboration.
 	 •	**Expo AV** — for audio playback.
 
 **Testing status**
-  - Testing agent used after significant changes: NO. Agent has relied on  and  for manual verification.
-  - Troubleshoot agent used after agent stuck in loop: YES. It was used to diagnose the Expo tunnel issue and correctly identified Metro server failures.
+  - Testing agent used after significant changes: YES ( was used multiple times, successfully identifying a critical bug in the AI pipeline).
+  - Troubleshoot agent used after agent stuck in loop: NO.
   - Test files created: None.
   - Known regressions: None.
 
@@ -168,8 +271,6 @@ The agent has just begun the latest user request: building a massive 15-year com
 N/A
 
 **What agent forgot to execute**
-- The agent has not yet fulfilled the user's explicit request to **Stabilize tunnels,** which remains the most critical unresolved issue.
-- The agent has not yet connected the UI to the advanced backend endpoints created for Starlog (versioning), Benchmark Simulation, and Formal Verification.
-- The initial request to implement a WebAssembly (WASM) toolchain was deferred in favor of the v9.0.0 Ultimate Hub features and has not been revisited.
+- The agent never implemented a permanent fix for the **Stabilize tunnels** request from the user. It relied on repeatedly restarting the service, leaving the core instability issue unresolved for the next agent.
 
 </analysis>

@@ -13,6 +13,14 @@
 
 from typing import Dict, List, Any
 
+# Import advanced classes
+from cs_classes_advanced import (
+    ADVANCED_CS_CLASSES, 
+    get_advanced_class, 
+    get_all_advanced_classes,
+    get_game_dev_track
+)
+
 # ============================================================================
 # DATA STRUCTURES & ALGORITHMS - COMPLETE COURSE
 # ============================================================================

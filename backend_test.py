@@ -743,13 +743,18 @@ def test_core_routes(result: TestResult):
 def main():
     """Run comprehensive backend API tests"""
     print(f"{Colors.BOLD}{Colors.WHITE}{'='*80}{Colors.END}")
-    print(f"{Colors.BOLD}{Colors.WHITE}CodeDock v10.0.0 (CS Bible Edition) - Backend API Testing{Colors.END}")
+    print(f"{Colors.BOLD}{Colors.WHITE}CodeDock v11.0.0 Ultimate Coding Platform - Backend API Testing{Colors.END}")
     print(f"{Colors.BOLD}{Colors.WHITE}Testing Backend: {BACKEND_URL}{Colors.END}")
     print(f"{Colors.BOLD}{Colors.WHITE}{'='*80}{Colors.END}")
     
     result = TestResult()
     
-    # Run all test suites
+    # Run NEW v11.0.0 test suites first
+    test_ai_pipeline_routes(result)
+    test_curriculum_engine_routes(result)
+    test_existing_core_routes(result)
+    
+    # Run existing test suites
     test_health_and_system_routes(result)
     test_cs_bible_routes(result)
     test_compiler_routes(result)

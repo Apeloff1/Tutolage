@@ -100,17 +100,17 @@ class PipelineResponse(BaseModel):
 async def call_gpt4o(prompt: str, system_prompt: str = None, max_tokens: int = 4096) -> str:
     """Call GPT-4o via Emergent LLM Key"""
     try:
-        chat = LlmChat(
-            api_key=EMERGENT_LLM_KEY
-        )
+        default_system = "You are an expert programmer and software architect. Provide helpful, accurate, and well-documented code and explanations."
         
-        full_prompt = prompt
-        if system_prompt:
-            full_prompt = f"{system_prompt}\n\n{prompt}"
+        chat = LlmChat(
+            api_key=EMERGENT_LLM_KEY,
+            session_id=f"codedock-pipeline-{uuid.uuid4().hex[:8]}",
+            system_message=system_prompt or default_system
+        ).with_model("openai", "gpt-4o")
         
         response = await asyncio.to_thread(
             chat.send_message,
-            UserMessage(content=full_prompt)
+            UserMessage(content=prompt)
         )
         
         return response.content if hasattr(response, 'content') else str(response)

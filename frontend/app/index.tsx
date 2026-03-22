@@ -31,6 +31,12 @@ import { useVoiceCommands, speak } from '../features/Voice/useVoiceCommands';
 import { starlog } from '../features/VersionControl/Starlog';
 import { wasmCompiler } from '../features/WasmCompiler/WasmCompiler';
 
+// v11.0 Features
+import { AIPipelineModal } from '../features/AIPipeline/AIPipelineModal';
+import { CurriculumBrowser } from '../features/Curriculum/CurriculumBrowser';
+import { VaultModal } from '../features/Vault/VaultModal';
+import { AdvancedFeaturesModal } from '../features/Advanced/AdvancedFeaturesModal';
+
 // Types
 import { Language, Template, AIMode } from '../types';
 
@@ -83,6 +89,12 @@ export default function CodeDockApp() {
   const [showOutput, setShowOutput] = useState(false);
   const [showWebPreview, setShowWebPreview] = useState(false);
   const [htmlPreview, setHtmlPreview] = useState('');
+  
+  // v11.0 Modal State
+  const [showAIPipelineModal, setShowAIPipelineModal] = useState(false);
+  const [showCurriculumModal, setShowCurriculumModal] = useState(false);
+  const [showVaultModal, setShowVaultModal] = useState(false);
+  const [showAdvancedModal, setShowAdvancedModal] = useState(false);
   
   // Voice Command Handler
   const handleVoiceCommand = useCallback((action: string, params?: any) => {
@@ -515,6 +527,42 @@ export default function CodeDockApp() {
           >
             <Ionicons name="sparkles" size={14} color="#EC4899" />
             <Text style={[styles.featureChipText, { color: '#EC4899' }]}>AI Lab</Text>
+          </TouchableOpacity>
+          
+          {/* v11.0 AI Pipeline Button */}
+          <TouchableOpacity 
+            style={[styles.featureChip, { backgroundColor: '#3B82F620' }]} 
+            onPress={() => setShowAIPipelineModal(true)}
+          >
+            <Ionicons name="flash-outline" size={14} color="#3B82F6" />
+            <Text style={[styles.featureChipText, { color: '#3B82F6' }]}>AI Gen</Text>
+          </TouchableOpacity>
+          
+          {/* v11.0 Curriculum Button */}
+          <TouchableOpacity 
+            style={[styles.featureChip, { backgroundColor: '#F9731620' }]} 
+            onPress={() => setShowCurriculumModal(true)}
+          >
+            <Ionicons name="school-outline" size={14} color="#F97316" />
+            <Text style={[styles.featureChipText, { color: '#F97316' }]}>Courses</Text>
+          </TouchableOpacity>
+          
+          {/* v11.0 Vault Button */}
+          <TouchableOpacity 
+            style={[styles.featureChip, { backgroundColor: '#14B8A620' }]} 
+            onPress={() => setShowVaultModal(true)}
+          >
+            <Ionicons name="file-tray-full-outline" size={14} color="#14B8A6" />
+            <Text style={[styles.featureChipText, { color: '#14B8A6' }]}>Vault</Text>
+          </TouchableOpacity>
+          
+          {/* v11.0 Advanced Tools Button */}
+          <TouchableOpacity 
+            style={[styles.featureChip, { backgroundColor: '#A855F720' }]} 
+            onPress={() => setShowAdvancedModal(true)}
+          >
+            <Ionicons name="flask-outline" size={14} color="#A855F7" />
+            <Text style={[styles.featureChipText, { color: '#A855F7' }]}>Tools</Text>
           </TouchableOpacity>
           
           {/* Voice Command Button */}
@@ -967,6 +1015,62 @@ export default function CodeDockApp() {
           languages: [selectedLanguage?.key || 'python'],
           skill_level: 'intermediate',
         }}
+      />
+
+      {/* v11.0 AI Pipeline Modal */}
+      <AIPipelineModal
+        visible={showAIPipelineModal}
+        onClose={() => setShowAIPipelineModal(false)}
+        colors={colors}
+        onCodeGenerated={(generatedCode, lang) => {
+          setCode(generatedCode);
+          const language = languages.find(l => l.key === lang);
+          if (language) {
+            setSelectedLanguage(language);
+          }
+          setShowAIPipelineModal(false);
+        }}
+      />
+
+      {/* v11.0 Curriculum Browser Modal */}
+      <CurriculumBrowser
+        visible={showCurriculumModal}
+        onClose={() => setShowCurriculumModal(false)}
+        colors={colors}
+        onCodeExample={(exampleCode, lang) => {
+          setCode(exampleCode);
+          const language = languages.find(l => l.key === lang);
+          if (language) {
+            setSelectedLanguage(language);
+          }
+          setShowCurriculumModal(false);
+        }}
+      />
+
+      {/* v11.0 Vault Modal */}
+      <VaultModal
+        visible={showVaultModal}
+        onClose={() => setShowVaultModal(false)}
+        colors={colors}
+        currentCode={code}
+        currentLanguage={selectedLanguage?.key}
+        onLoadCode={(loadedCode, lang) => {
+          setCode(loadedCode);
+          const language = languages.find(l => l.key === lang);
+          if (language) {
+            setSelectedLanguage(language);
+          }
+          setShowVaultModal(false);
+        }}
+      />
+
+      {/* v11.0 Advanced Features Modal */}
+      <AdvancedFeaturesModal
+        visible={showAdvancedModal}
+        onClose={() => setShowAdvancedModal(false)}
+        colors={colors}
+        currentCode={code}
+        currentLanguage={selectedLanguage?.key}
       />
     </SafeAreaView>
   );

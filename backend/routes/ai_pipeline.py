@@ -108,10 +108,7 @@ async def call_gpt4o(prompt: str, system_prompt: str = None, max_tokens: int = 4
             system_message=system_prompt or default_system
         ).with_model("openai", "gpt-4o")
         
-        response = await asyncio.to_thread(
-            chat.send_message,
-            UserMessage(text=prompt)
-        )
+        response = await chat.send_message(UserMessage(text=prompt))
         
         return response.content if hasattr(response, 'content') else str(response)
     except Exception as e:

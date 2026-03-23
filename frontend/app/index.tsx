@@ -50,6 +50,9 @@ import { MasterclassModal } from '../features/Masterclass/MasterclassModal';
 import { AssetPipelineModal } from '../features/AssetPipeline/AssetPipelineModal';
 import { GameGenresModal } from '../features/GameGenres/GameGenresModal';
 
+// v11.3 Command Palette for Clean UI
+import { CommandPalette } from '../components/CommandPalette';
+
 // Types
 import { Language, Template, AIMode } from '../types';
 
@@ -121,6 +124,9 @@ export default function CodeDockApp() {
   const [showMasterclassModal, setShowMasterclassModal] = useState(false);
   const [showAssetPipelineModal, setShowAssetPipelineModal] = useState(false);
   const [showGameGenresModal, setShowGameGenresModal] = useState(false);
+  
+  // v11.3 Command Palette State
+  const [showCommandPalette, setShowCommandPalette] = useState(false);
   
   // Voice Command Handler
   const handleVoiceCommand = useCallback((action: string, params?: any) => {
@@ -357,6 +363,39 @@ export default function CodeDockApp() {
     }
   }, [languages, loadTemplates]);
 
+  // Command Palette Action Handler
+  const handleCommandPaletteAction = useCallback((actionId: string) => {
+    setShowCommandPalette(false);
+    switch (actionId) {
+      // Code actions
+      case 'run': executeCode(); break;
+      case 'compile': setShowCompilerModal(true); break;
+      case 'format': setShowCompilerModal(true); break;
+      case 'hub': setShowHubModal(true); break;
+      // AI actions
+      case 'ai_pipeline': setShowAIPipelineModal(true); break;
+      case 'debugger': setShowDebuggerModal(true); break;
+      case 'code_to_app': setShowCodeToAppModal(true); break;
+      case 'imagine': setShowImagineModal(true); break;
+      case 'multi_agent': setShowAdvancedModal(true); break;
+      // Learn actions
+      case 'masterclass': setShowMasterclassModal(true); break;
+      case 'education': setShowEducationModal(true); break;
+      case 'curriculum': setShowCurriculumModal(true); break;
+      case 'jeeves': setShowJeevesModal(true); break;
+      // Create actions
+      case 'assets': setShowAssetPipelineModal(true); break;
+      case 'games': setShowGameGenresModal(true); break;
+      case 'music': setShowMusicPipelineModal(true); break;
+      // Pro tools
+      case 'advanced': setShowAdvancedModal(true); break;
+      case 'vault': setShowVaultModal(true); break;
+      case 'collab': setShowCollaborationModal(true); break;
+      case 'intelligence': setShowAdvancedModal(true); break;
+      default: console.log('Unknown action:', actionId);
+    }
+  }, [executeCode]);
+
   // Icon helper
   const getIconName = (icon: string): keyof typeof Ionicons.glyphMap => {
     const iconMap: Record<string, keyof typeof Ionicons.glyphMap> = {
@@ -472,13 +511,10 @@ export default function CodeDockApp() {
         </ScrollView>
       </View>
 
-      {/* ============ AI BAR ============ */}
+      {/* ============ AI BAR (CLEANED UP v11.3) ============ */}
       <View style={[styles.aiBar, { backgroundColor: colors.surface }]}>
-        <ScrollView 
-          horizontal 
-          showsHorizontalScrollIndicator={false} 
-          contentContainerStyle={styles.aiBarContent}
-        >
+        <View style={styles.aiBarClean}>
+          {/* AI Button - Primary Action */}
           <Animated.View style={{ transform: [{ scale: pulseAnim }] }}>
             <Pressable 
               style={[styles.aiButton, { backgroundColor: colors.primary + '15', borderColor: colors.primary + '40' }]}
@@ -492,198 +528,44 @@ export default function CodeDockApp() {
             </Pressable>
           </Animated.View>
           
-          {/* Compiler Suite Button */}
+          {/* Command Palette Button - Access All Features */}
           <TouchableOpacity 
-            style={[styles.featureChip, { backgroundColor: '#8B5CF620' }]} 
-            onPress={() => setShowCompilerModal(true)}
+            style={[styles.commandPaletteButton, { backgroundColor: colors.secondary + '15', borderColor: colors.secondary + '40' }]}
+            onPress={() => setShowCommandPalette(true)}
           >
-            <Ionicons name="construct" size={14} color="#8B5CF6" />
-            <Text style={[styles.featureChipText, { color: '#8B5CF6' }]}>Compiler</Text>
+            <Ionicons name="apps" size={18} color={colors.secondary} />
+            <Text style={[styles.commandPaletteText, { color: colors.secondary }]}>All Features</Text>
+            <View style={[styles.featureCountBadge, { backgroundColor: colors.secondary }]}>
+              <Text style={styles.featureCountText}>20+</Text>
+            </View>
           </TouchableOpacity>
           
-          {/* Bible Button */}
+          {/* Quick Access: Jeeves AI Tutor */}
           <TouchableOpacity 
-            style={[styles.featureChip, { backgroundColor: '#FFD70020' }]} 
-            onPress={() => setShowBibleModal(true)}
-          >
-            <Ionicons name="book" size={14} color="#FFD700" />
-            <Text style={[styles.featureChipText, { color: '#FFD700' }]}>Bible</Text>
-          </TouchableOpacity>
-          
-          {/* Pipeline Visualizer Button */}
-          <TouchableOpacity 
-            style={[styles.featureChip, { backgroundColor: '#06B6D420' }]} 
-            onPress={() => setShowPipelineModal(true)}
-          >
-            <Ionicons name="git-network" size={14} color="#06B6D4" />
-            <Text style={[styles.featureChipText, { color: '#06B6D4' }]}>Pipeline</Text>
-          </TouchableOpacity>
-          
-          {/* Learning Dashboard Button */}
-          <TouchableOpacity 
-            style={[styles.featureChip, { backgroundColor: '#10B98120' }]} 
-            onPress={() => setShowLearningModal(true)}
-          >
-            <Ionicons name="analytics" size={14} color="#10B981" />
-            <Text style={[styles.featureChipText, { color: '#10B981' }]}>Learn</Text>
-          </TouchableOpacity>
-          
-          {/* Collaboration Button */}
-          <TouchableOpacity 
-            style={[styles.featureChip, { backgroundColor: '#F4390020' }]} 
-            onPress={() => setShowCollaborationModal(true)}
-          >
-            <Ionicons name="people" size={14} color="#F43900" />
-            <Text style={[styles.featureChipText, { color: '#F43900' }]}>Collab</Text>
-          </TouchableOpacity>
-          
-          {/* Ultimate Hub Button */}
-          <TouchableOpacity 
-            style={[styles.featureChip, { backgroundColor: '#8B5CF620' }]} 
-            onPress={() => setShowHubModal(true)}
-          >
-            <Ionicons name="planet" size={14} color="#8B5CF6" />
-            <Text style={[styles.featureChipText, { color: '#8B5CF6' }]}>Hub</Text>
-          </TouchableOpacity>
-          
-          {/* AI Suggestions Button */}
-          <TouchableOpacity 
-            style={[styles.featureChip, { backgroundColor: '#EC489920' }]} 
-            onPress={() => setShowAISuggestionsModal(true)}
-          >
-            <Ionicons name="sparkles" size={14} color="#EC4899" />
-            <Text style={[styles.featureChipText, { color: '#EC4899' }]}>AI Lab</Text>
-          </TouchableOpacity>
-          
-          {/* v11.0 AI Pipeline Button */}
-          <TouchableOpacity 
-            style={[styles.featureChip, { backgroundColor: '#3B82F620' }]} 
-            onPress={() => setShowAIPipelineModal(true)}
-          >
-            <Ionicons name="flash-outline" size={14} color="#3B82F6" />
-            <Text style={[styles.featureChipText, { color: '#3B82F6' }]}>AI Gen</Text>
-          </TouchableOpacity>
-          
-          {/* v11.0 Curriculum Button */}
-          <TouchableOpacity 
-            style={[styles.featureChip, { backgroundColor: '#F9731620' }]} 
-            onPress={() => setShowCurriculumModal(true)}
-          >
-            <Ionicons name="school-outline" size={14} color="#F97316" />
-            <Text style={[styles.featureChipText, { color: '#F97316' }]}>Courses</Text>
-          </TouchableOpacity>
-          
-          {/* v11.0 Vault Button */}
-          <TouchableOpacity 
-            style={[styles.featureChip, { backgroundColor: '#14B8A620' }]} 
-            onPress={() => setShowVaultModal(true)}
-          >
-            <Ionicons name="file-tray-full-outline" size={14} color="#14B8A6" />
-            <Text style={[styles.featureChipText, { color: '#14B8A6' }]}>Vault</Text>
-          </TouchableOpacity>
-          
-          {/* v11.0 Advanced Tools Button */}
-          <TouchableOpacity 
-            style={[styles.featureChip, { backgroundColor: '#A855F720' }]} 
-            onPress={() => setShowAdvancedModal(true)}
-          >
-            <Ionicons name="flask-outline" size={14} color="#A855F7" />
-            <Text style={[styles.featureChipText, { color: '#A855F7' }]}>Tools</Text>
-          </TouchableOpacity>
-          
-          {/* v11.0 Code-to-App Button */}
-          <TouchableOpacity 
-            style={[styles.featureChip, { backgroundColor: '#06B6D420' }]} 
-            onPress={() => setShowCodeToAppModal(true)}
-          >
-            <Ionicons name="rocket-outline" size={14} color="#06B6D4" />
-            <Text style={[styles.featureChipText, { color: '#06B6D4' }]}>Build</Text>
-          </TouchableOpacity>
-          
-          {/* v11.0 Imagine (Image Gen) Button */}
-          <TouchableOpacity 
-            style={[styles.featureChip, { backgroundColor: '#F43F5E20' }]} 
-            onPress={() => setShowImagineModal(true)}
-          >
-            <Ionicons name="image-outline" size={14} color="#F43F5E" />
-            <Text style={[styles.featureChipText, { color: '#F43F5E' }]}>Imagine</Text>
-          </TouchableOpacity>
-          
-          {/* v11.1 SOTA 2026 Features */}
-          {/* AI Debugger Button */}
-          <TouchableOpacity 
-            style={[styles.featureChip, { backgroundColor: '#EF444420' }]} 
-            onPress={() => setShowDebuggerModal(true)}
-          >
-            <Ionicons name="bug-outline" size={14} color="#EF4444" />
-            <Text style={[styles.featureChipText, { color: '#EF4444' }]}>Debug</Text>
-          </TouchableOpacity>
-          
-          {/* Music Pipeline Button */}
-          <TouchableOpacity 
-            style={[styles.featureChip, { backgroundColor: '#8B5CF620' }]} 
-            onPress={() => setShowMusicPipelineModal(true)}
-          >
-            <Ionicons name="musical-notes-outline" size={14} color="#8B5CF6" />
-            <Text style={[styles.featureChipText, { color: '#8B5CF6' }]}>Music</Text>
-          </TouchableOpacity>
-          
-          {/* Interactive Education Button */}
-          <TouchableOpacity 
-            style={[styles.featureChip, { backgroundColor: '#10B98120' }]} 
-            onPress={() => setShowEducationModal(true)}
-          >
-            <Ionicons name="game-controller-outline" size={14} color="#10B981" />
-            <Text style={[styles.featureChipText, { color: '#10B981' }]}>Academy</Text>
-          </TouchableOpacity>
-          
-          {/* Jeeves AI Tutor Button */}
-          <TouchableOpacity 
-            style={[styles.featureChip, { backgroundColor: '#6366F120' }]} 
+            style={[styles.quickAccessChip, { backgroundColor: '#6366F120' }]} 
             onPress={() => setShowJeevesModal(true)}
           >
-            <Ionicons name="chatbubbles-outline" size={14} color="#6366F1" />
-            <Text style={[styles.featureChipText, { color: '#6366F1' }]}>Jeeves</Text>
+            <Ionicons name="chatbubbles" size={16} color="#6366F1" />
           </TouchableOpacity>
           
-          {/* v11.2 Masterclass Button */}
+          {/* Quick Access: Vault */}
           <TouchableOpacity 
-            style={[styles.featureChip, { backgroundColor: '#8B5CF620' }]} 
-            onPress={() => setShowMasterclassModal(true)}
+            style={[styles.quickAccessChip, { backgroundColor: '#14B8A620' }]} 
+            onPress={() => setShowVaultModal(true)}
           >
-            <Ionicons name="school-outline" size={14} color="#8B5CF6" />
-            <Text style={[styles.featureChipText, { color: '#8B5CF6' }]}>School</Text>
+            <Ionicons name="file-tray-full" size={16} color="#14B8A6" />
           </TouchableOpacity>
           
-          {/* Asset Pipeline Button */}
-          <TouchableOpacity 
-            style={[styles.featureChip, { backgroundColor: '#06B6D420' }]} 
-            onPress={() => setShowAssetPipelineModal(true)}
-          >
-            <Ionicons name="cube-outline" size={14} color="#06B6D4" />
-            <Text style={[styles.featureChipText, { color: '#06B6D4' }]}>Assets</Text>
-          </TouchableOpacity>
-          
-          {/* Game Genres Button */}
-          <TouchableOpacity 
-            style={[styles.featureChip, { backgroundColor: '#F59E0B20' }]} 
-            onPress={() => setShowGameGenresModal(true)}
-          >
-            <Ionicons name="game-controller-outline" size={14} color="#F59E0B" />
-            <Text style={[styles.featureChipText, { color: '#F59E0B' }]}>Games</Text>
-          </TouchableOpacity>
-          
-          {/* Voice Command Button */}
+          {/* Voice Button (if supported) */}
           {voice.isSupported && (
             <TouchableOpacity 
-              style={[styles.featureChip, { backgroundColor: voice.isListening ? '#EF444440' : '#EF444420' }]} 
+              style={[styles.quickAccessChip, { backgroundColor: voice.isListening ? '#EF444440' : '#EF444420' }]} 
               onPress={voice.toggleListening}
             >
-              <Ionicons name={voice.isListening ? 'mic' : 'mic-outline'} size={14} color="#EF4444" />
-              <Text style={[styles.featureChipText, { color: '#EF4444' }]}>{voice.isListening ? 'Listening...' : 'Voice'}</Text>
+              <Ionicons name={voice.isListening ? 'mic' : 'mic-outline'} size={16} color="#EF4444" />
             </TouchableOpacity>
           )}
-        </ScrollView>
+        </View>
       </View>
 
       {/* ============ EDITOR ============ */}
@@ -1259,6 +1141,14 @@ export default function CodeDockApp() {
         onClose={() => setShowGameGenresModal(false)}
         colors={colors}
       />
+
+      {/* v11.3 Command Palette */}
+      <CommandPalette
+        visible={showCommandPalette}
+        onClose={() => setShowCommandPalette(false)}
+        onSelectAction={handleCommandPaletteAction}
+        colors={colors}
+      />
     </SafeAreaView>
   );
 }
@@ -1408,6 +1298,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     gap: 10,
   },
+  aiBarClean: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    gap: 10,
+  },
   aiButton: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -1430,6 +1326,38 @@ const styles = StyleSheet.create({
     color: '#FFF',
     fontSize: 10,
     fontWeight: '700',
+  },
+  commandPaletteButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: 10,
+    borderWidth: 1,
+    gap: 8,
+    flex: 1,
+  },
+  commandPaletteText: {
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  featureCountBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 6,
+    marginLeft: 'auto',
+  },
+  featureCountText: {
+    color: '#FFF',
+    fontSize: 10,
+    fontWeight: '700',
+  },
+  quickAccessChip: {
+    width: 40,
+    height: 40,
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   featureChip: {
     flexDirection: 'row',

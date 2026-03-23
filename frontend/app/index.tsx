@@ -1,10 +1,10 @@
 // ============================================================================
 // CODEDOCK ULTIMATE HUB - Main Application
-// Version: 9.0.0 | Ultimate Hub Edition
-// Voice • Pipeline • Learning • Collaboration • WASM Compiler • AI Hub
+// Version: 11.4.0 | Mobile-Optimized Edition
+// Power Aware • Stability Layer • Polished UI • Performance Optimized
 // ============================================================================
 
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo, memo } from 'react';
 import {
   View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput,
   ActivityIndicator, SafeAreaView, StatusBar, Platform, Dimensions,
@@ -18,6 +18,15 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../hooks/useTheme';
 import { useStorage } from '../hooks/useStorage';
 import { useAPI } from '../hooks/useAPI';
+import { usePowerAwareness } from '../hooks/usePowerAwareness';
+import { useStability } from '../hooks/useStability';
+import { useMobileOptimization } from '../hooks/useMobileOptimization';
+
+// Mobile UI Components
+import { ErrorBoundary } from '../components/ErrorBoundary';
+import { QuickActionBar } from '../components/MobileUI/QuickActionBar';
+import { MinimalToolbar } from '../components/MobileUI/MinimalToolbar';
+import { StatusIndicator } from '../components/MobileUI/StatusIndicator';
 
 // Features
 import { BibleModal } from '../features/Bible/BibleModal';
@@ -85,6 +94,11 @@ export default function CodeDockApp() {
     executeCode: apiExecuteCode, aiAssist, saveFile: apiSaveFile,
     clearError,
   } = useAPI();
+  
+  // v11.4 Mobile Optimization Hooks
+  const power = usePowerAwareness();
+  const stability = useStability();
+  const mobile = useMobileOptimization();
 
   // Core State
   const [selectedLanguage, setSelectedLanguage] = useState<Language | null>(null);
@@ -443,6 +457,7 @@ export default function CodeDockApp() {
   // RENDER
   // ============================================================================
   return (
+    <ErrorBoundary onError={(error) => stability.handleError(error, 'MainApp')}>
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       <StatusBar barStyle={theme === 'dark' ? 'light-content' : 'dark-content'} />
       
@@ -466,6 +481,16 @@ export default function CodeDockApp() {
         </Pressable>
         
         <View style={styles.headerActions}>
+          {/* v11.4 Status Indicator */}
+          <StatusIndicator
+            batteryLevel={power.batteryLevel}
+            isCharging={power.isCharging}
+            isOnline={stability.isOnline}
+            performanceMode={power.performanceMode}
+            colors={colors}
+            compact={true}
+          />
+          
           {/* Connection Status */}
           {connectionStatus !== 'connected' && (
             <TouchableOpacity 
@@ -500,87 +525,35 @@ export default function CodeDockApp() {
         </View>
       )}
 
-      {/* ============ TOOLBAR ============ */}
-      <View style={[styles.toolbar, { backgroundColor: colors.surfaceAlt }]}>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.toolbarContent}>
-          <TouchableOpacity style={[styles.toolButton, { backgroundColor: colors.surface }]} onPress={() => setShowTemplateModal(true)}>
-            <Ionicons name="flash" size={15} color={colors.warning} />
-            <Text style={[styles.toolButtonText, { color: colors.text }]}>Templates</Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity style={[styles.toolButton, { backgroundColor: colors.surface }]} onPress={() => setShowFilesModal(true)}>
-            <Ionicons name="folder" size={15} color={colors.accent} />
-            <Text style={[styles.toolButtonText, { color: colors.text }]}>Files</Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity style={[styles.toolButton, { backgroundColor: colors.surface }]} onPress={saveFile}>
-            <Ionicons name="save" size={15} color={colors.success} />
-            <Text style={[styles.toolButtonText, { color: colors.text }]}>Save</Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity style={[styles.toolButton, { backgroundColor: colors.surface }]} onPress={clearCode}>
-            <Ionicons name="trash-outline" size={15} color={colors.error} />
-            <Text style={[styles.toolButtonText, { color: colors.text }]}>Clear</Text>
-          </TouchableOpacity>
-        </ScrollView>
-      </View>
+      {/* ============ TOOLBAR (MINIMAL v11.4) ============ */}
+      <MinimalToolbar
+        actions={[
+          { id: 'templates', icon: 'flash', label: 'Templates', color: colors.warning, onPress: () => setShowTemplateModal(true) },
+          { id: 'files', icon: 'folder', label: 'Files', color: colors.accent, onPress: () => setShowFilesModal(true) },
+          { id: 'save', icon: 'save', label: 'Save', color: colors.success, onPress: saveFile },
+          { id: 'clear', icon: 'trash-outline', label: 'Clear', color: colors.error, onPress: clearCode },
+        ]}
+        colors={colors}
+      />
 
-      {/* ============ AI BAR (CLEANED UP v11.3) ============ */}
-      <View style={[styles.aiBar, { backgroundColor: colors.surface }]}>
-        <View style={styles.aiBarClean}>
-          {/* AI Button - Primary Action */}
-          <Animated.View style={{ transform: [{ scale: pulseAnim }] }}>
-            <Pressable 
-              style={[styles.aiButton, { backgroundColor: colors.primary + '15', borderColor: colors.primary + '40' }]}
-              onPress={() => setShowAIModal(true)}
-            >
-              <Ionicons name="sparkles" size={18} color={colors.primary} />
-              <Text style={[styles.aiButtonText, { color: colors.primary }]}>AI</Text>
-              <View style={[styles.aiBadge, { backgroundColor: colors.primary }]}>
-                <Text style={styles.aiBadgeText}>GPT-4o</Text>
-              </View>
-            </Pressable>
-          </Animated.View>
-          
-          {/* Command Palette Button - Access All Features */}
-          <TouchableOpacity 
-            style={[styles.commandPaletteButton, { backgroundColor: colors.secondary + '15', borderColor: colors.secondary + '40' }]}
-            onPress={() => setShowCommandPalette(true)}
-          >
-            <Ionicons name="apps" size={18} color={colors.secondary} />
-            <Text style={[styles.commandPaletteText, { color: colors.secondary }]}>All Features</Text>
-            <View style={[styles.featureCountBadge, { backgroundColor: colors.secondary }]}>
-              <Text style={styles.featureCountText}>20+</Text>
-            </View>
-          </TouchableOpacity>
-          
-          {/* Quick Access: Jeeves AI Tutor */}
-          <TouchableOpacity 
-            style={[styles.quickAccessChip, { backgroundColor: '#6366F120' }]} 
-            onPress={() => setShowJeevesModal(true)}
-          >
-            <Ionicons name="chatbubbles" size={16} color="#6366F1" />
-          </TouchableOpacity>
-          
-          {/* Quick Access: Vault */}
-          <TouchableOpacity 
-            style={[styles.quickAccessChip, { backgroundColor: '#14B8A620' }]} 
-            onPress={() => setShowVaultModal(true)}
-          >
-            <Ionicons name="file-tray-full" size={16} color="#14B8A6" />
-          </TouchableOpacity>
-          
-          {/* Voice Button (if supported) */}
-          {voice.isSupported && (
-            <TouchableOpacity 
-              style={[styles.quickAccessChip, { backgroundColor: voice.isListening ? '#EF444440' : '#EF444420' }]} 
-              onPress={voice.toggleListening}
-            >
-              <Ionicons name={voice.isListening ? 'mic' : 'mic-outline'} size={16} color="#EF4444" />
-            </TouchableOpacity>
-          )}
-        </View>
-      </View>
+      {/* ============ ACTION BAR (POLISHED v11.4) ============ */}
+      <QuickActionBar
+        primaryAction={{
+          id: 'ai',
+          icon: 'sparkles',
+          label: 'AI Assistant',
+          color: colors.primary,
+          badge: 'GPT-4o',
+          onPress: () => setShowAIModal(true),
+        }}
+        secondaryActions={[
+          { id: 'features', icon: 'apps', color: colors.secondary, badge: '20+', onPress: () => setShowCommandPalette(true) },
+          { id: 'jeeves', icon: 'chatbubbles', color: '#6366F1', onPress: () => setShowJeevesModal(true) },
+          { id: 'vault', icon: 'file-tray-full', color: '#14B8A6', onPress: () => setShowVaultModal(true) },
+        ]}
+        colors={colors}
+        reduceAnimations={power.shouldReduceAnimations}
+      />
 
       {/* ============ EDITOR ============ */}
       <KeyboardAvoidingView style={styles.mainContent} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
@@ -1199,6 +1172,7 @@ export default function CodeDockApp() {
         onCodeUpdate={setCode}
       />
     </SafeAreaView>
+    </ErrorBoundary>
   );
 }
 

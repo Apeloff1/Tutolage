@@ -45,6 +45,11 @@ import { MusicPipelineModal } from '../features/Music/MusicPipelineModal';
 import { EducationModal } from '../features/Education/EducationModal';
 import { JeevesModal } from '../features/Jeeves/JeevesModal';
 
+// v11.2 Masterclass, Assets & Game Systems
+import { MasterclassModal } from '../features/Masterclass/MasterclassModal';
+import { AssetPipelineModal } from '../features/AssetPipeline/AssetPipelineModal';
+import { GameGenresModal } from '../features/GameGenres/GameGenresModal';
+
 // Types
 import { Language, Template, AIMode } from '../types';
 
@@ -111,6 +116,11 @@ export default function CodeDockApp() {
   const [showMusicPipelineModal, setShowMusicPipelineModal] = useState(false);
   const [showEducationModal, setShowEducationModal] = useState(false);
   const [showJeevesModal, setShowJeevesModal] = useState(false);
+  
+  // v11.2 Masterclass & Asset Pipeline Modal State
+  const [showMasterclassModal, setShowMasterclassModal] = useState(false);
+  const [showAssetPipelineModal, setShowAssetPipelineModal] = useState(false);
+  const [showGameGenresModal, setShowGameGenresModal] = useState(false);
   
   // Voice Command Handler
   const handleVoiceCommand = useCallback((action: string, params?: any) => {
@@ -634,6 +644,33 @@ export default function CodeDockApp() {
           >
             <Ionicons name="chatbubbles-outline" size={14} color="#6366F1" />
             <Text style={[styles.featureChipText, { color: '#6366F1' }]}>Jeeves</Text>
+          </TouchableOpacity>
+          
+          {/* v11.2 Masterclass Button */}
+          <TouchableOpacity 
+            style={[styles.featureChip, { backgroundColor: '#8B5CF620' }]} 
+            onPress={() => setShowMasterclassModal(true)}
+          >
+            <Ionicons name="school-outline" size={14} color="#8B5CF6" />
+            <Text style={[styles.featureChipText, { color: '#8B5CF6' }]}>School</Text>
+          </TouchableOpacity>
+          
+          {/* Asset Pipeline Button */}
+          <TouchableOpacity 
+            style={[styles.featureChip, { backgroundColor: '#06B6D420' }]} 
+            onPress={() => setShowAssetPipelineModal(true)}
+          >
+            <Ionicons name="cube-outline" size={14} color="#06B6D4" />
+            <Text style={[styles.featureChipText, { color: '#06B6D4' }]}>Assets</Text>
+          </TouchableOpacity>
+          
+          {/* Game Genres Button */}
+          <TouchableOpacity 
+            style={[styles.featureChip, { backgroundColor: '#F59E0B20' }]} 
+            onPress={() => setShowGameGenresModal(true)}
+          >
+            <Ionicons name="game-controller-outline" size={14} color="#F59E0B" />
+            <Text style={[styles.featureChipText, { color: '#F59E0B' }]}>Games</Text>
           </TouchableOpacity>
           
           {/* Voice Command Button */}
@@ -1200,6 +1237,27 @@ export default function CodeDockApp() {
         colors={colors}
         currentCode={code}
         currentLanguage={selectedLanguage?.key}
+      />
+
+      {/* v11.2 Masterclass Modal */}
+      <MasterclassModal
+        visible={showMasterclassModal}
+        onClose={() => setShowMasterclassModal(false)}
+        colors={colors}
+      />
+
+      {/* Asset Pipeline Modal */}
+      <AssetPipelineModal
+        visible={showAssetPipelineModal}
+        onClose={() => setShowAssetPipelineModal(false)}
+        colors={colors}
+      />
+
+      {/* Game Genres Modal */}
+      <GameGenresModal
+        visible={showGameGenresModal}
+        onClose={() => setShowGameGenresModal(false)}
+        colors={colors}
       />
     </SafeAreaView>
   );

@@ -1,635 +1,478 @@
 #!/usr/bin/env python3
 """
-CodeDock v11.1 SOTA 2026 Features Backend API Testing Suite
-Testing all 4 SOTA 2026 feature APIs:
-1. AI Debugger APIs (prefix: /api/debugger)
-2. Music Pipeline APIs (prefix: /api/music)  
-3. Interactive Education APIs (prefix: /api/education)
-4. Jeeves AI Tutor APIs (prefix: /api/jeeves)
+╔══════════════════════════════════════════════════════════════════════════════╗
+║  CODEDOCK v11.2 API TESTING SUITE                                           ║
+║  Testing NEW v11.2 APIs: Masterclass, Asset Pipeline, Game Genres,         ║
+║  AI Log Vault, and Enhanced Jeeves                                          ║
+╚══════════════════════════════════════════════════════════════════════════════╝
 """
 
-import asyncio
-import aiohttp
+import requests
 import json
 import sys
 from datetime import datetime
 from typing import Dict, Any, List
 
 # Backend URL from frontend/.env
-BACKEND_URL = "https://march-2026-preview.preview.emergentagent.com/api"
+BACKEND_URL = "https://march-2026-preview.preview.emergentagent.com"
 
-class TestResult:
+class CodeDockTester:
     def __init__(self):
-        self.passed = 0
-        self.failed = 0
         self.results = []
-    
-    def add_result(self, test_name: str, success: bool, details: str = "", response_data: Any = None):
-        status = "✅ PASS" if success else "❌ FAIL"
-        self.results.append({
+        self.total_tests = 0
+        self.passed_tests = 0
+        
+    def log_result(self, test_name: str, success: bool, details: str = "", response_data: Any = None):
+        """Log test result"""
+        self.total_tests += 1
+        if success:
+            self.passed_tests += 1
+            
+        result = {
             "test": test_name,
-            "status": status,
             "success": success,
             "details": details,
-            "response": response_data
-        })
-        if success:
-            self.passed += 1
-        else:
-            self.failed += 1
-        print(f"{status} | {test_name}")
-        if details:
-            print(f"      {details}")
-    
-    def summary(self):
-        total = self.passed + self.failed
-        success_rate = (self.passed / total * 100) if total > 0 else 0
-        print(f"\n{'='*80}")
-        print(f"CODEDOCK v11.1 SOTA 2026 FEATURES TESTING COMPLETE")
-        print(f"{'='*80}")
-        print(f"Total Tests: {total}")
-        print(f"Passed: {self.passed}")
-        print(f"Failed: {self.failed}")
-        print(f"Success Rate: {success_rate:.1f}%")
-        print(f"{'='*80}")
-        
-        if self.failed > 0:
-            print(f"\n❌ FAILED TESTS:")
-            for result in self.results:
-                if not result["success"]:
-                    print(f"  - {result['test']}: {result['details']}")
-        
-        return success_rate >= 80.0
-
-async def make_request(session: aiohttp.ClientSession, method: str, endpoint: str, 
-                      data: Dict = None, timeout: int = 30, raw_body: str = None) -> tuple[bool, Dict, str]:
-    """Make HTTP request with error handling"""
-    url = f"{BACKEND_URL}{endpoint}"
-    try:
-        kwargs = {
-            "timeout": aiohttp.ClientTimeout(total=timeout)
+            "timestamp": datetime.utcnow().isoformat()
         }
         
-        if raw_body:
-            kwargs["data"] = raw_body
-            kwargs["headers"] = {"Content-Type": "text/plain"}
-        elif data:
-            kwargs["json"] = data
-            
-        async with session.request(method, url, **kwargs) as response:
-            response_text = await response.text()
-            
-            if response.status == 200:
-                try:
-                    response_data = json.loads(response_text)
-                    return True, response_data, f"Status: {response.status}"
-                except json.JSONDecodeError:
-                    return True, {"raw_response": response_text}, f"Status: {response.status} (non-JSON)"
-            else:
-                return False, {"error": response_text}, f"HTTP {response.status}: {response_text[:200]}"
+        if response_data and isinstance(response_data, dict):
+            # Add key metrics from response
+            if "total_hours" in response_data:
+                result["total_hours"] = response_data["total_hours"]
+            if "total_tracks" in response_data:
+                result["total_tracks"] = response_data["total_tracks"]
+            if "total_genres" in response_data:
+                result["total_genres"] = response_data["total_genres"]
+            if "total_subgenres" in response_data:
+                result["total_subgenres"] = response_data["total_subgenres"]
                 
-    except asyncio.TimeoutError:
-        return False, {}, f"Request timeout after {timeout}s"
-    except Exception as e:
-        return False, {}, f"Request error: {str(e)}"
-
-async def test_ai_debugger_apis(session: aiohttp.ClientSession, results: TestResult):
-    """Test AI Debugger API endpoints"""
-    print(f"\n🐛 TESTING AI DEBUGGER APIs")
-    print("-" * 50)
-    
-    # Test 1: GET /api/debugger/info
-    success, data, details = await make_request(session, "GET", "/debugger/info")
-    if success and "capabilities" in data:
-        capabilities = data.get("capabilities", [])
-        expected_caps = ["Autonomous error detection", "Stack trace interpretation", "One-click fix suggestions"]
-        has_expected = any(cap in capabilities for cap in expected_caps)
-        results.add_result(
-            "AI Debugger Info Endpoint", 
-            has_expected,
-            f"Found {len(capabilities)} capabilities, includes expected features: {has_expected}",
-            data
-        )
-    else:
-        results.add_result("AI Debugger Info Endpoint", False, details)
-    
-    # Test 2: POST /api/debugger/analyze
-    analyze_payload = {
-        "code": "def test(): x = 1/0",
-        "language": "python",
-        "debug_level": "standard"
-    }
-    success, data, details = await make_request(session, "POST", "/debugger/analyze", analyze_payload, timeout=45)
-    if success and ("analysis" in data or "issues_found" in data):
-        issues = data.get("issues_found", 0)
-        analysis = data.get("analysis", {})
-        results.add_result(
-            "AI Debugger Analyze Endpoint",
-            issues >= 0,  # Should find at least the division by zero
-            f"Found {issues} issues, analysis provided: {bool(analysis)}",
-            {"issues_count": issues}
-        )
-    else:
-        results.add_result("AI Debugger Analyze Endpoint", False, details)
-    
-    # Test 3: POST /api/debugger/security-scan
-    security_payload = {
-        "code": "import os; os.system('rm -rf /')",
-        "language": "python",
-        "scan_type": "full"
-    }
-    success, data, details = await make_request(session, "POST", "/debugger/security-scan", security_payload, timeout=45)
-    if success and ("vulnerabilities" in data or "risk_score" in data):
-        vulns = data.get("vulnerabilities", {})
-        risk_score = data.get("risk_score", 0)
-        results.add_result(
-            "AI Debugger Security Scan Endpoint",
-            risk_score > 0,  # Should detect the dangerous os.system call
-            f"Risk score: {risk_score}, vulnerabilities detected: {vulns}",
-            {"risk_score": risk_score}
-        )
-    else:
-        results.add_result("AI Debugger Security Scan Endpoint", False, details)
-    
-    # Test 4: POST /api/debugger/performance-analysis
-    perf_payload = {
-        "code": "for i in range(10000): print(i)",
-        "language": "python"
-    }
-    success, data, details = await make_request(session, "POST", "/debugger/performance-analysis", perf_payload, timeout=45)
-    if success and ("analysis" in data or "metrics" in data):
-        analysis = data.get("analysis", "")
-        metrics = data.get("metrics", {})
-        results.add_result(
-            "AI Debugger Performance Analysis Endpoint",
-            bool(analysis or metrics),
-            f"Analysis provided: {bool(analysis)}, metrics: {bool(metrics)}",
-            {"has_analysis": bool(analysis)}
-        )
-    else:
-        results.add_result("AI Debugger Performance Analysis Endpoint", False, details)
-    
-    # Test 5: POST /api/debugger/quick-fix?language=python&code=...
-    quick_fix_code = "def hello() print('hello')"  # Missing colon
-    success, data, details = await make_request(session, "POST", f"/debugger/quick-fix?language=python&code={quick_fix_code}", 
-                                                 timeout=30)
-    if success and "fixed_code" in data:
-        fixed = data.get("fixed_code", "")
-        has_colon = ":" in fixed
-        results.add_result(
-            "AI Debugger Quick Fix Endpoint",
-            has_colon,
-            f"Fixed code contains colon: {has_colon}, length: {len(fixed)}",
-            {"fixed_length": len(fixed)}
-        )
-    else:
-        results.add_result("AI Debugger Quick Fix Endpoint", False, details)
-    
-    # Test 6: POST /api/debugger/explain-code?language=python&code=...
-    explain_code = "print([x**2 for x in range(10)])"
-    success, data, details = await make_request(session, "POST", f"/debugger/explain-code?language=python&code={explain_code}", 
-                                                 timeout=30)
-    if success and "explanation" in data:
-        explanation = data.get("explanation", "")
-        has_explanation = len(explanation) > 50  # Should be a detailed explanation
-        results.add_result(
-            "AI Debugger Explain Code Endpoint",
-            has_explanation,
-            f"Explanation length: {len(explanation)} chars, detailed: {has_explanation}",
-            {"explanation_length": len(explanation)}
-        )
-    else:
-        results.add_result("AI Debugger Explain Code Endpoint", False, details)
-
-async def test_music_pipeline_apis(session: aiohttp.ClientSession, results: TestResult):
-    """Test Music Pipeline API endpoints"""
-    print(f"\n🎵 TESTING MUSIC PIPELINE APIs")
-    print("-" * 50)
-    
-    # Test 1: GET /api/music/info
-    success, data, details = await make_request(session, "GET", "/music/info")
-    if success and "capabilities" in data:
-        capabilities = data.get("capabilities", [])
-        genres = data.get("genres", [])
-        moods = data.get("moods", [])
-        expected_caps = ["Text-to-music generation", "Game soundtrack composition"]
-        has_expected = any(cap in capabilities for cap in expected_caps)
-        results.add_result(
-            "Music Pipeline Info Endpoint", 
-            has_expected and len(genres) > 5 and len(moods) > 5,
-            f"Capabilities: {len(capabilities)}, Genres: {len(genres)}, Moods: {len(moods)}",
-            data
-        )
-    else:
-        results.add_result("Music Pipeline Info Endpoint", False, details)
-    
-    # Test 2: GET /api/music/presets
-    success, data, details = await make_request(session, "GET", "/music/presets")
-    if success and "presets" in data:
-        presets = data.get("presets", [])
-        expected_presets = ["menu_theme", "combat", "exploration"]
-        has_expected = any(p.get("id") in expected_presets for p in presets)
-        results.add_result(
-            "Music Pipeline Presets Endpoint",
-            has_expected and len(presets) >= 5,
-            f"Found {len(presets)} presets, includes expected types: {has_expected}",
-            {"preset_count": len(presets)}
-        )
-    else:
-        results.add_result("Music Pipeline Presets Endpoint", False, details)
-    
-    # Test 3: POST /api/music/generate
-    generate_payload = {
-        "description": "epic boss battle theme",
-        "genre": "orchestral",
-        "mood": "epic",  # Changed from "intense" to "epic" which is valid
-        "duration": "medium",
-        "loopable": True
-    }
-    success, data, details = await make_request(session, "POST", "/music/generate", generate_payload, timeout=60)
-    if success and ("composition" in data or "status" in data):
-        composition = data.get("composition", "")
-        status = data.get("status", "")
-        is_success = status == "success" and len(composition) > 100
-        results.add_result(
-            "Music Pipeline Generate Endpoint",
-            is_success,
-            f"Status: {status}, composition length: {len(composition)} chars",
-            {"composition_length": len(composition)}
-        )
-    else:
-        results.add_result("Music Pipeline Generate Endpoint", False, details)
-    
-    # Test 4: POST /api/music/sound-effect
-    sfx_payload = {
-        "description": "coin pickup sparkle",
-        "category": "item",
-        "duration": "short"
-    }
-    success, data, details = await make_request(session, "POST", "/music/sound-effect", sfx_payload, timeout=45)
-    if success and ("sound_design" in data or "status" in data):
-        sound_design = data.get("sound_design", "")
-        status = data.get("status", "")
-        is_success = status == "success" and len(sound_design) > 50
-        results.add_result(
-            "Music Pipeline Sound Effect Endpoint",
-            is_success,
-            f"Status: {status}, sound design length: {len(sound_design)} chars",
-            {"sound_design_length": len(sound_design)}
-        )
-    else:
-        results.add_result("Music Pipeline Sound Effect Endpoint", False, details)
-    
-    # Test 5: POST /api/music/adaptive-music
-    adaptive_payload = {
-        "game_state": "combat",
-        "intensity": 0.8,
-        "transitions": True
-    }
-    success, data, details = await make_request(session, "POST", "/music/adaptive-music", adaptive_payload, timeout=45)
-    if success and ("adaptive_system" in data or "status" in data):
-        adaptive_system = data.get("adaptive_system", "")
-        status = data.get("status", "")
-        is_success = status == "success" and len(adaptive_system) > 100
-        results.add_result(
-            "Music Pipeline Adaptive Music Endpoint",
-            is_success,
-            f"Status: {status}, adaptive system length: {len(adaptive_system)} chars",
-            {"adaptive_system_length": len(adaptive_system)}
-        )
-    else:
-        results.add_result("Music Pipeline Adaptive Music Endpoint", False, details)
-
-async def test_interactive_education_apis(session: aiohttp.ClientSession, results: TestResult):
-    """Test Interactive Education API endpoints"""
-    print(f"\n🎓 TESTING INTERACTIVE EDUCATION APIs")
-    print("-" * 50)
-    
-    # Test 1: GET /api/education/info
-    success, data, details = await make_request(session, "GET", "/education/info")
-    if success and "features" in data:
-        features = data.get("features", [])
-        languages = data.get("languages_supported", [])
-        total_challenges = data.get("total_challenges", 0)
-        expected_features = ["Real-time coding challenges", "AI-powered feedback"]
-        has_expected = any(feat in features for feat in expected_features)
-        results.add_result(
-            "Interactive Education Info Endpoint", 
-            has_expected and total_challenges > 0,
-            f"Features: {len(features)}, Languages: {len(languages)}, Challenges: {total_challenges}",
-            data
-        )
-    else:
-        results.add_result("Interactive Education Info Endpoint", False, details)
-    
-    # Test 2: GET /api/education/challenges/python?difficulty=beginner
-    success, data, details = await make_request(session, "GET", "/education/challenges/python?difficulty=beginner")
-    if success and "challenges" in data:
-        challenges = data.get("challenges", [])
-        language = data.get("language", "")
-        difficulty = data.get("difficulty", "")
-        has_challenges = len(challenges) > 0 and language == "python"
-        results.add_result(
-            "Interactive Education Challenges Endpoint",
-            has_challenges,
-            f"Language: {language}, Difficulty: {difficulty}, Challenges: {len(challenges)}",
-            {"challenge_count": len(challenges)}
-        )
-    else:
-        results.add_result("Interactive Education Challenges Endpoint", False, details)
-    
-    # Test 3: GET /api/education/daily-challenge
-    success, data, details = await make_request(session, "GET", "/education/daily-challenge")
-    if success and "daily_challenge" in data:
-        daily = data.get("daily_challenge", {})
-        date = data.get("date", "")
-        has_challenge = bool(daily.get("title")) and bool(daily.get("description"))
-        results.add_result(
-            "Interactive Education Daily Challenge Endpoint",
-            has_challenge,
-            f"Date: {date}, Challenge: {daily.get('title', 'N/A')}, XP: {daily.get('xp', 0)}",
-            {"challenge_title": daily.get("title")}
-        )
-    else:
-        results.add_result("Interactive Education Daily Challenge Endpoint", False, details)
-    
-    # Test 4: GET /api/education/achievements
-    success, data, details = await make_request(session, "GET", "/education/achievements")
-    if success and "achievements" in data:
-        achievements = data.get("achievements", [])
-        total_xp = data.get("total_xp_available", 0)
-        categories = data.get("categories", {})
-        has_achievements = len(achievements) > 5 and total_xp > 0
-        results.add_result(
-            "Interactive Education Achievements Endpoint",
-            has_achievements,
-            f"Achievements: {len(achievements)}, Total XP: {total_xp}, Categories: {len(categories)}",
-            {"achievement_count": len(achievements)}
-        )
-    else:
-        results.add_result("Interactive Education Achievements Endpoint", False, details)
-    
-    # Test 5: POST /api/education/submit
-    submit_payload = {
-        "challenge_id": "py_beg_1",  # Use a valid challenge ID from the challenges
-        "code": "print('Hello, World!')",
-        "language": "python"
-    }
-    success, data, details = await make_request(session, "POST", "/education/submit", submit_payload, timeout=45)
-    if success and ("evaluation" in data or "status" in data):
-        evaluation = data.get("evaluation", {})
-        status = data.get("status", "")
-        has_evaluation = bool(evaluation) or status == "evaluated"
-        results.add_result(
-            "Interactive Education Submit Endpoint",
-            has_evaluation,
-            f"Status: {status}, Evaluation provided: {bool(evaluation)}",
-            {"has_evaluation": bool(evaluation)}
-        )
-    else:
-        results.add_result("Interactive Education Submit Endpoint", False, details)
-    
-    # Test 6: POST /api/education/learning-path
-    path_payload = {
-        "current_level": "beginner",
-        "goals": ["web_development"],
-        "time_commitment": "moderate",
-        "preferred_languages": ["python"]
-    }
-    success, data, details = await make_request(session, "POST", "/education/learning-path", path_payload, timeout=45)
-    if success and "learning_path" in data:
-        learning_path = data.get("learning_path", "")
-        parameters = data.get("parameters", {})
-        has_path = len(learning_path) > 100
-        results.add_result(
-            "Interactive Education Learning Path Endpoint",
-            has_path,
-            f"Learning path length: {len(learning_path)} chars, parameters: {bool(parameters)}",
-            {"path_length": len(learning_path)}
-        )
-    else:
-        results.add_result("Interactive Education Learning Path Endpoint", False, details)
-
-async def test_jeeves_tutor_apis(session: aiohttp.ClientSession, results: TestResult):
-    """Test Jeeves AI Tutor API endpoints"""
-    print(f"\n🤖 TESTING JEEVES AI TUTOR APIs")
-    print("-" * 50)
-    
-    # Test 1: GET /api/jeeves/info
-    success, data, details = await make_request(session, "GET", "/jeeves/info")
-    if success and "capabilities" in data:
-        capabilities = data.get("capabilities", [])
-        personalities = data.get("personalities", {})
-        languages = data.get("languages_fluent", [])
-        expected_caps = ["Code explanation at any level", "Debugging assistance"]
-        has_expected = any(cap in capabilities for cap in expected_caps)
-        results.add_result(
-            "Jeeves AI Tutor Info Endpoint", 
-            has_expected and len(personalities) >= 4,
-            f"Capabilities: {len(capabilities)}, Personalities: {len(personalities)}, Languages: {len(languages)}",
-            data
-        )
-    else:
-        results.add_result("Jeeves AI Tutor Info Endpoint", False, details)
-    
-    # Test 2: GET /api/jeeves/tip-of-the-day?language=python&level=intermediate
-    success, data, details = await make_request(session, "GET", "/jeeves/tip-of-the-day?language=python&level=intermediate")
-    if success and "tip" in data:
-        tip = data.get("tip", "")
-        date = data.get("date", "")
-        language = data.get("language", "")
-        has_tip = len(tip) > 50 and language == "python"
-        results.add_result(
-            "Jeeves AI Tutor Tip of the Day Endpoint",
-            has_tip,
-            f"Date: {date}, Language: {language}, Tip length: {len(tip)} chars",
-            {"tip_length": len(tip)}
-        )
-    else:
-        results.add_result("Jeeves AI Tutor Tip of the Day Endpoint", False, details)
-    
-    # Test 3: POST /api/jeeves/ask
-    ask_payload = {
-        "message": "How do I use list comprehensions?",
-        "skill_level": "beginner",
-        "language": "python",
-        "personality": "friendly"
-    }
-    success, data, details = await make_request(session, "POST", "/jeeves/ask", ask_payload, timeout=45)
-    if success and "jeeves_response" in data:
-        response = data.get("jeeves_response", "")
-        personality = data.get("personality", "")
-        session_id = data.get("session_id", "")
-        has_response = len(response) > 50 and personality == "friendly"
-        results.add_result(
-            "Jeeves AI Tutor Ask Endpoint",
-            has_response,
-            f"Response length: {len(response)} chars, Personality: {personality}, Session: {bool(session_id)}",
-            {"response_length": len(response)}
-        )
-    else:
-        results.add_result("Jeeves AI Tutor Ask Endpoint", False, details)
-    
-    # Test 4: POST /api/jeeves/explain
-    explain_payload = {
-        "code": "print([x**2 for x in range(10)])",
-        "language": "python",
-        "depth": "beginner"
-    }
-    success, data, details = await make_request(session, "POST", "/jeeves/explain", explain_payload, timeout=45)
-    if success and "explanation" in data:
-        explanation = data.get("explanation", "")
-        depth = data.get("depth", "")
-        language = data.get("language", "")
-        has_explanation = len(explanation) > 100 and depth == "beginner"
-        results.add_result(
-            "Jeeves AI Tutor Explain Endpoint",
-            has_explanation,
-            f"Explanation length: {len(explanation)} chars, Depth: {depth}, Language: {language}",
-            {"explanation_length": len(explanation)}
-        )
-    else:
-        results.add_result("Jeeves AI Tutor Explain Endpoint", False, details)
-    
-    # Test 5: POST /api/jeeves/debug-help
-    debug_payload = {
-        "code": "def test(): x = 1/0",
-        "language": "python",
-        "skill_level": "intermediate"
-    }
-    success, data, details = await make_request(session, "POST", "/jeeves/debug-help", debug_payload, timeout=45)
-    if success and "debug_assistance" in data:
-        assistance = data.get("debug_assistance", "")
-        language = data.get("language", "")
-        had_error = data.get("had_error", False)
-        has_assistance = len(assistance) > 100
-        results.add_result(
-            "Jeeves AI Tutor Debug Help Endpoint",
-            has_assistance,
-            f"Assistance length: {len(assistance)} chars, Language: {language}, Had error: {had_error}",
-            {"assistance_length": len(assistance)}
-        )
-    else:
-        results.add_result("Jeeves AI Tutor Debug Help Endpoint", False, details)
-    
-    # Test 6: POST /api/jeeves/teach-concept
-    concept_payload = {
-        "concept": "recursion",
-        "skill_level": "intermediate",
-        "language": "python",
-        "include_examples": True
-    }
-    success, data, details = await make_request(session, "POST", "/jeeves/teach-concept", concept_payload, timeout=45)
-    if success and "lesson" in data:
-        lesson = data.get("lesson", "")
-        concept = data.get("concept", "")
-        language = data.get("language", "")
-        has_lesson = len(lesson) > 200 and concept == "recursion"
-        results.add_result(
-            "Jeeves AI Tutor Teach Concept Endpoint",
-            has_lesson,
-            f"Lesson length: {len(lesson)} chars, Concept: {concept}, Language: {language}",
-            {"lesson_length": len(lesson)}
-        )
-    else:
-        results.add_result("Jeeves AI Tutor Teach Concept Endpoint", False, details)
-    
-    # Test 7: POST /api/jeeves/practice
-    practice_payload = {
-        "topic": "python basics",
-        "difficulty": "easy",
-        "language": "python",
-        "count": 3
-    }
-    success, data, details = await make_request(session, "POST", "/jeeves/practice", practice_payload, timeout=45)
-    if success and "practice_problems" in data:
-        problems = data.get("practice_problems", "")
-        topic = data.get("topic", "")
-        difficulty = data.get("difficulty", "")
-        count = data.get("count", 0)
-        has_problems = len(problems) > 200 and count == 3
-        results.add_result(
-            "Jeeves AI Tutor Practice Endpoint",
-            has_problems,
-            f"Problems length: {len(problems)} chars, Topic: {topic}, Difficulty: {difficulty}, Count: {count}",
-            {"problems_length": len(problems)}
-        )
-    else:
-        results.add_result("Jeeves AI Tutor Practice Endpoint", False, details)
-    
-    # Test 8: POST /api/jeeves/motivate?mood=stuck
-    success, data, details = await make_request(session, "POST", "/jeeves/motivate?mood=stuck")
-    if success and "message" in data:
-        message = data.get("message", "")
-        mood = data.get("mood", "")
-        has_message = len(message) > 50 and mood == "stuck"
-        results.add_result(
-            "Jeeves AI Tutor Motivate Endpoint",
-            has_message,
-            f"Message length: {len(message)} chars, Mood: {mood}",
-            {"message_length": len(message)}
-        )
-    else:
-        results.add_result("Jeeves AI Tutor Motivate Endpoint", False, details)
-
-async def main():
-    """Main testing function"""
-    print("🚀 CODEDOCK v11.1 SOTA 2026 FEATURES BACKEND API TESTING")
-    print("=" * 80)
-    print(f"Backend URL: {BACKEND_URL}")
-    print(f"Test Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-    print("=" * 80)
-    
-    results = TestResult()
-    
-    # Create HTTP session with proper headers
-    connector = aiohttp.TCPConnector(limit=10, limit_per_host=5)
-    timeout = aiohttp.ClientTimeout(total=60)
-    
-    async with aiohttp.ClientSession(
-        connector=connector,
-        timeout=timeout,
-        headers={
-            "Content-Type": "application/json",
-            "User-Agent": "CodeDock-SOTA-2026-Testing-Agent/11.1"
-        }
-    ) as session:
+        self.results.append(result)
         
-        # Test all 4 SOTA 2026 feature APIs
-        await test_ai_debugger_apis(session, results)
-        await test_music_pipeline_apis(session, results)
-        await test_interactive_education_apis(session, results)
-        await test_jeeves_tutor_apis(session, results)
-    
-    # Print final summary
-    success = results.summary()
-    
-    # Save detailed results
-    with open("/app/test_results_sota_2026.json", "w") as f:
-        json.dump({
-            "timestamp": datetime.now().isoformat(),
-            "backend_url": BACKEND_URL,
-            "version": "11.1 SOTA 2026",
-            "summary": {
-                "total": results.passed + results.failed,
-                "passed": results.passed,
-                "failed": results.failed,
-                "success_rate": (results.passed / (results.passed + results.failed) * 100) if (results.passed + results.failed) > 0 else 0
-            },
-            "results": results.results
-        }, f, indent=2)
-    
-    print(f"\n📄 Detailed results saved to: /app/test_results_sota_2026.json")
-    
-    return success
+        status = "✅ PASS" if success else "❌ FAIL"
+        print(f"{status} {test_name}")
+        if details:
+            print(f"    {details}")
+        print()
+
+    def test_api_endpoint(self, method: str, endpoint: str, data: Dict = None, expected_keys: List[str] = None) -> Dict:
+        """Generic API endpoint tester"""
+        url = f"{BACKEND_URL}{endpoint}"
+        
+        try:
+            if method.upper() == "GET":
+                response = requests.get(url, timeout=30)
+            elif method.upper() == "POST":
+                response = requests.post(url, json=data, timeout=30)
+            else:
+                return {"success": False, "error": f"Unsupported method: {method}"}
+                
+            if response.status_code == 200:
+                try:
+                    json_data = response.json()
+                    
+                    # Check for expected keys if provided
+                    if expected_keys:
+                        missing_keys = [key for key in expected_keys if key not in json_data]
+                        if missing_keys:
+                            return {
+                                "success": False, 
+                                "error": f"Missing expected keys: {missing_keys}",
+                                "data": json_data
+                            }
+                    
+                    return {"success": True, "data": json_data}
+                except json.JSONDecodeError:
+                    return {"success": False, "error": "Invalid JSON response", "raw": response.text[:500]}
+            else:
+                return {
+                    "success": False, 
+                    "error": f"HTTP {response.status_code}: {response.text[:500]}"
+                }
+                
+        except requests.exceptions.RequestException as e:
+            return {"success": False, "error": f"Request failed: {str(e)}"}
+
+    def test_masterclass_apis(self):
+        """Test all Masterclass APIs"""
+        print("🎓 TESTING MASTERCLASS APIs")
+        print("=" * 50)
+        
+        # 1. GET /api/masterclass/info
+        result = self.test_api_endpoint("GET", "/api/masterclass/info", 
+                                      expected_keys=["name", "total_hours", "total_tracks"])
+        self.log_result("Masterclass Info", result["success"], 
+                       f"Expected 2860+ hours, 12 tracks" if result["success"] else result["error"],
+                       result.get("data"))
+        
+        # 2. GET /api/masterclass/tracks
+        result = self.test_api_endpoint("GET", "/api/masterclass/tracks",
+                                      expected_keys=["total_hours", "tracks"])
+        if result["success"]:
+            tracks_count = len(result["data"].get("tracks", []))
+            total_hours = result["data"].get("total_hours", 0)
+            self.log_result("Masterclass Tracks", True, 
+                           f"Found {tracks_count} tracks, {total_hours} total hours")
+        else:
+            self.log_result("Masterclass Tracks", False, result["error"])
+        
+        # 3. GET /api/masterclass/track/python_mastery
+        result = self.test_api_endpoint("GET", "/api/masterclass/track/python_mastery",
+                                      expected_keys=["name", "total_hours", "modules"])
+        if result["success"]:
+            track_name = result["data"].get("name", "")
+            track_hours = result["data"].get("total_hours", 0)
+            modules_count = len(result["data"].get("modules", []))
+            self.log_result("Python Mastery Track", True,
+                           f"Track: {track_name}, {track_hours} hours, {modules_count} modules")
+        else:
+            self.log_result("Python Mastery Track", False, result["error"])
+        
+        # 4. GET /api/masterclass/certifications
+        result = self.test_api_endpoint("GET", "/api/masterclass/certifications",
+                                      expected_keys=["certifications"])
+        if result["success"]:
+            certs_count = len(result["data"].get("certifications", []))
+            self.log_result("Masterclass Certifications", True,
+                           f"Found {certs_count} certifications available")
+        else:
+            self.log_result("Masterclass Certifications", False, result["error"])
+        
+        # 5. POST /api/masterclass/personalized-path
+        path_request = {
+            "goals": ["web_development"],
+            "current_level": "beginner",
+            "weekly_hours": 10
+        }
+        result = self.test_api_endpoint("POST", "/api/masterclass/personalized-path", 
+                                      data=path_request,
+                                      expected_keys=["personalized_path"])
+        if result["success"]:
+            path = result["data"].get("personalized_path", {})
+            tracks_count = len(path.get("tracks", []))
+            total_hours = path.get("total_hours", 0)
+            weeks = path.get("estimated_weeks", 0)
+            self.log_result("Personalized Learning Path", True,
+                           f"Generated path: {tracks_count} tracks, {total_hours} hours, {weeks} weeks")
+        else:
+            self.log_result("Personalized Learning Path", False, result["error"])
+
+    def test_asset_pipeline_apis(self):
+        """Test all Asset Pipeline APIs"""
+        print("🎨 TESTING ASSET PIPELINE APIs")
+        print("=" * 50)
+        
+        # 1. GET /api/assets/info
+        result = self.test_api_endpoint("GET", "/api/assets/info",
+                                      expected_keys=["name", "capabilities"])
+        self.log_result("Asset Pipeline Info", result["success"],
+                       "System info with 2D/3D capabilities" if result["success"] else result["error"],
+                       result.get("data"))
+        
+        # 2. GET /api/assets/categories/2d
+        result = self.test_api_endpoint("GET", "/api/assets/categories/2d")
+        if result["success"]:
+            categories = list(result["data"].keys()) if isinstance(result["data"], dict) else []
+            self.log_result("2D Asset Categories", True,
+                           f"Found categories: {', '.join(categories[:5])}")
+        else:
+            self.log_result("2D Asset Categories", False, result["error"])
+        
+        # 3. GET /api/assets/categories/3d
+        result = self.test_api_endpoint("GET", "/api/assets/categories/3d")
+        if result["success"]:
+            categories = list(result["data"].keys()) if isinstance(result["data"], dict) else []
+            self.log_result("3D Asset Categories", True,
+                           f"Found categories: {', '.join(categories[:5])}")
+        else:
+            self.log_result("3D Asset Categories", False, result["error"])
+        
+        # 4. POST /api/assets/generate/sprite
+        sprite_request = {
+            "description": "dragon character",
+            "category": "characters",
+            "asset_type": "enemy",
+            "style": "pixel_art",
+            "resolution": "32x32"
+        }
+        result = self.test_api_endpoint("POST", "/api/assets/generate/sprite",
+                                      data=sprite_request,
+                                      expected_keys=["asset", "generation"])
+        if result["success"]:
+            asset_id = result["data"].get("asset", {}).get("id", "")
+            generation = result["data"].get("generation", {})
+            self.log_result("Generate 2D Sprite", True,
+                           f"Generated sprite asset {asset_id}, includes DALL-E and Stable Diffusion prompts")
+        else:
+            self.log_result("Generate 2D Sprite", False, result["error"])
+        
+        # 5. POST /api/assets/generate/model
+        model_request = {
+            "description": "medieval knight",
+            "category": "characters",
+            "asset_type": "humanoid",
+            "style": "stylized",
+            "poly_count": "mid_poly"
+        }
+        result = self.test_api_endpoint("POST", "/api/assets/generate/model",
+                                      data=model_request,
+                                      expected_keys=["asset", "generation"])
+        if result["success"]:
+            asset_id = result["data"].get("asset", {}).get("id", "")
+            poly_count = result["data"].get("technical", {}).get("poly_count", "")
+            self.log_result("Generate 3D Model", True,
+                           f"Generated 3D model {asset_id}, poly count: {poly_count}")
+        else:
+            self.log_result("Generate 3D Model", False, result["error"])
+        
+        # 6. POST /api/assets/generate/tileset
+        tileset_request = {
+            "theme": "forest",
+            "style": "pixel_art",
+            "tile_size": 32
+        }
+        result = self.test_api_endpoint("POST", "/api/assets/generate/tileset",
+                                      data=tileset_request,
+                                      expected_keys=["tileset", "tiles"])
+        if result["success"]:
+            tileset_id = result["data"].get("tileset", {}).get("id", "")
+            total_tiles = result["data"].get("tileset", {}).get("total_tiles", 0)
+            self.log_result("Generate Tileset", True,
+                           f"Generated tileset {tileset_id} with {total_tiles} tiles")
+        else:
+            self.log_result("Generate Tileset", False, result["error"])
+
+    def test_game_genres_apis(self):
+        """Test all Game Genres APIs"""
+        print("🎮 TESTING GAME GENRES APIs")
+        print("=" * 50)
+        
+        # 1. GET /api/game-genres/info
+        result = self.test_api_endpoint("GET", "/api/game-genres/info",
+                                      expected_keys=["total_genres", "total_subgenres"])
+        if result["success"]:
+            genres = result["data"].get("total_genres", 0)
+            subgenres = result["data"].get("total_subgenres", 0)
+            self.log_result("Game Genres Info", True,
+                           f"Expected 11 genres, 39+ subgenres. Found: {genres} genres, {subgenres} subgenres")
+        else:
+            self.log_result("Game Genres Info", False, result["error"])
+        
+        # 2. GET /api/game-genres/all
+        result = self.test_api_endpoint("GET", "/api/game-genres/all",
+                                      expected_keys=["genres"])
+        if result["success"]:
+            genres_list = result["data"].get("genres", [])
+            genre_names = [g.get("name", "") for g in genres_list]
+            self.log_result("All Game Genres", True,
+                           f"Found {len(genres_list)} genres: {', '.join(genre_names[:5])}")
+        else:
+            self.log_result("All Game Genres", False, result["error"])
+        
+        # 3. GET /api/game-genres/action
+        result = self.test_api_endpoint("GET", "/api/game-genres/action",
+                                      expected_keys=["name", "subgenres"])
+        if result["success"]:
+            genre_name = result["data"].get("name", "")
+            subgenres = result["data"].get("subgenres", {})
+            self.log_result("Action Genre Details", True,
+                           f"Genre: {genre_name}, {len(subgenres)} subgenres")
+        else:
+            self.log_result("Action Genre Details", False, result["error"])
+        
+        # 4. GET /api/game-genres/action/platformer_2d
+        result = self.test_api_endpoint("GET", "/api/game-genres/action/platformer_2d",
+                                      expected_keys=["genre", "subgenre", "pipeline"])
+        if result["success"]:
+            subgenre_info = result["data"].get("subgenre", {})
+            pipeline = result["data"].get("pipeline", {})
+            assets_needed = pipeline.get("asset_phase", [])
+            self.log_result("2D Platformer Subgenre", True,
+                           f"Subgenre with full pipeline, {len(assets_needed)} asset types needed")
+        else:
+            self.log_result("2D Platformer Subgenre", False, result["error"])
+        
+        # 5. POST /api/game-genres/create-project
+        project_request = {
+            "name": "My Platformer",
+            "genre": "action",
+            "subgenre": "platformer_2d",
+            "description": "A fun platformer game"
+        }
+        result = self.test_api_endpoint("POST", "/api/game-genres/create-project",
+                                      data=project_request,
+                                      expected_keys=["id", "name", "genre"])
+        if result["success"]:
+            project_id = result["data"].get("id", "")
+            project_name = result["data"].get("name", "")
+            assets_required = result["data"].get("assets_required", [])
+            self.log_result("Create Game Project", True,
+                           f"Created project '{project_name}' ({project_id}) with {len(assets_required)} required assets")
+        else:
+            self.log_result("Create Game Project", False, result["error"])
+
+    def test_ai_log_vault_apis(self):
+        """Test all AI Log Vault APIs"""
+        print("📊 TESTING AI LOG VAULT APIs")
+        print("=" * 50)
+        
+        # 1. GET /api/ai-logs/info
+        result = self.test_api_endpoint("GET", "/api/ai-logs/info",
+                                      expected_keys=["name", "statistics", "features"])
+        if result["success"]:
+            stats = result["data"].get("statistics", {})
+            features = result["data"].get("features", [])
+            self.log_result("AI Log Vault Info", True,
+                           f"System info with {len(features)} features, tracking {len(stats)} metrics")
+        else:
+            self.log_result("AI Log Vault Info", False, result["error"])
+        
+        # 2. POST /api/ai-logs/query
+        query_log = {
+            "query_type": "code_gen",
+            "user_input": "write hello world",
+            "ai_response": "print('hello world')",
+            "model_used": "gpt-4o"
+        }
+        result = self.test_api_endpoint("POST", "/api/ai-logs/query",
+                                      data=query_log,
+                                      expected_keys=["status", "log_id"])
+        if result["success"]:
+            log_id = result["data"].get("log_id", "")
+            status = result["data"].get("status", "")
+            self.log_result("Log AI Query", True,
+                           f"Logged query with ID: {log_id}, status: {status}")
+        else:
+            self.log_result("Log AI Query", False, result["error"])
+        
+        # 3. POST /api/ai-logs/action
+        action_log = {
+            "action_type": "code_written",
+            "action_data": {
+                "language": "python",
+                "lines": 10
+            }
+        }
+        result = self.test_api_endpoint("POST", "/api/ai-logs/action",
+                                      data=action_log,
+                                      expected_keys=["status", "log_id"])
+        if result["success"]:
+            log_id = result["data"].get("log_id", "")
+            status = result["data"].get("status", "")
+            self.log_result("Log User Action", True,
+                           f"Logged action with ID: {log_id}, status: {status}")
+        else:
+            self.log_result("Log User Action", False, result["error"])
+        
+        # 4. GET /api/ai-logs/stats
+        result = self.test_api_endpoint("GET", "/api/ai-logs/stats",
+                                      expected_keys=["ai_queries", "user_actions"])
+        if result["success"]:
+            ai_queries = result["data"].get("ai_queries", {})
+            user_actions = result["data"].get("user_actions", {})
+            total_queries = ai_queries.get("total", 0)
+            total_actions = user_actions.get("total", 0)
+            self.log_result("AI Log Statistics", True,
+                           f"Total queries: {total_queries}, Total actions: {total_actions}")
+        else:
+            self.log_result("AI Log Statistics", False, result["error"])
+        
+        # 5. POST /api/ai-logs/startup-train
+        result = self.test_api_endpoint("POST", "/api/ai-logs/startup-train",
+                                      expected_keys=["status", "startup_id"])
+        if result["success"]:
+            startup_id = result["data"].get("startup_id", "")
+            status = result["data"].get("status", "")
+            self.log_result("Startup Training", True,
+                           f"Triggered startup training: {startup_id}, status: {status}")
+        else:
+            self.log_result("Startup Training", False, result["error"])
+
+    def test_enhanced_jeeves_apis(self):
+        """Test Enhanced Jeeves APIs"""
+        print("🤖 TESTING ENHANCED JEEVES APIs")
+        print("=" * 50)
+        
+        # 1. GET /api/jeeves/my-learning-profile
+        result = self.test_api_endpoint("GET", "/api/jeeves/my-learning-profile",
+                                      expected_keys=["vault_summary", "recent_activity"])
+        if result["success"]:
+            vault_summary = result["data"].get("vault_summary", {})
+            recommended = result["data"].get("recommended_next", [])
+            self.log_result("Jeeves Learning Profile", True,
+                           f"Profile with vault summary and {len(recommended)} recommendations")
+        else:
+            self.log_result("Jeeves Learning Profile", False, result["error"])
+        
+        # 2. POST /api/jeeves/ask-with-context
+        context_request = {
+            "message": "Help me learn Python",
+            "skill_level": "beginner"
+        }
+        result = self.test_api_endpoint("POST", "/api/jeeves/ask-with-context",
+                                      data=context_request,
+                                      expected_keys=["jeeves_response", "context_used"])
+        if result["success"]:
+            response_length = len(result["data"].get("jeeves_response", ""))
+            context_used = result["data"].get("context_used", False)
+            self.log_result("Jeeves Ask with Context", True,
+                           f"Response length: {response_length} chars, context used: {context_used}")
+        else:
+            self.log_result("Jeeves Ask with Context", False, result["error"])
+        
+        # 3. POST /api/jeeves/interactive-lesson
+        lesson_request = {
+            "lesson_topic": "variables in Python",
+            "skill_level": "beginner"
+        }
+        result = self.test_api_endpoint("POST", "/api/jeeves/interactive-lesson?lesson_topic=variables%20in%20Python&skill_level=beginner",
+                                      expected_keys=["lesson_session", "lesson_content"])
+        if result["success"]:
+            session_id = result["data"].get("lesson_session", "")
+            content_length = len(result["data"].get("lesson_content", ""))
+            interactive = result["data"].get("interactive", False)
+            self.log_result("Jeeves Interactive Lesson", True,
+                           f"Started lesson session {session_id}, content: {content_length} chars, interactive: {interactive}")
+        else:
+            self.log_result("Jeeves Interactive Lesson", False, result["error"])
+
+    def run_all_tests(self):
+        """Run all v11.2 API tests"""
+        print("🚀 CODEDOCK v11.2 API TESTING SUITE")
+        print("=" * 60)
+        print(f"Backend URL: {BACKEND_URL}")
+        print(f"Test started: {datetime.utcnow().isoformat()}")
+        print()
+        
+        # Test all API groups
+        self.test_masterclass_apis()
+        self.test_asset_pipeline_apis()
+        self.test_game_genres_apis()
+        self.test_ai_log_vault_apis()
+        self.test_enhanced_jeeves_apis()
+        
+        # Print summary
+        print("📊 TEST SUMMARY")
+        print("=" * 50)
+        print(f"Total Tests: {self.total_tests}")
+        print(f"Passed: {self.passed_tests}")
+        print(f"Failed: {self.total_tests - self.passed_tests}")
+        print(f"Success Rate: {(self.passed_tests/self.total_tests*100):.1f}%")
+        print()
+        
+        # Print failed tests
+        failed_tests = [r for r in self.results if not r["success"]]
+        if failed_tests:
+            print("❌ FAILED TESTS:")
+            for test in failed_tests:
+                print(f"  - {test['test']}: {test['details']}")
+        else:
+            print("🎉 ALL TESTS PASSED!")
+        
+        return self.passed_tests, self.total_tests, self.results
 
 if __name__ == "__main__":
-    try:
-        success = asyncio.run(main())
-        sys.exit(0 if success else 1)
-    except KeyboardInterrupt:
-        print("\n⚠️  Testing interrupted by user")
-        sys.exit(1)
-    except Exception as e:
-        print(f"\n💥 Testing failed with error: {e}")
-        sys.exit(1)
+    tester = CodeDockTester()
+    passed, total, results = tester.run_all_tests()
+    
+    # Exit with appropriate code
+    sys.exit(0 if passed == total else 1)

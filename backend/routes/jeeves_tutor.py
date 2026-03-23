@@ -438,3 +438,265 @@ Seed for variety: {seed}"""
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+# ============================================================================
+# JEEVES ENHANCED - FULL SYSTEM ACCESS v11.2.0
+# ============================================================================
+
+# Import MongoDB for vault/log access
+from motor.motor_asyncio import AsyncIOMotorClient
+MONGO_URL = os.getenv("MONGO_URL", "mongodb://localhost:27017")
+mongo_client = AsyncIOMotorClient(MONGO_URL)
+
+# Access to all CodeDock databases
+vaults_db = mongo_client.codedock_vaults
+logs_db = mongo_client.codedock_logs
+masterclass_db = mongo_client.codedock_masterclass
+
+class JeevesContextRequest(BaseModel):
+    message: str
+    skill_level: str = "intermediate"
+    personality: str = "friendly"
+    session_id: Optional[str] = None
+    include_vault: bool = True
+    include_logs: bool = True
+    include_curriculum: bool = True
+
+@router.post("/ask-with-context")
+async def ask_jeeves_with_full_context(request: JeevesContextRequest):
+    """Ask Jeeves with full access to vaults, logs, and curriculum"""
+    
+    context_parts = []
+    
+    # Gather vault data
+    if request.include_vault:
+        try:
+            code_blocks = await vaults_db.code_blocks.find().limit(20).to_list(20)
+            if code_blocks:
+                context_parts.append(f"User's saved code ({len(code_blocks)} items): {[c.get('title', 'Untitled') for c in code_blocks]}")
+        except:
+            pass
+    
+    # Gather learning history from logs
+    if request.include_logs:
+        try:
+            recent_queries = await logs_db.ai_queries.find().sort("timestamp", -1).limit(10).to_list(10)
+            if recent_queries:
+                topics = [q.get("query_type", "") for q in recent_queries]
+                context_parts.append(f"Recent learning topics: {topics}")
+        except:
+            pass
+    
+    # Add curriculum context
+    if request.include_curriculum:
+        context_parts.append("Available curriculum: 2860+ hours, 12 tracks including Python Mastery, JavaScript Mastery, Game Development, AI/ML, and more.")
+    
+    # Build enhanced prompt
+    context_str = "\\n".join(context_parts) if context_parts else "No additional context available."
+    
+    prompt = f"""User's question: {request.message}
+
+SYSTEM CONTEXT (Jeeves has access to):
+{context_str}
+
+Use this context to provide personalized, relevant assistance. Reference the user's saved code, learning history, or recommend curriculum when relevant.
+
+Respond as a helpful tutor who knows the user's learning journey."""
+
+    try:
+        response = await call_jeeves(prompt, request.personality, request.skill_level, request.session_id)
+        
+        # Log this interaction for training
+        try:
+            await logs_db.ai_queries.insert_one({
+                "query_type": "jeeves_contextual",
+                "user_input": request.message[:500],
+                "ai_response": response[:1000],
+                "model_used": "gpt-4o",
+                "timestamp": datetime.utcnow(),
+                "context_used": {
+                    "vault": request.include_vault,
+                    "logs": request.include_logs,
+                    "curriculum": request.include_curriculum
+                }
+            })
+        except:
+            pass
+        
+        return {
+            "jeeves_response": response,
+            "context_used": True,
+            "session_id": request.session_id
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/my-learning-profile")
+async def get_learning_profile():
+    """Get Jeeves' understanding of the user's learning profile"""
+    
+    profile = {
+        "vault_summary": {},
+        "recent_activity": [],
+        "strengths": [],
+        "areas_for_growth": [],
+        "recommended_next": []
+    }
+    
+    # Analyze vault
+    try:
+        code_count = await vaults_db.code_blocks.count_documents({})
+        assets_count = await vaults_db.assets.count_documents({})
+        profile["vault_summary"] = {
+            "saved_code_blocks": code_count,
+            "saved_assets": assets_count
+        }
+    except:
+        pass
+    
+    # Analyze recent queries
+    try:
+        queries = await logs_db.ai_queries.find().sort("timestamp", -1).limit(50).to_list(50)
+        
+        # Count query types
+        query_types = {}
+        for q in queries:
+            qt = q.get("query_type", "unknown")
+            query_types[qt] = query_types.get(qt, 0) + 1
+        
+        # Find most common
+        if query_types:
+            sorted_types = sorted(query_types.items(), key=lambda x: x[1], reverse=True)
+            profile["strengths"] = [t[0] for t in sorted_types[:3] if t[1] > 3]
+            profile["areas_for_growth"] = ["Consider exploring: " + topic for topic in ["system_design", "testing", "performance"] if topic not in query_types]
+    except:
+        pass
+    
+    # Recommendations based on profile
+    profile["recommended_next"] = [
+        "Complete the next Masterclass module",
+        "Try a Daily Coding Challenge",
+        "Review your saved code blocks",
+        "Ask Jeeves to explain a new concept"
+    ]
+    
+    return profile
+
+@router.post("/learn-from-interaction")
+async def learn_from_interaction(
+    interaction_type: str,
+    was_helpful: bool,
+    feedback: Optional[str] = None
+):
+    """Allow Jeeves to learn from user interactions"""
+    
+    try:
+        await logs_db.user_actions.insert_one({
+            "action_type": "jeeves_feedback",
+            "action_data": {
+                "interaction_type": interaction_type,
+                "was_helpful": was_helpful,
+                "feedback": feedback
+            },
+            "timestamp": datetime.utcnow(),
+            "processed": False
+        })
+        
+        return {
+            "status": "feedback_recorded",
+            "message": "Thank you! I'll use this to improve.",
+            "jeeves_says": "Your feedback helps me become a better butler. Most appreciated!" if was_helpful else "I apologize for any confusion. I'll strive to do better."
+        }
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/curriculum-guide/{track_key}")
+async def get_curriculum_guide(track_key: str, skill_level: str = "intermediate"):
+    """Get Jeeves' personalized guide for a curriculum track"""
+    
+    # Import masterclass data
+    from routes.masterclass import MASTERCLASS_TRACKS
+    
+    if track_key not in MASTERCLASS_TRACKS:
+        raise HTTPException(status_code=404, detail="Track not found")
+    
+    track = MASTERCLASS_TRACKS[track_key]
+    
+    prompt = f"""Create a personalized study guide for the "{track['name']}" track ({track['total_hours']} hours).
+
+Track description: {track['description']}
+Student level: {skill_level}
+
+Provide:
+1. Recommended study order
+2. Time management tips
+3. Key concepts to focus on
+4. Practice project ideas
+5. How this connects to other skills"""
+
+    try:
+        response = await call_jeeves(prompt, "encouraging", skill_level)
+        
+        return {
+            "track": track_key,
+            "track_name": track["name"],
+            "total_hours": track["total_hours"],
+            "jeeves_guide": response,
+            "interactive_support": True,
+            "message": "I'll be here throughout your journey. Don't hesitate to ask questions!"
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/interactive-lesson")
+async def interactive_lesson(
+    lesson_topic: str,
+    track: Optional[str] = None,
+    skill_level: str = "intermediate",
+    personality: str = "friendly",
+    session_id: Optional[str] = None
+):
+    """Start an interactive lesson with Jeeves"""
+    
+    lesson_session = session_id or f"lesson-{uuid.uuid4().hex[:8]}"
+    
+    prompt = f"""Start an interactive lesson on: {lesson_topic}
+{f'Part of track: {track}' if track else ''}
+
+Create an engaging, interactive lesson that:
+1. Starts with a hook/real-world example
+2. Explains the core concept
+3. Provides a simple code example
+4. Asks the student a question to check understanding
+5. Offers a mini-challenge
+
+Make it conversational and engaging. End with a question for the student to answer."""
+
+    try:
+        response = await call_jeeves(prompt, personality, skill_level, lesson_session)
+        
+        # Log the lesson start
+        try:
+            await logs_db.user_actions.insert_one({
+                "action_type": "lesson_started",
+                "action_data": {
+                    "topic": lesson_topic,
+                    "track": track,
+                    "skill_level": skill_level
+                },
+                "session_id": lesson_session,
+                "timestamp": datetime.utcnow()
+            })
+        except:
+            pass
+        
+        return {
+            "lesson_session": lesson_session,
+            "topic": lesson_topic,
+            "lesson_content": response,
+            "interactive": True,
+            "next_action": "Reply with your answer to continue the lesson"
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

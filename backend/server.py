@@ -61,6 +61,11 @@ from routes.ai_debugger import router as debugger_router
 from routes.music_pipeline import router as music_router
 from routes.interactive_education import router as education_router
 from routes.jeeves_tutor import router as jeeves_router
+# v11.2 Masterclass & Asset Pipeline
+from routes.masterclass import router as masterclass_router
+from routes.asset_pipeline import router as asset_pipeline_router
+from routes.game_genres import router as game_genres_router
+from routes.ai_log_vault import router as ai_log_vault_router
 
 # Import the 15-Year CS Bible Curriculum (for backward compatibility)
 from cs_bible import CS_BIBLE, get_year_info, get_course, get_all_courses, get_curriculum_stats
@@ -6357,3 +6362,8 @@ app.include_router(debugger_router, prefix="/api")
 app.include_router(music_router, prefix="/api")
 app.include_router(education_router, prefix="/api")
 app.include_router(jeeves_router, prefix="/api")
+# v11.2 Masterclass & Asset Pipeline Routes
+app.include_router(masterclass_router, prefix="/api")
+app.include_router(asset_pipeline_router, prefix="/api")
+app.include_router(game_genres_router, prefix="/api")
+app.include_router(ai_log_vault_router, prefix="/api")

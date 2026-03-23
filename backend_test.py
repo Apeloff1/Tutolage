@@ -1,245 +1,374 @@
 #!/usr/bin/env python3
 """
-CodeDock v11.3 SOTA Backend API Testing
-Testing Multi-Agent System, SOTA 2026, Code Intelligence, and Collaboration APIs
+╔══════════════════════════════════════════════════════════════════════════════╗
+║  CODEDOCK v11.3 COMPREHENSIVE BACKEND API TESTING SUITE                      ║
+║  Testing Multi-Agent, SOTA 2026, Code Intelligence, Collaboration,           ║
+║  AI Log Vault, and Jeeves Tutor APIs                                          ║
+╚══════════════════════════════════════════════════════════════════════════════╝
 """
 
-import requests
+import asyncio
+import aiohttp
 import json
 import sys
 from datetime import datetime
+from typing import Dict, List, Any
 
-# Get backend URL from environment
+# Backend URL from environment
 BACKEND_URL = "https://ai-tutor-stage.preview.emergentagent.com/api"
 
-def test_endpoint(method, endpoint, data=None, expected_status=200):
-    """Test a single endpoint"""
-    url = f"{BACKEND_URL}{endpoint}"
+class CodeDockTester:
+    def __init__(self):
+        self.session = None
+        self.results = []
+        self.total_tests = 0
+        self.passed_tests = 0
+        
+    async def __aenter__(self):
+        self.session = aiohttp.ClientSession()
+        return self
+        
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
+        if self.session:
+            await self.session.close()
     
-    try:
-        if method.upper() == "GET":
-            response = requests.get(url, timeout=30)
-        elif method.upper() == "POST":
-            response = requests.post(url, json=data, timeout=30)
-        else:
-            return {"error": f"Unsupported method: {method}"}
-        
-        result = {
-            "endpoint": endpoint,
-            "method": method,
-            "status_code": response.status_code,
-            "success": response.status_code == expected_status,
-            "response_size": len(response.text),
-            "timestamp": datetime.now().isoformat()
-        }
-        
-        if response.status_code == expected_status:
-            try:
-                json_data = response.json()
-                result["response_data"] = json_data
-            except:
-                result["response_text"] = response.text[:500]
-        else:
-            result["error"] = response.text[:500]
+    def log_result(self, test_name: str, success: bool, response_data: Any = None, error: str = None):
+        """Log test result"""
+        self.total_tests += 1
+        if success:
+            self.passed_tests += 1
             
-        return result
-        
-    except Exception as e:
-        return {
-            "endpoint": endpoint,
-            "method": method,
-            "error": str(e),
-            "success": False,
-            "timestamp": datetime.now().isoformat()
+        result = {
+            "test": test_name,
+            "success": success,
+            "timestamp": datetime.utcnow().isoformat(),
+            "response_data": response_data,
+            "error": error
         }
+        self.results.append(result)
+        
+        status = "✅ PASS" if success else "❌ FAIL"
+        print(f"{status} | {test_name}")
+        if error:
+            print(f"      Error: {error}")
+        if response_data and isinstance(response_data, dict):
+            if 'name' in response_data:
+                print(f"      Response: {response_data.get('name', 'N/A')}")
+            elif 'status' in response_data:
+                print(f"      Status: {response_data.get('status', 'N/A')}")
+    
+    async def test_endpoint(self, method: str, endpoint: str, data: Dict = None, expected_status: int = 200) -> Dict:
+        """Test a single endpoint"""
+        url = f"{BACKEND_URL}{endpoint}"
+        
+        try:
+            if method.upper() == "GET":
+                async with self.session.get(url) as response:
+                    response_data = await response.json()
+                    success = response.status == expected_status
+                    return {"success": success, "data": response_data, "status": response.status}
+            
+            elif method.upper() == "POST":
+                headers = {"Content-Type": "application/json"}
+                async with self.session.post(url, json=data, headers=headers) as response:
+                    response_data = await response.json()
+                    success = response.status == expected_status
+                    return {"success": success, "data": response_data, "status": response.status}
+                    
+        except Exception as e:
+            return {"success": False, "data": None, "error": str(e), "status": 0}
+    
+    # ============================================================================
+    # 1. MULTI-AGENT SYSTEM TESTS
+    # ============================================================================
+    
+    async def test_multi_agent_system(self):
+        """Test Multi-Agent System endpoints"""
+        print("\n🤖 TESTING MULTI-AGENT SYSTEM")
+        print("=" * 50)
+        
+        # Test 1: GET /api/agents/info
+        result = await self.test_endpoint("GET", "/agents/info")
+        self.log_result(
+            "Multi-Agent System Info",
+            result["success"],
+            result.get("data"),
+            result.get("error")
+        )
+        
+        # Test 2: POST /api/agents/run/code_architect
+        test_data = {
+            "system": "code_architect",
+            "task": "Create a hello world function",
+            "code": "",
+            "language": "python",
+            "max_iterations": 1
+        }
+        
+        result = await self.test_endpoint("POST", "/agents/run/code_architect", test_data)
+        self.log_result(
+            "Code Architect Multi-Agent Run",
+            result["success"],
+            result.get("data"),
+            result.get("error")
+        )
+    
+    # ============================================================================
+    # 2. SOTA 2026 TESTS
+    # ============================================================================
+    
+    async def test_sota_2026(self):
+        """Test SOTA 2026 endpoints"""
+        print("\n🚀 TESTING SOTA 2026 FEATURES")
+        print("=" * 50)
+        
+        # Test 1: GET /api/sota/info
+        result = await self.test_endpoint("GET", "/sota/info")
+        self.log_result(
+            "SOTA 2026 Info",
+            result["success"],
+            result.get("data"),
+            result.get("error")
+        )
+        
+        # Test 2: POST /api/sota/predict
+        predict_data = {
+            "code": "def hello():\n    print('hello')",
+            "language": "python",
+            "recent_actions": []
+        }
+        
+        result = await self.test_endpoint("POST", "/sota/predict", predict_data)
+        self.log_result(
+            "SOTA Predictive Assistance",
+            result["success"],
+            result.get("data"),
+            result.get("error")
+        )
+        
+        # Test 3: POST /api/sota/code-intel
+        intel_data = {
+            "code": "def test(): pass",
+            "language": "python",
+            "analysis_types": ["complexity"]
+        }
+        
+        result = await self.test_endpoint("POST", "/sota/code-intel", intel_data)
+        self.log_result(
+            "SOTA Code Intelligence",
+            result["success"],
+            result.get("data"),
+            result.get("error")
+        )
+    
+    # ============================================================================
+    # 3. CODE INTELLIGENCE TESTS
+    # ============================================================================
+    
+    async def test_code_intelligence(self):
+        """Test Code Intelligence endpoints"""
+        print("\n🧠 TESTING CODE INTELLIGENCE")
+        print("=" * 50)
+        
+        # Test 1: GET /api/intelligence/info
+        result = await self.test_endpoint("GET", "/intelligence/info")
+        self.log_result(
+            "Code Intelligence Info",
+            result["success"],
+            result.get("data"),
+            result.get("error")
+        )
+        
+        # Test 2: POST /api/intelligence/auto-document
+        doc_data = {
+            "code": "def add(a, b):\n    return a + b",
+            "language": "python",
+            "doc_style": "google"
+        }
+        
+        result = await self.test_endpoint("POST", "/intelligence/auto-document", doc_data)
+        self.log_result(
+            "Auto Documentation Generation",
+            result["success"],
+            result.get("data"),
+            result.get("error")
+        )
+        
+        # Test 3: POST /api/intelligence/predict-bugs
+        bug_data = {
+            "code": "x = None\nprint(x.upper())",
+            "language": "python"
+        }
+        
+        result = await self.test_endpoint("POST", "/intelligence/predict-bugs", bug_data)
+        self.log_result(
+            "Bug Prediction",
+            result["success"],
+            result.get("data"),
+            result.get("error")
+        )
+    
+    # ============================================================================
+    # 4. COLLABORATION TESTS
+    # ============================================================================
+    
+    async def test_collaboration(self):
+        """Test Collaboration endpoints"""
+        print("\n👥 TESTING COLLABORATION FEATURES")
+        print("=" * 50)
+        
+        # Test 1: GET /api/collab/info
+        result = await self.test_endpoint("GET", "/collab/info")
+        self.log_result(
+            "Collaboration Info",
+            result["success"],
+            result.get("data"),
+            result.get("error")
+        )
+        
+        # Test 2: POST /api/collab/pair-program
+        pair_data = {
+            "code": "print('hi')",
+            "language": "python",
+            "task": "Add error handling",
+            "ai_role": "copilot"
+        }
+        
+        result = await self.test_endpoint("POST", "/collab/pair-program", pair_data)
+        self.log_result(
+            "AI Pair Programming",
+            result["success"],
+            result.get("data"),
+            result.get("error")
+        )
+    
+    # ============================================================================
+    # 5. AI LOG VAULT TESTS
+    # ============================================================================
+    
+    async def test_ai_log_vault(self):
+        """Test AI Log Vault endpoints"""
+        print("\n📊 TESTING AI LOG VAULT")
+        print("=" * 50)
+        
+        # Test 1: GET /api/ai-logs/info
+        result = await self.test_endpoint("GET", "/ai-logs/info")
+        self.log_result(
+            "AI Log Vault Info",
+            result["success"],
+            result.get("data"),
+            result.get("error")
+        )
+        
+        # Test 2: POST /api/ai-logs/startup-train
+        result = await self.test_endpoint("POST", "/ai-logs/startup-train")
+        self.log_result(
+            "AI Log Vault Startup Training",
+            result["success"],
+            result.get("data"),
+            result.get("error")
+        )
+    
+    # ============================================================================
+    # 6. JEEVES TUTOR TESTS
+    # ============================================================================
+    
+    async def test_jeeves_tutor(self):
+        """Test Jeeves Tutor endpoints"""
+        print("\n🎩 TESTING JEEVES AI TUTOR")
+        print("=" * 50)
+        
+        # Test 1: GET /api/jeeves/info
+        result = await self.test_endpoint("GET", "/jeeves/info")
+        self.log_result(
+            "Jeeves Tutor Info",
+            result["success"],
+            result.get("data"),
+            result.get("error")
+        )
+        
+        # Test 2: POST /api/jeeves/ask-with-context
+        ask_data = {
+            "message": "What is a loop?",
+            "skill_level": "beginner"
+        }
+        
+        result = await self.test_endpoint("POST", "/jeeves/ask-with-context", ask_data)
+        self.log_result(
+            "Jeeves Ask with Context",
+            result["success"],
+            result.get("data"),
+            result.get("error")
+        )
+    
+    # ============================================================================
+    # MAIN TEST RUNNER
+    # ============================================================================
+    
+    async def run_all_tests(self):
+        """Run all test suites"""
+        print("╔══════════════════════════════════════════════════════════════════════════════╗")
+        print("║                    CODEDOCK v11.3 BACKEND API TESTING                         ║")
+        print("╚══════════════════════════════════════════════════════════════════════════════╝")
+        print(f"Backend URL: {BACKEND_URL}")
+        print(f"Started at: {datetime.utcnow().isoformat()}")
+        
+        # Run all test suites
+        await self.test_multi_agent_system()
+        await self.test_sota_2026()
+        await self.test_code_intelligence()
+        await self.test_collaboration()
+        await self.test_ai_log_vault()
+        await self.test_jeeves_tutor()
+        
+        # Print summary
+        self.print_summary()
+    
+    def print_summary(self):
+        """Print test summary"""
+        print("\n" + "=" * 80)
+        print("🎯 TEST SUMMARY")
+        print("=" * 80)
+        
+        success_rate = (self.passed_tests / self.total_tests * 100) if self.total_tests > 0 else 0
+        
+        print(f"Total Tests: {self.total_tests}")
+        print(f"Passed: {self.passed_tests}")
+        print(f"Failed: {self.total_tests - self.passed_tests}")
+        print(f"Success Rate: {success_rate:.1f}%")
+        
+        # Show failed tests
+        failed_tests = [r for r in self.results if not r["success"]]
+        if failed_tests:
+            print(f"\n❌ FAILED TESTS ({len(failed_tests)}):")
+            for test in failed_tests:
+                print(f"   • {test['test']}")
+                if test.get('error'):
+                    print(f"     Error: {test['error']}")
+        
+        # Show successful tests
+        passed_tests = [r for r in self.results if r["success"]]
+        if passed_tests:
+            print(f"\n✅ PASSED TESTS ({len(passed_tests)}):")
+            for test in passed_tests:
+                print(f"   • {test['test']}")
+        
+        print("\n" + "=" * 80)
+        
+        # Overall status
+        if success_rate >= 90:
+            print("🎉 EXCELLENT: All systems operational!")
+        elif success_rate >= 75:
+            print("✅ GOOD: Most systems working, minor issues detected")
+        elif success_rate >= 50:
+            print("⚠️  WARNING: Several systems have issues")
+        else:
+            print("🚨 CRITICAL: Major system failures detected")
 
-def main():
-    print("🚀 CodeDock v11.3 SOTA Backend API Testing")
-    print("=" * 60)
-    
-    test_results = []
-    
-    # ============================================================================
-    # 1. MULTI-AGENT SYSTEM TESTS (prefix: /api/agents)
-    # ============================================================================
-    
-    print("\n🤖 MULTI-AGENT SYSTEM TESTS")
-    print("-" * 40)
-    
-    # Test 1: GET /api/agents/info
-    print("Testing GET /api/agents/info...")
-    result = test_endpoint("GET", "/agents/info")
-    test_results.append(result)
-    if result["success"]:
-        data = result["response_data"]
-        print(f"✅ Multi-Agent info: {data.get('name', 'N/A')} v{data.get('version', 'N/A')}")
-        print(f"   Total agents: {data.get('total_agents', 0)}")
-        print(f"   Agent systems: {len(data.get('systems', {}))}")
-    else:
-        print(f"❌ Failed: {result.get('error', 'Unknown error')}")
-    
-    # Test 2: GET /api/agents/roles
-    print("\nTesting GET /api/agents/roles...")
-    result = test_endpoint("GET", "/agents/roles")
-    test_results.append(result)
-    if result["success"]:
-        data = result["response_data"]
-        roles_count = len(data.get("roles", {}))
-        print(f"✅ Agent roles: {roles_count} roles available")
-        if roles_count > 0:
-            sample_roles = list(data["roles"].keys())[:3]
-            print(f"   Sample roles: {', '.join(sample_roles)}")
-    else:
-        print(f"❌ Failed: {result.get('error', 'Unknown error')}")
-    
-    # Test 3: GET /api/agents/systems
-    print("\nTesting GET /api/agents/systems...")
-    result = test_endpoint("GET", "/agents/systems")
-    test_results.append(result)
-    if result["success"]:
-        data = result["response_data"]
-        systems_count = len(data.get("systems", {}))
-        print(f"✅ Agent systems: {systems_count} systems available")
-        if systems_count > 0:
-            sample_systems = list(data["systems"].keys())[:3]
-            print(f"   Sample systems: {', '.join(sample_systems)}")
-    else:
-        print(f"❌ Failed: {result.get('error', 'Unknown error')}")
-    
-    # ============================================================================
-    # 2. SOTA 2026 TESTS (prefix: /api/sota)
-    # ============================================================================
-    
-    print("\n🔬 SOTA 2026 TESTS")
-    print("-" * 40)
-    
-    # Test 4: GET /api/sota/info
-    print("Testing GET /api/sota/info...")
-    result = test_endpoint("GET", "/sota/info")
-    test_results.append(result)
-    if result["success"]:
-        data = result["response_data"]
-        print(f"✅ SOTA info: {data.get('name', 'N/A')} v{data.get('version', 'N/A')}")
-        features = data.get("features", {})
-        print(f"   Features available: {len(features)}")
-        if features:
-            feature_names = list(features.keys())[:3]
-            print(f"   Sample features: {', '.join(feature_names)}")
-    else:
-        print(f"❌ Failed: {result.get('error', 'Unknown error')}")
-    
-    # ============================================================================
-    # 3. CODE INTELLIGENCE TESTS (prefix: /api/intelligence)
-    # ============================================================================
-    
-    print("\n🧠 CODE INTELLIGENCE TESTS")
-    print("-" * 40)
-    
-    # Test 5: GET /api/intelligence/info
-    print("Testing GET /api/intelligence/info...")
-    result = test_endpoint("GET", "/intelligence/info")
-    test_results.append(result)
-    if result["success"]:
-        data = result["response_data"]
-        print(f"✅ Intelligence info: {data.get('name', 'N/A')} v{data.get('version', 'N/A')}")
-        features = data.get("features", [])
-        print(f"   Intelligence features: {len(features)}")
-        if features:
-            feature_names = [f["name"] for f in features[:3]]
-            print(f"   Sample features: {', '.join(feature_names)}")
-    else:
-        print(f"❌ Failed: {result.get('error', 'Unknown error')}")
-    
-    # ============================================================================
-    # 4. COLLABORATION TESTS (prefix: /api/collab)
-    # ============================================================================
-    
-    print("\n👥 COLLABORATION TESTS")
-    print("-" * 40)
-    
-    # Test 6: GET /api/collab/info
-    print("Testing GET /api/collab/info...")
-    result = test_endpoint("GET", "/collab/info")
-    test_results.append(result)
-    if result["success"]:
-        data = result["response_data"]
-        print(f"✅ Collaboration info: {data.get('name', 'N/A')} v{data.get('version', 'N/A')}")
-        features = data.get("features", [])
-        print(f"   Collaboration features: {len(features)}")
-        active_sessions = data.get("active_sessions", 0)
-        print(f"   Active sessions: {active_sessions}")
-    else:
-        print(f"❌ Failed: {result.get('error', 'Unknown error')}")
-    
-    # Test 7: GET /api/collab/sessions
-    print("\nTesting GET /api/collab/sessions...")
-    result = test_endpoint("GET", "/collab/sessions")
-    test_results.append(result)
-    if result["success"]:
-        data = result["response_data"]
-        sessions_count = data.get("count", 0)
-        print(f"✅ Active sessions: {sessions_count} sessions")
-        if sessions_count > 0:
-            sessions = data.get("sessions", {})
-            print(f"   Session IDs: {list(sessions.keys())[:3]}")
-    else:
-        print(f"❌ Failed: {result.get('error', 'Unknown error')}")
-    
-    # ============================================================================
-    # SUMMARY
-    # ============================================================================
-    
-    print("\n" + "=" * 60)
-    print("📊 TEST RESULTS SUMMARY")
-    print("=" * 60)
-    
-    total_tests = len(test_results)
-    passed_tests = sum(1 for r in test_results if r["success"])
-    failed_tests = total_tests - passed_tests
-    success_rate = (passed_tests / total_tests * 100) if total_tests > 0 else 0
-    
-    print(f"Total Tests: {total_tests}")
-    print(f"Passed: {passed_tests} ✅")
-    print(f"Failed: {failed_tests} ❌")
-    print(f"Success Rate: {success_rate:.1f}%")
-    
-    print("\n📋 DETAILED RESULTS:")
-    for i, result in enumerate(test_results, 1):
-        status = "✅ PASS" if result["success"] else "❌ FAIL"
-        endpoint = result["endpoint"]
-        method = result["method"]
-        print(f"{i:2d}. {method} {endpoint} - {status}")
-        if not result["success"]:
-            error = result.get("error", "Unknown error")[:100]
-            print(f"     Error: {error}")
-    
-    # ============================================================================
-    # FEATURE VERIFICATION
-    # ============================================================================
-    
-    print("\n🔍 FEATURE VERIFICATION:")
-    
-    # Check Multi-Agent System
-    multi_agent_working = any(r["success"] and "/agents/" in r["endpoint"] for r in test_results)
-    print(f"Multi-Agent System: {'✅ Working' if multi_agent_working else '❌ Issues'}")
-    
-    # Check SOTA 2026
-    sota_working = any(r["success"] and "/sota/" in r["endpoint"] for r in test_results)
-    print(f"SOTA 2026 Features: {'✅ Working' if sota_working else '❌ Issues'}")
-    
-    # Check Code Intelligence
-    intel_working = any(r["success"] and "/intelligence/" in r["endpoint"] for r in test_results)
-    print(f"Code Intelligence: {'✅ Working' if intel_working else '❌ Issues'}")
-    
-    # Check Collaboration
-    collab_working = any(r["success"] and "/collab/" in r["endpoint"] for r in test_results)
-    print(f"Collaboration: {'✅ Working' if collab_working else '❌ Issues'}")
-    
-    print("\n🎯 CODEDOCK v11.3 SOTA BACKEND API TESTING COMPLETE!")
-    
-    # Return appropriate exit code
-    return 0 if success_rate == 100 else 1
+async def main():
+    """Main test runner"""
+    async with CodeDockTester() as tester:
+        await tester.run_all_tests()
 
 if __name__ == "__main__":
-    exit_code = main()
-    sys.exit(exit_code)
+    asyncio.run(main())

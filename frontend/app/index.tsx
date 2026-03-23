@@ -53,6 +53,12 @@ import { GameGenresModal } from '../features/GameGenres/GameGenresModal';
 // v11.3 Command Palette for Clean UI
 import { CommandPalette } from '../components/CommandPalette';
 
+// v11.3 SOTA Feature Modals
+import { MultiAgentModal } from '../features/MultiAgent/MultiAgentModal';
+import { SOTAModal } from '../features/SOTA/SOTAModal';
+import { CodeIntelligenceModal } from '../features/CodeIntelligence/CodeIntelligenceModal';
+import { LiveCollabModal } from '../features/LiveCollab/LiveCollabModal';
+
 // Types
 import { Language, Template, AIMode } from '../types';
 
@@ -127,6 +133,12 @@ export default function CodeDockApp() {
   
   // v11.3 Command Palette State
   const [showCommandPalette, setShowCommandPalette] = useState(false);
+  
+  // v11.3 SOTA Feature Modal States
+  const [showMultiAgentModal, setShowMultiAgentModal] = useState(false);
+  const [showSOTAModal, setShowSOTAModal] = useState(false);
+  const [showCodeIntelligenceModal, setShowCodeIntelligenceModal] = useState(false);
+  const [showLiveCollabModal, setShowLiveCollabModal] = useState(false);
   
   // Voice Command Handler
   const handleVoiceCommand = useCallback((action: string, params?: any) => {
@@ -377,7 +389,7 @@ export default function CodeDockApp() {
       case 'debugger': setShowDebuggerModal(true); break;
       case 'code_to_app': setShowCodeToAppModal(true); break;
       case 'imagine': setShowImagineModal(true); break;
-      case 'multi_agent': setShowAdvancedModal(true); break;
+      case 'multi_agent': setShowMultiAgentModal(true); break;
       // Learn actions
       case 'masterclass': setShowMasterclassModal(true); break;
       case 'education': setShowEducationModal(true); break;
@@ -390,8 +402,10 @@ export default function CodeDockApp() {
       // Pro tools
       case 'advanced': setShowAdvancedModal(true); break;
       case 'vault': setShowVaultModal(true); break;
-      case 'collab': setShowCollaborationModal(true); break;
-      case 'intelligence': setShowAdvancedModal(true); break;
+      case 'collab': setShowLiveCollabModal(true); break;
+      case 'intelligence': setShowCodeIntelligenceModal(true); break;
+      // SOTA features
+      case 'sota': setShowSOTAModal(true); break;
       default: console.log('Unknown action:', actionId);
     }
   }, [executeCode]);
@@ -1148,6 +1162,41 @@ export default function CodeDockApp() {
         onClose={() => setShowCommandPalette(false)}
         onSelectAction={handleCommandPaletteAction}
         colors={colors}
+      />
+
+      {/* v11.3 SOTA Feature Modals */}
+      <MultiAgentModal
+        visible={showMultiAgentModal}
+        onClose={() => setShowMultiAgentModal(false)}
+        colors={colors}
+        currentCode={code}
+        currentLanguage={selectedLanguage.key}
+      />
+
+      <SOTAModal
+        visible={showSOTAModal}
+        onClose={() => setShowSOTAModal(false)}
+        colors={colors}
+        currentCode={code}
+        currentLanguage={selectedLanguage.key}
+        onApplyCode={setCode}
+      />
+
+      <CodeIntelligenceModal
+        visible={showCodeIntelligenceModal}
+        onClose={() => setShowCodeIntelligenceModal(false)}
+        colors={colors}
+        currentCode={code}
+        currentLanguage={selectedLanguage.key}
+      />
+
+      <LiveCollabModal
+        visible={showLiveCollabModal}
+        onClose={() => setShowLiveCollabModal(false)}
+        colors={colors}
+        currentCode={code}
+        currentLanguage={selectedLanguage.key}
+        onCodeUpdate={setCode}
       />
     </SafeAreaView>
   );

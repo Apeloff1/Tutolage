@@ -59,6 +59,7 @@ const FEATURE_CATEGORIES: FeatureCategory[] = [
       { id: 'code_to_app', name: 'Code to App', icon: 'apps', description: 'Generate full apps' },
       { id: 'imagine', name: 'Imagine', icon: 'image', description: 'AI image generation' },
       { id: 'multi_agent', name: 'Multi-Agent', icon: 'people', description: 'Agent swarm systems' },
+      { id: 'sota', name: 'SOTA 2026', icon: 'rocket', description: 'Predictive AI & Auto-refactor' },
     ]
   },
   {
@@ -92,8 +93,8 @@ const FEATURE_CATEGORIES: FeatureCategory[] = [
     features: [
       { id: 'advanced', name: 'Advanced Tools', icon: 'analytics', description: 'Benchmark, verify, starlog' },
       { id: 'vault', name: 'Vault', icon: 'filing', description: 'Save code & assets' },
-      { id: 'collab', name: 'Collaborate', icon: 'people-circle', description: 'Pair programming' },
-      { id: 'intelligence', name: 'Code Intel', icon: 'bulb', description: 'Semantic search, docs' },
+      { id: 'collab', name: 'Live Collab', icon: 'people-circle', description: 'AI Pair programming' },
+      { id: 'intelligence', name: 'Code Intel', icon: 'bulb', description: 'Auto-docs, tests, review' },
     ]
   },
 ];

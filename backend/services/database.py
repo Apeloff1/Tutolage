@@ -181,7 +181,8 @@ class SynergyLayer:
     @staticmethod
     async def get_personalized_recommendations(user_id: str) -> List[Dict]:
         """Get AI-powered content recommendations based on user context"""
-        context = await SynergyLayer.get_user_context(user_id)
+        # Get user context for future personalization enhancements
+        _ = await SynergyLayer.get_user_context(user_id)
         
         # Find modules user hasn't completed
         completed_modules = await reading_progress_collection.find(

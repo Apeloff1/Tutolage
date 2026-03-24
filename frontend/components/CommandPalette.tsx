@@ -83,6 +83,9 @@ const FEATURE_CATEGORIES: FeatureCategory[] = [
       { id: 'assets', name: 'Asset Pipeline', icon: 'cube', description: '2D sprites & 3D models' },
       { id: 'games', name: 'Game Builder', icon: 'game-controller', description: '11 genres, full pipeline' },
       { id: 'music', name: 'Music Studio', icon: 'musical-notes', description: 'Game audio generation' },
+      { id: 'world_engine', name: 'World Engine', icon: 'globe', description: 'Text-to-Environment' },
+      { id: 'narrative', name: 'Narrative', icon: 'book', description: 'Stories, quests, dialogue' },
+      { id: 'logic_engine', name: 'Logic Engine', icon: 'code-working', description: 'Mechanics & AI behavior' },
     ]
   },
   {

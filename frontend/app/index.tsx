@@ -68,6 +68,11 @@ import { SOTAModal } from '../features/SOTA/SOTAModal';
 import { CodeIntelligenceModal } from '../features/CodeIntelligence/CodeIntelligenceModal';
 import { LiveCollabModal } from '../features/LiveCollab/LiveCollabModal';
 
+// v11.5 AI-to-Game Pipelines
+import { WorldEngineModal } from '../features/WorldEngine/WorldEngineModal';
+import { NarrativeModal } from '../features/Narrative/NarrativeModal';
+import { LogicEngineModal } from '../features/LogicEngine/LogicEngineModal';
+
 // Types
 import { Language, Template, AIMode } from '../types';
 
@@ -153,6 +158,11 @@ export default function CodeDockApp() {
   const [showSOTAModal, setShowSOTAModal] = useState(false);
   const [showCodeIntelligenceModal, setShowCodeIntelligenceModal] = useState(false);
   const [showLiveCollabModal, setShowLiveCollabModal] = useState(false);
+  
+  // v11.5 AI-to-Game Pipeline Modal States
+  const [showWorldEngineModal, setShowWorldEngineModal] = useState(false);
+  const [showNarrativeModal, setShowNarrativeModal] = useState(false);
+  const [showLogicEngineModal, setShowLogicEngineModal] = useState(false);
   
   // Voice Command Handler
   const handleVoiceCommand = useCallback((action: string, params?: any) => {
@@ -413,6 +423,10 @@ export default function CodeDockApp() {
       case 'assets': setShowAssetPipelineModal(true); break;
       case 'games': setShowGameGenresModal(true); break;
       case 'music': setShowMusicPipelineModal(true); break;
+      // v11.5 Game Pipelines
+      case 'world_engine': setShowWorldEngineModal(true); break;
+      case 'narrative': setShowNarrativeModal(true); break;
+      case 'logic_engine': setShowLogicEngineModal(true); break;
       // Pro tools
       case 'advanced': setShowAdvancedModal(true); break;
       case 'vault': setShowVaultModal(true); break;
@@ -1170,6 +1184,25 @@ export default function CodeDockApp() {
         currentCode={code}
         currentLanguage={selectedLanguage.key}
         onCodeUpdate={setCode}
+      />
+
+      {/* v11.5 AI-to-Game Pipelines */}
+      <WorldEngineModal
+        visible={showWorldEngineModal}
+        onClose={() => setShowWorldEngineModal(false)}
+        colors={colors}
+      />
+
+      <NarrativeModal
+        visible={showNarrativeModal}
+        onClose={() => setShowNarrativeModal(false)}
+        colors={colors}
+      />
+
+      <LogicEngineModal
+        visible={showLogicEngineModal}
+        onClose={() => setShowLogicEngineModal(false)}
+        colors={colors}
       />
     </SafeAreaView>
     </ErrorBoundary>

@@ -71,6 +71,10 @@ from routes.multi_agent import router as multi_agent_router
 from routes.sota_2026 import router as sota_router
 from routes.code_intelligence import router as intelligence_router
 from routes.collaboration import router as collab_router
+# v11.5 AI-to-Game Pipelines
+from routes.world_engine import router as world_engine_router
+from routes.narrative_engine import router as narrative_router
+from routes.logic_engine import router as logic_router
 
 # Import the 15-Year CS Bible Curriculum (for backward compatibility)
 from cs_bible import CS_BIBLE, get_year_info, get_course, get_all_courses, get_curriculum_stats
@@ -6377,3 +6381,7 @@ app.include_router(multi_agent_router, prefix="/api")
 app.include_router(sota_router, prefix="/api")
 app.include_router(intelligence_router, prefix="/api")
 app.include_router(collab_router, prefix="/api")
+# v11.5 AI-to-Game Pipelines
+app.include_router(world_engine_router)
+app.include_router(narrative_router)
+app.include_router(logic_router)

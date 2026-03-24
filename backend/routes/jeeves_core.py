@@ -1445,6 +1445,22 @@ async def get_core_overview():
         }
     }
 
+@router.get("/system-laws/all")
+async def get_all_system_laws():
+    """Get all system law blurbs"""
+    return {
+        "success": True,
+        "total_blurbs": 3,
+        "total_characters": len(SYSTEM_LAW_BLURB_1_TEACHING_PHILOSOPHY) + 
+                          len(SYSTEM_LAW_BLURB_2_COCODING_PROTOCOL) + 
+                          len(SYSTEM_LAW_BLURB_3_QUALITY_STANDARDS),
+        "blurbs": [
+            {"number": 1, "title": "Core Teaching Philosophy", "preview": SYSTEM_LAW_BLURB_1_TEACHING_PHILOSOPHY[:500] + "..."},
+            {"number": 2, "title": "Co-Coding Protocol", "preview": SYSTEM_LAW_BLURB_2_COCODING_PROTOCOL[:500] + "..."},
+            {"number": 3, "title": "Quality Standards", "preview": SYSTEM_LAW_BLURB_3_QUALITY_STANDARDS[:500] + "..."}
+        ]
+    }
+
 @router.get("/system-laws/{blurb_number}")
 async def get_system_law_blurb(blurb_number: int):
     """Get a specific system law blurb"""
@@ -1470,22 +1486,6 @@ async def get_system_law_blurb(blurb_number: int):
         raise HTTPException(status_code=400, detail="Blurb number must be 1, 2, or 3")
     
     return {"success": True, "blurb": blurbs[blurb_number]}
-
-@router.get("/system-laws/all")
-async def get_all_system_laws():
-    """Get all system law blurbs"""
-    return {
-        "success": True,
-        "total_blurbs": 3,
-        "total_characters": len(SYSTEM_LAW_BLURB_1_TEACHING_PHILOSOPHY) + 
-                          len(SYSTEM_LAW_BLURB_2_COCODING_PROTOCOL) + 
-                          len(SYSTEM_LAW_BLURB_3_QUALITY_STANDARDS),
-        "blurbs": [
-            {"number": 1, "title": "Core Teaching Philosophy", "preview": SYSTEM_LAW_BLURB_1_TEACHING_PHILOSOPHY[:500] + "..."},
-            {"number": 2, "title": "Co-Coding Protocol", "preview": SYSTEM_LAW_BLURB_2_COCODING_PROTOCOL[:500] + "..."},
-            {"number": 3, "title": "Quality Standards", "preview": SYSTEM_LAW_BLURB_3_QUALITY_STANDARDS[:500] + "..."}
-        ]
-    }
 
 @router.get("/matrices")
 async def get_all_matrices():

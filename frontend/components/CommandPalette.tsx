@@ -116,6 +116,7 @@ const FEATURE_CATEGORIES: FeatureCategory[] = [
       { id: 'collab', name: 'Live Collab', icon: 'people-circle', description: 'AI Pair programming' },
       { id: 'intelligence', name: 'Code Intel', icon: 'bulb', description: 'Auto-docs, tests, review' },
       { id: 'ai_interactions_log', name: 'AI Interactions Log', icon: 'document-text', description: 'Direct-to-Jeeves AI history' },
+      { id: 'dashboard', name: 'Dashboard', icon: 'stats-chart', description: 'Analytics & progress tracking' },
     ]
   },
 ];

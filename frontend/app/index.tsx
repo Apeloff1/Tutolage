@@ -88,6 +88,11 @@ import { JeevesEQModal } from '../features/JeevesEQ/JeevesEQModal';
 // v12.0 AI Interactions Log
 import { AIInteractionsLogModal } from '../features/AIInteractionsLog/AIInteractionsLogModal';
 
+// v12.0 Dashboard & Session Tracking
+import { DashboardModal } from '../features/Dashboard/DashboardModal';
+import { AchievementQueue, Achievement } from '../components/AchievementNotification';
+import { useSessionTracker } from '../hooks/useSessionTracker';
+
 // i18n Provider
 import { I18nProvider, useTranslation } from '../i18n';
 import { LanguageSwitcher } from '../components/LanguageSwitcher';
@@ -130,6 +135,18 @@ function CodeDockAppContent() {
 
   // Zustand Modal Store
   const { activeModal, openModal, closeModal } = useModalStore();
+  
+  // v12.0 Session Tracker with achievements
+  const { 
+    session, 
+    achievements, 
+    xpEarned,
+    startSession, 
+    updateProgress, 
+    endSession, 
+    logAIInteraction,
+    clearAchievements 
+  } = useSessionTracker('default_user');
   
   // Helper to check if a modal is open
   const isModalOpen = (modal: ModalType) => activeModal === modal;
@@ -408,6 +425,8 @@ function CodeDockAppContent() {
       case 'jeeves_eq': openModal('jeevesEQ'); break;
       // v12.0 AI Interactions Log
       case 'ai_interactions_log': openModal('aiInteractionsLog'); break;
+      // v12.0 Dashboard
+      case 'dashboard': openModal('dashboard'); break;
       // Learn actions
       case 'masterclass': openModal('masterclass'); break;
       case 'education': openModal('education'); break;
@@ -1270,6 +1289,21 @@ function CodeDockAppContent() {
         onClose={closeModal}
         colors={colors}
         userId="default_user"
+      />
+      
+      {/* v12.0 Dashboard Modal */}
+      <DashboardModal
+        visible={isModalOpen('dashboard')}
+        onClose={closeModal}
+        colors={colors}
+        userId="default_user"
+      />
+      
+      {/* v12.0 Achievement Notifications */}
+      <AchievementQueue
+        achievements={achievements}
+        onClear={clearAchievements}
+        colors={colors}
       />
     </SafeAreaView>
     </ErrorBoundary>

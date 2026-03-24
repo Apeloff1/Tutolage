@@ -53,6 +53,7 @@ export type ModalType =
   | 'jeevesEQ'
   | 'exportGitHub'
   | 'aiInteractionsLog'
+  | 'dashboard'
   | null;
 
 interface ModalState {

@@ -54,6 +54,7 @@ export type ModalType =
   | 'exportGitHub'
   | 'aiInteractionsLog'
   | 'dashboard'
+  | 'learningHub'
   | null;
 
 interface ModalState {

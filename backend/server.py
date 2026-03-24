@@ -95,6 +95,9 @@ from routes.ai_toolkit_enhanced import router as ai_toolkit_router
 # v12.0 - Synergy Integration
 from routes.synergy import router as synergy_router
 
+# v12.5 - Multi-Layer Learning Engine
+from routes.learning_engine import router as learning_engine_router
+
 # Import the 15-Year CS Bible Curriculum (for backward compatibility)
 from cs_bible import CS_BIBLE, get_year_info, get_course, get_all_courses, get_curriculum_stats
 
@@ -6422,3 +6425,5 @@ app.include_router(export_github_router)
 app.include_router(ai_toolkit_router)
 # v12.0 - Synergy Integration (Cross-Feature Data Flow)
 app.include_router(synergy_router)
+# v12.5 - Multi-Layer Learning Engine
+app.include_router(learning_engine_router)

@@ -93,6 +93,9 @@ import { DashboardModal } from '../features/Dashboard/DashboardModal';
 import { AchievementQueue, Achievement } from '../components/AchievementNotification';
 import { useSessionTracker } from '../hooks/useSessionTracker';
 
+// v12.5 Learning Hub - Multi-Layer Learning System
+import { LearningHubModal } from '../features/LearningHub/LearningHubModal';
+
 // i18n Provider
 import { I18nProvider, useTranslation } from '../i18n';
 import { LanguageSwitcher } from '../components/LanguageSwitcher';
@@ -427,6 +430,8 @@ function CodeDockAppContent() {
       case 'ai_interactions_log': openModal('aiInteractionsLog'); break;
       // v12.0 Dashboard
       case 'dashboard': openModal('dashboard'); break;
+      // v12.5 Learning Hub
+      case 'learning_hub': openModal('learningHub'); break;
       // Learn actions
       case 'masterclass': openModal('masterclass'); break;
       case 'education': openModal('education'); break;
@@ -1294,6 +1299,14 @@ function CodeDockAppContent() {
       {/* v12.0 Dashboard Modal */}
       <DashboardModal
         visible={isModalOpen('dashboard')}
+        onClose={closeModal}
+        colors={colors}
+        userId="default_user"
+      />
+      
+      {/* v12.5 Learning Hub Modal */}
+      <LearningHubModal
+        visible={isModalOpen('learningHub')}
         onClose={closeModal}
         colors={colors}
         userId="default_user"

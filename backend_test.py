@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-CodeDock v11.8 Backend API Testing Suite
-Testing Export & GitHub Integration, Reading Curriculum, and Jeeves EQ endpoints
+CodeDock v11.9 Enhanced AI Toolkit Backend API Testing Suite
+Testing AI Toolkit endpoints as requested in review
 """
 
 import asyncio
@@ -73,126 +73,164 @@ class CodeDockTester:
             print(f"   Exception: {str(e)}")
             return result
 
-    async def test_export_github_integration(self):
-        """Test Export & GitHub Integration endpoints"""
-        print("\n🔧 TESTING EXPORT & GITHUB INTEGRATION ENDPOINTS")
+    async def test_ai_toolkit_info(self):
+        """Test AI Toolkit info endpoint"""
+        print("\n🤖 TESTING AI TOOLKIT INFO ENDPOINT")
         print("=" * 60)
         
-        # 1. GET /api/export/info
-        await self.test_endpoint(
-            "GET", "/export/info",
-            description="Export system capabilities"
+        # GET /api/ai-toolkit/info - Should return AI toolkit capabilities (10 tools)
+        result = await self.test_endpoint(
+            "GET", "/ai-toolkit/info",
+            description="AI toolkit capabilities (should have 10 tools)"
         )
         
-        # 2. POST /api/export/pdf
-        pdf_data = {
-            "content": "print('Hello World')",
-            "filename": "test_code",
-            "content_type": "code",
+        # Validate response structure
+        if result["success"] and "response_data" in result:
+            data = result["response_data"]
+            capabilities = data.get("capabilities", [])
+            print(f"   Found {len(capabilities)} capabilities")
+            if len(capabilities) == 10:
+                print("   ✅ Correct number of capabilities (10)")
+            else:
+                print(f"   ⚠️  Expected 10 capabilities, found {len(capabilities)}")
+        
+        return result
+
+    async def test_ai_toolkit_code_review(self):
+        """Test AI Toolkit code review endpoint"""
+        print("\n🔍 TESTING AI TOOLKIT CODE REVIEW ENDPOINT")
+        print("=" * 60)
+        
+        # POST /api/ai-toolkit/code-review with specific body as requested
+        code_review_data = {
+            "code": "def hello():\n    print('Hello World')\n    x = 1\n    y = 2\n    return x + y",
+            "language": "python",
+            "review_depth": "standard"
+        }
+        
+        result = await self.test_endpoint(
+            "POST", "/ai-toolkit/code-review",
+            data=code_review_data,
+            description="Code review with structure analysis, security analysis, quality score, and AI review"
+        )
+        
+        # Validate response structure
+        if result["success"] and "response_data" in result:
+            data = result["response_data"]
+            required_fields = ["structure_analysis", "security_analysis", "quality_score", "ai_review"]
+            
+            for field in required_fields:
+                if field in data:
+                    print(f"   ✅ Found {field}")
+                else:
+                    print(f"   ❌ Missing {field}")
+            
+            # Check structure analysis details
+            if "structure_analysis" in data:
+                structure = data["structure_analysis"]
+                print(f"   Structure: {structure.get('total_lines', 0)} lines, complexity {structure.get('cyclomatic_complexity', 0)}")
+            
+            # Check quality score
+            if "quality_score" in data:
+                quality = data["quality_score"]
+                print(f"   Quality Score: {quality.get('overall', 0)}/100 (Grade: {quality.get('grade', 'N/A')})")
+        
+        return result
+
+    async def test_ai_toolkit_quality_score(self):
+        """Test AI Toolkit quality score endpoint"""
+        print("\n📊 TESTING AI TOOLKIT QUALITY SCORE ENDPOINT")
+        print("=" * 60)
+        
+        # GET /api/ai-toolkit/quality-score with query params as requested
+        params = {
+            "code": "def test(): pass",
             "language": "python"
         }
-        await self.test_endpoint(
-            "POST", "/export/pdf",
-            data=pdf_data,
-            description="PDF export with Python code"
+        
+        result = await self.test_endpoint(
+            "GET", "/ai-toolkit/quality-score",
+            params=params,
+            description="Quality score with metrics"
         )
         
-        # 3. POST /api/export/log-ai-interaction
-        ai_interaction_data = {
-            "user_id": "test_user",
-            "interaction_type": "code_generation",
-            "prompt": "Write a hello world",
-            "response": "Here is your code",
-            "model_used": "gpt-4o"
+        # Validate response structure
+        if result["success"] and "response_data" in result:
+            data = result["response_data"]
+            required_fields = ["code_metrics", "quality_score"]
+            
+            for field in required_fields:
+                if field in data:
+                    print(f"   ✅ Found {field}")
+                else:
+                    print(f"   ❌ Missing {field}")
+            
+            # Check quality score details
+            if "quality_score" in data:
+                quality = data["quality_score"]
+                print(f"   Overall Score: {quality.get('overall', 0)}/100")
+                print(f"   Grade: {quality.get('grade', 'N/A')}")
+                if "breakdown" in quality:
+                    breakdown = quality["breakdown"]
+                    print(f"   Breakdown: Maintainability={breakdown.get('maintainability', 0)}, Security={breakdown.get('security', 0)}")
+        
+        return result
+
+    async def test_ai_toolkit_generate_tests(self):
+        """Test AI Toolkit generate tests endpoint"""
+        print("\n🧪 TESTING AI TOOLKIT GENERATE TESTS ENDPOINT")
+        print("=" * 60)
+        
+        # POST /api/ai-toolkit/generate-tests with specific body as requested
+        test_generation_data = {
+            "code": "def add(a, b):\n    return a + b",
+            "language": "python",
+            "test_framework": "pytest",
+            "test_types": ["unit", "edge_cases"]
         }
-        await self.test_endpoint(
-            "POST", "/export/log-ai-interaction",
-            data=ai_interaction_data,
-            description="Log AI interaction for learning"
+        
+        result = await self.test_endpoint(
+            "POST", "/ai-toolkit/generate-tests",
+            data=test_generation_data,
+            description="Generate automated tests for code"
         )
         
-        # 4. GET /api/export/ai-interactions/test_user
-        await self.test_endpoint(
-            "GET", "/export/ai-interactions/test_user",
-            description="Get AI interaction history"
-        )
-
-    async def test_reading_curriculum(self):
-        """Test Reading Curriculum endpoints"""
-        print("\n📚 TESTING READING CURRICULUM ENDPOINTS")
-        print("=" * 60)
+        # Validate response structure
+        if result["success"] and "response_data" in result:
+            data = result["response_data"]
+            required_fields = ["test_code", "framework", "test_types"]
+            
+            for field in required_fields:
+                if field in data:
+                    print(f"   ✅ Found {field}")
+                else:
+                    print(f"   ❌ Missing {field}")
+            
+            # Check test generation details
+            if "test_code" in data:
+                test_code = data["test_code"]
+                print(f"   Generated test code length: {len(test_code)} characters")
+            
+            if "estimated_test_count" in data:
+                print(f"   Estimated test count: {data['estimated_test_count']}")
+            
+            if "framework" in data:
+                print(f"   Framework: {data['framework']}")
         
-        # 1. GET /api/reading/info
-        await self.test_endpoint(
-            "GET", "/reading/info",
-            description="Comprehensive curriculum info (1600+ hours)"
-        )
-        
-        # 2. GET /api/reading/tracks
-        await self.test_endpoint(
-            "GET", "/reading/tracks",
-            description="Get 4 learning tracks"
-        )
-        
-        # 3. GET /api/reading/track/game_development
-        await self.test_endpoint(
-            "GET", "/reading/track/game_development",
-            description="Game dev track with sub-tracks"
-        )
-        
-        # 4. GET /api/reading/manuals
-        await self.test_endpoint(
-            "GET", "/reading/manuals",
-            description="Advanced and language manuals"
-        )
-
-    async def test_jeeves_eq(self):
-        """Test Jeeves EQ endpoints"""
-        print("\n🧠 TESTING JEEVES EQ ENDPOINTS")
-        print("=" * 60)
-        
-        # 1. GET /api/jeeves-eq/info
-        await self.test_endpoint(
-            "GET", "/jeeves-eq/info",
-            description="EQ capabilities"
-        )
-        
-        # 2. POST /api/jeeves-eq/detect-emotion
-        emotion_data = [
-            {"action_type": "challenge_completed"},
-            {"action_type": "quiz_completed"}
-        ]
-        await self.test_endpoint(
-            "POST", "/jeeves-eq/detect-emotion",
-            data=emotion_data,
-            params={"user_id": "test_user"},
-            description="Detect emotion from user actions"
-        )
-        
-        # 3. GET /api/jeeves-eq/psychology-profile/test_user
-        await self.test_endpoint(
-            "GET", "/jeeves-eq/psychology-profile/test_user",
-            description="Get psychology profile"
-        )
-        
-        # 4. POST /api/jeeves-eq/pomodoro/start?user_id=test_user&session_type=work
-        await self.test_endpoint(
-            "POST", "/jeeves-eq/pomodoro/start",
-            params={"user_id": "test_user", "session_type": "work"},
-            description="Start Pomodoro session"
-        )
+        return result
 
     async def run_all_tests(self):
         """Run all test suites"""
-        print(f"🚀 STARTING CODEDOCK v11.8 BACKEND API TESTING")
+        print(f"🚀 STARTING CODEDOCK v11.9 ENHANCED AI TOOLKIT TESTING")
         print(f"Backend URL: {BACKEND_URL}")
         print(f"API Base: {API_BASE}")
         print(f"Test started at: {datetime.now().isoformat()}")
         
-        # Run test suites
-        await self.test_export_github_integration()
-        await self.test_reading_curriculum()
-        await self.test_jeeves_eq()
+        # Run AI Toolkit test suites as requested
+        await self.test_ai_toolkit_info()
+        await self.test_ai_toolkit_code_review()
+        await self.test_ai_toolkit_quality_score()
+        await self.test_ai_toolkit_generate_tests()
         
         # Generate summary
         await self.generate_summary()
@@ -214,14 +252,10 @@ class CodeDockTester:
         print(f"Success Rate: {success_rate:.1f}%")
         
         # Group by endpoint category
-        export_tests = [r for r in self.results if r["endpoint"].startswith("/export")]
-        reading_tests = [r for r in self.results if r["endpoint"].startswith("/reading")]
-        jeeves_tests = [r for r in self.results if r["endpoint"].startswith("/jeeves-eq")]
+        ai_toolkit_tests = [r for r in self.results if r["endpoint"].startswith("/ai-toolkit")]
         
         print(f"\n📊 RESULTS BY CATEGORY:")
-        print(f"Export & GitHub Integration: {sum(1 for r in export_tests if r['success'])}/{len(export_tests)} passed")
-        print(f"Reading Curriculum: {sum(1 for r in reading_tests if r['success'])}/{len(reading_tests)} passed")
-        print(f"Jeeves EQ: {sum(1 for r in jeeves_tests if r['success'])}/{len(jeeves_tests)} passed")
+        print(f"AI Toolkit Enhanced: {sum(1 for r in ai_toolkit_tests if r['success'])}/{len(ai_toolkit_tests)} passed")
         
         # Show failed tests
         failed_results = [r for r in self.results if not r["success"]]
@@ -242,24 +276,25 @@ class CodeDockTester:
                     data = result["response_data"]
                     if "name" in data:
                         print(f"    Name: {data['name']}")
-                    if "total_curriculum_hours" in data:
-                        print(f"    Total Hours: {data['total_curriculum_hours']}")
-                    if "tracks" in data and isinstance(data["tracks"], list):
-                        print(f"    Tracks: {len(data['tracks'])}")
                     if "capabilities" in data and isinstance(data["capabilities"], list):
                         print(f"    Capabilities: {len(data['capabilities'])}")
-                    if "emotional_state" in data:
-                        print(f"    Detected Emotion: {data['emotional_state'].get('primary', 'unknown')}")
+                    if "quality_score" in data and isinstance(data["quality_score"], dict):
+                        quality = data["quality_score"]
+                        print(f"    Quality Score: {quality.get('overall', 0)}/100 (Grade: {quality.get('grade', 'N/A')})")
+                    if "test_code" in data:
+                        print(f"    Generated test code: {len(data['test_code'])} characters")
+                    if "framework" in data:
+                        print(f"    Test framework: {data['framework']}")
         
         print(f"\n🎯 CONCLUSION:")
         if success_rate >= 90:
-            print("🏆 EXCELLENT! All major endpoints are working correctly.")
+            print("🏆 EXCELLENT! All AI Toolkit endpoints are working correctly.")
         elif success_rate >= 75:
-            print("✅ GOOD! Most endpoints are working with minor issues.")
+            print("✅ GOOD! Most AI Toolkit endpoints are working with minor issues.")
         elif success_rate >= 50:
-            print("⚠️  MODERATE! Some endpoints need attention.")
+            print("⚠️  MODERATE! Some AI Toolkit endpoints need attention.")
         else:
-            print("🚨 CRITICAL! Multiple endpoints are failing.")
+            print("🚨 CRITICAL! Multiple AI Toolkit endpoints are failing.")
         
         await self.client.aclose()
 

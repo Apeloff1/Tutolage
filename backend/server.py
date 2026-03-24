@@ -84,6 +84,9 @@ from routes.sota_extended import router as sota_extended_router
 from routes.learning_engine import router as learning_router
 from routes.logscraper import router as logscraper_router
 from routes.quiz_bank import router as quiz_bank_router
+# v11.7 SOTA - Reading Curriculum & Jeeves EQ
+from routes.reading_curriculum import router as reading_router
+from routes.jeeves_eq import router as jeeves_eq_router
 
 # Import the 15-Year CS Bible Curriculum (for backward compatibility)
 from cs_bible import CS_BIBLE, get_year_info, get_course, get_all_courses, get_curriculum_stats
@@ -6403,3 +6406,6 @@ app.include_router(sota_extended_router)
 app.include_router(learning_router)
 app.include_router(logscraper_router)
 app.include_router(quiz_bank_router)
+# v11.7 SOTA - Reading Curriculum & Jeeves EQ
+app.include_router(reading_router)
+app.include_router(jeeves_eq_router)

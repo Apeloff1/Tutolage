@@ -116,3 +116,7 @@ secrets/
 *.key
 credentials.json
 service-account.json
+-e 
+# Environment files
+*.env
+*.env.*

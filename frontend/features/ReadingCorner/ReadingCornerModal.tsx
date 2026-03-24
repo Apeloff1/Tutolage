@@ -49,6 +49,7 @@ interface Manual {
   id: string;
   name: string;
   pages?: number;
+  total_pages?: number;
   difficulty?: number;
   description?: string;
 }

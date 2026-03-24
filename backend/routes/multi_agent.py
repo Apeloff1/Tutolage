@@ -5,11 +5,10 @@
 ╚══════════════════════════════════════════════════════════════════════════════╝
 """
 
-from fastapi import APIRouter, HTTPException, BackgroundTasks
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
-from typing import Optional, List, Dict, Any
+from typing import Optional, Dict, Any
 from datetime import datetime
-import asyncio
 import os
 import uuid
 
@@ -19,7 +18,7 @@ router = APIRouter(prefix="/agents", tags=["Multi-Agent Systems"])
 try:
     from emergentintegrations.llm.chat import LlmChat, UserMessage
     LLM_AVAILABLE = True
-except:
+except Exception:
     LLM_AVAILABLE = False
 
 EMERGENT_KEY = os.getenv("EMERGENT_LLM_KEY", "")

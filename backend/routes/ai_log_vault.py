@@ -5,12 +5,11 @@
 ╚══════════════════════════════════════════════════════════════════════════════╝
 """
 
-from fastapi import APIRouter, HTTPException, BackgroundTasks
+from fastapi import APIRouter, BackgroundTasks
 from pydantic import BaseModel
 from typing import Optional, List, Dict, Any
 from datetime import datetime, timedelta
 import os
-import json
 from motor.motor_asyncio import AsyncIOMotorClient
 
 router = APIRouter(prefix="/ai-logs", tags=["AI Log Vault"])
@@ -143,7 +142,7 @@ async def add_query_feedback(log_id: str, feedback: str, comment: Optional[str] 
     """Add feedback to an AI query for training improvement"""
     from bson import ObjectId
     
-    result = await ai_queries_collection.update_one(
+    await ai_queries_collection.update_one(
         {"_id": ObjectId(log_id)},
         {
             "$set": {

@@ -13,9 +13,7 @@ Covers:
 """
 
 from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel
-from typing import List, Optional, Dict, Any
-from datetime import datetime
+from typing import Dict, Any
 
 router = APIRouter(prefix="/api/physics", tags=["Physics Engine"])
 

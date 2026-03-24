@@ -7,7 +7,6 @@
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
-from typing import Optional, List, Dict, Any
 from datetime import datetime
 import os
 
@@ -17,7 +16,7 @@ router = APIRouter(prefix="/game-genres", tags=["Game Genres"])
 try:
     from emergentintegrations.llm.chat import LlmChat
     LLM_AVAILABLE = True
-except:
+except Exception:
     LLM_AVAILABLE = False
 
 EMERGENT_KEY = os.getenv("EMERGENT_LLM_KEY", "")
@@ -459,7 +458,7 @@ async def create_game_project(request: GameProjectRequest):
             5. Development milestones
             6. Estimated timeline""")
             project["ai_specification"] = llm.chat()
-        except:
+        except Exception:
             pass
     
     project["assets_required"] = subgenre.get("assets_needed", [])

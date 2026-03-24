@@ -10,7 +10,7 @@
 ╚══════════════════════════════════════════════════════════════════════════════╝
 """
 
-from fastapi import APIRouter, HTTPException, UploadFile, File
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 from typing import Optional, List, Dict, Any
 from datetime import datetime

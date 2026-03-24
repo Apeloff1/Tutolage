@@ -5,9 +5,9 @@
 ╚══════════════════════════════════════════════════════════════════════════════╝
 """
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter
 from pydantic import BaseModel
-from typing import Optional, List, Dict, Any
+from typing import Optional
 from datetime import datetime
 import os
 
@@ -16,7 +16,7 @@ router = APIRouter(prefix="/intelligence", tags=["Code Intelligence"])
 try:
     from emergentintegrations.llm.chat import LlmChat, UserMessage
     LLM_AVAILABLE = True
-except:
+except Exception:
     LLM_AVAILABLE = False
 
 EMERGENT_KEY = os.getenv("EMERGENT_LLM_KEY", "")

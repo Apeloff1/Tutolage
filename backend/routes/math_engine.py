@@ -12,9 +12,7 @@ Covers:
 """
 
 from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel
-from typing import List, Optional, Dict, Any
-from datetime import datetime
+from typing import List, Optional
 import math
 
 router = APIRouter(prefix="/api/math", tags=["Mathematics Engine"])

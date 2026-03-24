@@ -5,7 +5,7 @@
 ╚══════════════════════════════════════════════════════════════════════════════╝
 """
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter
 from pydantic import BaseModel
 from typing import Optional, List, Dict, Any
 from datetime import datetime
@@ -17,7 +17,7 @@ router = APIRouter(prefix="/assets", tags=["Asset Pipeline"])
 try:
     from emergentintegrations.llm.chat import LlmChat
     LLM_AVAILABLE = True
-except:
+except Exception:
     LLM_AVAILABLE = False
 
 EMERGENT_KEY = os.getenv("EMERGENT_LLM_KEY", "")
@@ -220,7 +220,7 @@ async def generate_sprite(request: Sprite2DRequest):
             5. Technical specifications
             6. Animation keyframe descriptions (if animated)""")
             generation_prompt = llm.chat()
-        except Exception as e:
+        except Exception:
             generation_prompt = prompt
     else:
         generation_prompt = prompt
@@ -299,7 +299,7 @@ async def generate_3d_model(request: Model3DRequest):
             7. Animation specifications (if applicable)
             8. LOD recommendations""")
             generation_prompt = llm.chat()
-        except Exception as e:
+        except Exception:
             generation_prompt = prompt
     else:
         generation_prompt = prompt
@@ -425,7 +425,7 @@ async def generate_asset_batch(request: AssetBatchRequest):
             3. Technical specifications""")
             style_response = llm.chat()
             style_guide["ai_generated"] = style_response
-        except:
+        except Exception:
             pass
     
     for i, asset in enumerate(request.assets):

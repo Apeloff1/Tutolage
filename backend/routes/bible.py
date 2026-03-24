@@ -2,7 +2,7 @@
 CS Bible API Routes - 15-Year Computer Science Curriculum
 """
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException
 from typing import Optional
 
 # Import CS Bible data

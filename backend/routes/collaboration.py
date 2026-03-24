@@ -7,7 +7,7 @@
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
-from typing import Optional, List, Dict, Any
+from typing import Optional, List, Dict
 from datetime import datetime
 import os
 import uuid
@@ -17,7 +17,7 @@ router = APIRouter(prefix="/collab", tags=["Collaboration"])
 try:
     from emergentintegrations.llm.chat import LlmChat, UserMessage
     LLM_AVAILABLE = True
-except:
+except Exception:
     LLM_AVAILABLE = False
 
 EMERGENT_KEY = os.getenv("EMERGENT_LLM_KEY", "")

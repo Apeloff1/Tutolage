@@ -103,7 +103,7 @@ export function useMobileOptimization() {
   }, []);
 
   // Debounced heavy operations
-  const debounceRef = useRef<NodeJS.Timeout | null>(null);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const debounce = useCallback((callback: () => void, delay: number = 300) => {
     if (debounceRef.current) {
       clearTimeout(debounceRef.current);

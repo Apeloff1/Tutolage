@@ -73,7 +73,7 @@ export const JeevesEQModal: React.FC<JeevesEQModalProps> = ({
   const [pomodoroType, setPomodoroType] = useState<'work' | 'short_break' | 'long_break'>('work');
   const [pomodoroTime, setPomodoroTime] = useState(25 * 60); // 25 minutes in seconds
   const [sessionsCompleted, setSessionsCompleted] = useState(0);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   
   const pulseAnim = useRef(new Animated.Value(1)).current;
 
@@ -273,7 +273,7 @@ export const JeevesEQModal: React.FC<JeevesEQModalProps> = ({
         {/* Quick Stats */}
         <View style={styles.statsGrid}>
           <View style={[styles.statCard, { backgroundColor: colors.surface }]}>
-            <Ionicons name="brain" size={24} color="#8B5CF6" />
+            <Ionicons name="analytics" size={24} color="#8B5CF6" />
             <Text style={[styles.statValue, { color: colors.text }]}>
               {cognitiveLoad?.cognitive_load_level || 'Low'}
             </Text>

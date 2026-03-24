@@ -9,7 +9,7 @@
 ╰───────────────────────────────────────────────────────────────────────────╯
 """
 
-from fastapi import APIRouter, HTTPException, BackgroundTasks
+from fastapi import APIRouter, BackgroundTasks
 from pydantic import BaseModel, Field
 from typing import Optional, List, Dict, Any, Literal
 from datetime import datetime, timedelta
@@ -17,8 +17,6 @@ from pathlib import Path
 from dotenv import load_dotenv
 import uuid
 import os
-import json
-import asyncio
 
 ROOT_DIR = Path(__file__).parent.parent
 load_dotenv(ROOT_DIR / '.env')
@@ -417,7 +415,6 @@ async def detect_patterns(user_id: str, action_type: str, action_data: Dict):
         })
     
     # Pattern: Night owl (learns late)
-    from datetime import time
     late_actions = [a for a in recent_actions if a.get("timestamp") and a["timestamp"].hour >= 22 or a["timestamp"].hour <= 4]
     if len(late_actions) >= 10:
         patterns_detected.append({

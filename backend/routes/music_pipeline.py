@@ -13,13 +13,12 @@
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
-from typing import Optional, List, Literal
+from typing import Optional, Literal
 from datetime import datetime
 from pathlib import Path
 from dotenv import load_dotenv
 import uuid
 import os
-import json
 
 # Load environment
 ROOT_DIR = Path(__file__).parent.parent

@@ -11,15 +11,14 @@
 """
 
 from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel, Field
-from typing import Optional, List, Dict, Any
+from pydantic import BaseModel
+from typing import Optional, Dict, Any
 from datetime import datetime
 from pathlib import Path
 from dotenv import load_dotenv
 import uuid
 import os
 import base64
-import json
 import httpx
 
 ROOT_DIR = Path(__file__).parent.parent

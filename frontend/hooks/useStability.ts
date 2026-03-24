@@ -30,7 +30,7 @@ export function useStability() {
     isRecovering: false,
   });
 
-  const errorTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const errorTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Network monitoring
   useEffect(() => {

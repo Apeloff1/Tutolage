@@ -11,13 +11,12 @@
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
-from typing import Optional, List, Literal
+from typing import Optional, Literal
 from datetime import datetime
 from pathlib import Path
 from dotenv import load_dotenv
 import uuid
 import base64
-import httpx
 import asyncio
 import os
 
@@ -220,7 +219,7 @@ async def generate_with_grok(prompt: str, style: Optional[str] = None) -> dict:
                 openai_result["grok_enhanced_prompt"] = enhanced
                 return openai_result
                 
-        except Exception as e2:
+        except Exception:
             pass
             
         return {"provider": "grok", "error": str(e), "status": "failed"}

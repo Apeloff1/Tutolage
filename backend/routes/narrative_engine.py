@@ -13,9 +13,8 @@ Capabilities:
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
-from typing import List, Optional, Dict, Any
+from typing import List
 from datetime import datetime
-import json
 
 router = APIRouter(prefix="/api/narrative", tags=["Narrative Engine"])
 
@@ -335,7 +334,7 @@ async def generate_character(request: CharacterRequest):
 @router.post("/generate-dialogue")
 async def generate_dialogue(request: DialogueRequest):
     """Generate dialogue between characters"""
-    pattern = DIALOGUE_PATTERNS.get(request.purpose, DIALOGUE_PATTERNS["exposition"])
+    DIALOGUE_PATTERNS.get(request.purpose, DIALOGUE_PATTERNS["exposition"])
     
     dialogue = {
         "context": request.context,

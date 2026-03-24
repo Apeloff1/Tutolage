@@ -13,7 +13,7 @@
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
-from typing import Optional, List, Dict, Any, Literal
+from typing import Optional, List, Literal
 from datetime import datetime
 from pathlib import Path
 from dotenv import load_dotenv
@@ -364,7 +364,7 @@ Format as JSON:
                     "score": 70,
                     "feedback": result
                 }
-        except:
+        except Exception:
             evaluation = {
                 "passed": "pass" in result.lower() or "correct" in result.lower(),
                 "score": 70,
@@ -430,7 +430,7 @@ Make questions practical and test real understanding, not just memorization."""
                 questions = json.loads(result[json_start:json_end])
             else:
                 questions = [{"raw_response": result}]
-        except:
+        except Exception:
             questions = [{"raw_response": result}]
         
         return {

@@ -21,8 +21,7 @@ Bleeding Edge Features - April 2026
 """
 
 from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel
-from typing import List, Optional, Dict, Any
+from typing import Optional, Dict, Any
 from datetime import datetime
 
 router = APIRouter(prefix="/api/sota-extended", tags=["SOTA Extended"])

@@ -1098,4 +1098,23 @@ const localStyles = StyleSheet.create({
   bottomTabs: { flexDirection: 'row', borderTopWidth: 1, paddingVertical: 8, paddingBottom: Platform.OS === 'ios' ? 24 : 8 },
   tabBtn: { flex: 1, alignItems: 'center', paddingVertical: 6 },
   tabLabel: { fontSize: 10, marginTop: 4, fontWeight: '600' },
+
+  // Settings Panel (v11.7)
+  headerActions: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  langBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 10, paddingVertical: 6, borderRadius: 8 },
+  langText: { fontSize: 12, fontWeight: '600' },
+  settingsPanel: { padding: 16, margin: 16, borderRadius: 12, marginTop: 0 },
+  settingsTitle: { fontSize: 16, fontWeight: '700', marginBottom: 16 },
+  settingsLabel: { fontSize: 12, fontWeight: '600', marginBottom: 8 },
+  langRow: { flexDirection: 'row', marginBottom: 8 },
+  langChip: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 12, paddingVertical: 8, borderRadius: 8, marginRight: 8 },
+  langChipText: { fontSize: 13, fontWeight: '600' },
+  difficultyRow: { flexDirection: 'row', gap: 8, marginBottom: 8 },
+  diffChip: { paddingHorizontal: 14, paddingVertical: 8, borderRadius: 8 },
+  diffChipText: { fontSize: 12, fontWeight: '600' },
+  countRow: { flexDirection: 'row', gap: 8, marginBottom: 16 },
+  countChip: { paddingHorizontal: 14, paddingVertical: 8, borderRadius: 8 },
+  countChipText: { fontSize: 12, fontWeight: '600' },
+  closeSettings: { alignItems: 'center', paddingVertical: 12, borderRadius: 10 },
+  closeSettingsText: { color: '#FFF', fontSize: 14, fontWeight: '700' },
 });

@@ -2,11 +2,10 @@
 Quantum Compiler Suite Routes
 """
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter
 from pydantic import BaseModel
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any
 import ast
-import re
 import hashlib
 from datetime import datetime
 

@@ -13,10 +13,9 @@ Capabilities:
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
-from typing import List, Optional, Dict, Any, Union
+from typing import List
 from datetime import datetime
 from enum import Enum
-import json
 
 router = APIRouter(prefix="/api/game-logic", tags=["Logic Engine"])
 
@@ -309,7 +308,7 @@ async def get_procedural_systems():
 async def generate_mechanic(request: MechanicRequest):
     """Generate a complete game mechanic"""
     try:
-        mechanic_templates = MECHANIC_TEMPLATES.get(request.mechanic_type.value, {})
+        MECHANIC_TEMPLATES.get(request.mechanic_type.value, {})
         
         mechanic = {
             "id": f"mechanic_{datetime.now().strftime('%Y%m%d%H%M%S')}",
@@ -576,7 +575,6 @@ async def generate_balance_config(request: BalanceRequest):
 async def export_logic(system_id: str, format: str = "json", engine: str = "unity"):
     """Export logic system to game engine format"""
     supported_formats = ["json", "csharp", "gdscript", "blueprints", "lua"]
-    supported_engines = ["unity", "unreal", "godot", "custom"]
     
     if format.lower() not in supported_formats:
         raise HTTPException(status_code=400, detail=f"Unsupported format. Use: {supported_formats}")

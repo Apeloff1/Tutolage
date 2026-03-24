@@ -12,7 +12,7 @@
 """
 
 from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from typing import Optional, List, Dict, Any, Literal
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -628,7 +628,7 @@ Be encouraging but honest. Return ONLY valid JSON."""
             evaluation = json.loads(json_match.group())
         else:
             evaluation = {"passed": False, "score": 50, "feedback": response.text, "improvements": []}
-    except:
+    except Exception:
         evaluation = {"passed": False, "score": 50, "feedback": response.text, "improvements": []}
     
     passed = evaluation.get("passed", False)

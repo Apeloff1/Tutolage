@@ -1193,7 +1193,7 @@ export default function CodeDockApp() {
         onClose={() => setShowMultiAgentModal(false)}
         colors={colors}
         currentCode={code}
-        currentLanguage={selectedLanguage.key}
+        currentLanguage={selectedLanguage?.key || 'python'}
       />
 
       <SOTAModal
@@ -1201,7 +1201,7 @@ export default function CodeDockApp() {
         onClose={() => setShowSOTAModal(false)}
         colors={colors}
         currentCode={code}
-        currentLanguage={selectedLanguage.key}
+        currentLanguage={selectedLanguage?.key || 'python'}
         onApplyCode={setCode}
       />
 
@@ -1210,7 +1210,7 @@ export default function CodeDockApp() {
         onClose={() => setShowCodeIntelligenceModal(false)}
         colors={colors}
         currentCode={code}
-        currentLanguage={selectedLanguage.key}
+        currentLanguage={selectedLanguage?.key || 'python'}
       />
 
       <LiveCollabModal
@@ -1218,7 +1218,7 @@ export default function CodeDockApp() {
         onClose={() => setShowLiveCollabModal(false)}
         colors={colors}
         currentCode={code}
-        currentLanguage={selectedLanguage.key}
+        currentLanguage={selectedLanguage?.key || 'python'}
         onCodeUpdate={setCode}
       />
 

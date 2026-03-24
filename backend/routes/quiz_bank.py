@@ -18,8 +18,7 @@
 """
 
 from fastapi import APIRouter, HTTPException
-from typing import Optional, List, Dict, Any, Literal
-from datetime import datetime
+from typing import Optional, List, Dict, Any
 from pathlib import Path
 from dotenv import load_dotenv
 import random

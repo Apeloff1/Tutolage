@@ -2,11 +2,10 @@
 AI Assistant Routes
 """
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter
 from pydantic import BaseModel
-from typing import Optional, List, Dict, Any
+from typing import Optional, List, Dict
 from datetime import datetime
-import os
 import uuid
 
 router = APIRouter(prefix="/ai", tags=["AI"])
@@ -121,7 +120,7 @@ async def ai_assist(request: AIAssistRequest):
         "document": '"""\nModule documentation.\n\nThis module provides functionality for...\n"""',
         "test_gen": "def test_function():\n    assert function() == expected_value",
         "security_audit": "No critical security vulnerabilities detected. Consider input validation.",
-        "convert": f"// Converted code structure for target language"
+        "convert": "// Converted code structure for target language"
     }
     
     return AIAssistResponse(

@@ -12,9 +12,8 @@ Capabilities:
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
-from typing import List, Optional, Dict, Any
+from typing import List, Optional, Dict
 from datetime import datetime
-import json
 
 router = APIRouter(prefix="/api/world-engine", tags=["World Engine"])
 

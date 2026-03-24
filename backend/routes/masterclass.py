@@ -7,9 +7,8 @@
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
-from typing import Optional, List, Dict, Any
+from typing import Optional, List
 from datetime import datetime
-import json
 
 router = APIRouter(prefix="/masterclass", tags=["Masterclass"])
 

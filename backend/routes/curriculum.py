@@ -12,14 +12,14 @@
 """
 
 from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from typing import Optional, List, Dict, Any
 from datetime import datetime
 from enum import Enum
 import uuid
 
 # Import CS Classes
-from cs_classes import CS_CLASSES, get_class, get_all_classes, get_class_summary
+from cs_classes import get_class, get_all_classes, get_class_summary
 
 router = APIRouter(prefix="/curriculum", tags=["Curriculum Engine"])
 

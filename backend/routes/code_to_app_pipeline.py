@@ -9,14 +9,13 @@
 ╚══════════════════════════════════════════════════════════════════════════════╝
 """
 
-from fastapi import APIRouter, HTTPException, BackgroundTasks
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 from typing import Optional, List, Dict, Any, Literal
 from datetime import datetime
 from pathlib import Path
 from dotenv import load_dotenv
 import uuid
-import asyncio
 import os
 import json
 

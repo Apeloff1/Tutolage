@@ -69,9 +69,23 @@ export const ImmersiveLearningModal = memo(function ImmersiveLearningModal({
   const [dailyChallenge, setDailyChallenge] = useState<any>(null);
   const [showHint, setShowHint] = useState(false);
   const [currentHintIndex, setCurrentHintIndex] = useState(0);
+  const [preferredLanguage, setPreferredLanguage] = useState<string>('python');
+  const [showSettings, setShowSettings] = useState(false);
+  const [quizDifficulty, setQuizDifficulty] = useState<number>(0); // 0 = all
+  const [quizCount, setQuizCount] = useState<number>(10);
 
   const xpAnim = useRef(new Animated.Value(0)).current;
   const levelUpAnim = useRef(new Animated.Value(0)).current;
+
+  const LANGUAGES = [
+    { id: 'python', name: 'Python', icon: 'logo-python' },
+    { id: 'javascript', name: 'JavaScript', icon: 'logo-javascript' },
+    { id: 'typescript', name: 'TypeScript', icon: 'code-slash' },
+    { id: 'csharp', name: 'C#', icon: 'code' },
+    { id: 'cpp', name: 'C++', icon: 'hardware-chip' },
+    { id: 'rust', name: 'Rust', icon: 'cog' },
+    { id: 'gdscript', name: 'GDScript', icon: 'game-controller' },
+  ];
 
   useEffect(() => {
     if (visible) {
@@ -176,7 +190,9 @@ export const ImmersiveLearningModal = memo(function ImmersiveLearningModal({
     setQuizResult(null);
     setQuizAnswers({});
     try {
-      const res = await fetch(`${API_URL}/api/learning/quiz/${category}?count=5`);
+      // Use comprehensive quiz bank with difficulty filter
+      const diffParam = quizDifficulty > 0 ? `&difficulty=${quizDifficulty}` : '';
+      const res = await fetch(`${API_URL}/api/quiz-bank/${category}?count=${quizCount}${diffParam}`);
       const data = await res.json();
       setQuiz(data);
     } catch (e) {
@@ -811,10 +827,95 @@ export const ImmersiveLearningModal = memo(function ImmersiveLearningModal({
               <Ionicons name="school" size={24} color="#6366F1" />
               <Text style={[localStyles.title, { color: colors.text }]}>Learning Hub</Text>
             </View>
-            <TouchableOpacity onPress={onClose}>
-              <Ionicons name="close" size={24} color={colors.textSecondary} />
-            </TouchableOpacity>
+            <View style={localStyles.headerActions}>
+              {/* Language Selector Button */}
+              <TouchableOpacity 
+                style={[localStyles.langBtn, { backgroundColor: colors.surfaceAlt }]}
+                onPress={() => setShowSettings(!showSettings)}
+              >
+                <Ionicons name="code-slash" size={16} color="#6366F1" />
+                <Text style={[localStyles.langText, { color: colors.text }]}>{preferredLanguage.toUpperCase()}</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => setShowSettings(!showSettings)}>
+                <Ionicons name="settings-outline" size={22} color={colors.textSecondary} />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={onClose} style={{ marginLeft: 12 }}>
+                <Ionicons name="close" size={24} color={colors.textSecondary} />
+              </TouchableOpacity>
+            </View>
           </View>
+
+          {/* Settings Panel */}
+          {showSettings && (
+            <View style={[localStyles.settingsPanel, { backgroundColor: colors.surfaceAlt }]}>
+              <Text style={[localStyles.settingsTitle, { color: colors.text }]}>Preferences</Text>
+              
+              {/* Language Selection */}
+              <Text style={[localStyles.settingsLabel, { color: colors.textMuted }]}>Code Language</Text>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} style={localStyles.langRow}>
+                {LANGUAGES.map((lang) => (
+                  <TouchableOpacity
+                    key={lang.id}
+                    style={[
+                      localStyles.langChip,
+                      { backgroundColor: preferredLanguage === lang.id ? '#6366F120' : colors.background }
+                    ]}
+                    onPress={() => setPreferredLanguage(lang.id)}
+                  >
+                    <Ionicons name={lang.icon as any} size={16} color={preferredLanguage === lang.id ? '#6366F1' : colors.textMuted} />
+                    <Text style={[localStyles.langChipText, { color: preferredLanguage === lang.id ? '#6366F1' : colors.text }]}>
+                      {lang.name}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+
+              {/* Quiz Settings */}
+              <Text style={[localStyles.settingsLabel, { color: colors.textMuted, marginTop: 12 }]}>Quiz Difficulty</Text>
+              <View style={localStyles.difficultyRow}>
+                {[{ id: 0, name: 'All' }, { id: 1, name: 'Easy' }, { id: 2, name: 'Medium' }, { id: 3, name: 'Hard' }, { id: 4, name: 'Expert' }].map((d) => (
+                  <TouchableOpacity
+                    key={d.id}
+                    style={[
+                      localStyles.diffChip,
+                      { backgroundColor: quizDifficulty === d.id ? '#6366F1' : colors.background }
+                    ]}
+                    onPress={() => setQuizDifficulty(d.id)}
+                  >
+                    <Text style={[localStyles.diffChipText, { color: quizDifficulty === d.id ? '#FFF' : colors.text }]}>
+                      {d.name}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+
+              {/* Quiz Count */}
+              <Text style={[localStyles.settingsLabel, { color: colors.textMuted, marginTop: 12 }]}>Questions per Quiz</Text>
+              <View style={localStyles.countRow}>
+                {[5, 10, 15, 20, 30].map((c) => (
+                  <TouchableOpacity
+                    key={c}
+                    style={[
+                      localStyles.countChip,
+                      { backgroundColor: quizCount === c ? '#6366F1' : colors.background }
+                    ]}
+                    onPress={() => setQuizCount(c)}
+                  >
+                    <Text style={[localStyles.countChipText, { color: quizCount === c ? '#FFF' : colors.text }]}>
+                      {c}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+
+              <TouchableOpacity
+                style={[localStyles.closeSettings, { backgroundColor: '#6366F1' }]}
+                onPress={() => setShowSettings(false)}
+              >
+                <Text style={localStyles.closeSettingsText}>Done</Text>
+              </TouchableOpacity>
+            </View>
+          )}
 
           {/* Tab Content */}
           {activeTab === 'dashboard' && renderDashboard()}

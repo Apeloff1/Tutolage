@@ -475,7 +475,7 @@ async def ask_jeeves_with_full_context(request: JeevesContextRequest):
             code_blocks = await vaults_db.code_blocks.find().limit(20).to_list(20)
             if code_blocks:
                 context_parts.append(f"User's saved code ({len(code_blocks)} items): {[c.get('title', 'Untitled') for c in code_blocks]}")
-        except:
+        except Exception:
             pass
     
     # Gather learning history from logs
@@ -485,7 +485,7 @@ async def ask_jeeves_with_full_context(request: JeevesContextRequest):
             if recent_queries:
                 topics = [q.get("query_type", "") for q in recent_queries]
                 context_parts.append(f"Recent learning topics: {topics}")
-        except:
+        except Exception:
             pass
     
     # Add curriculum context
@@ -521,7 +521,7 @@ Respond as a helpful tutor who knows the user's learning journey."""
                     "curriculum": request.include_curriculum
                 }
             })
-        except:
+        except Exception:
             pass
         
         return {
@@ -552,7 +552,7 @@ async def get_learning_profile():
             "saved_code_blocks": code_count,
             "saved_assets": assets_count
         }
-    except:
+    except Exception:
         pass
     
     # Analyze recent queries
@@ -570,7 +570,7 @@ async def get_learning_profile():
             sorted_types = sorted(query_types.items(), key=lambda x: x[1], reverse=True)
             profile["strengths"] = [t[0] for t in sorted_types[:3] if t[1] > 3]
             profile["areas_for_growth"] = ["Consider exploring: " + topic for topic in ["system_design", "testing", "performance"] if topic not in query_types]
-    except:
+    except Exception:
         pass
     
     # Recommendations based on profile
@@ -688,7 +688,7 @@ Make it conversational and engaging. End with a question for the student to answ
                 "session_id": lesson_session,
                 "timestamp": datetime.utcnow()
             })
-        except:
+        except Exception:
             pass
         
         return {
@@ -703,8 +703,369 @@ Make it conversational and engaging. End with a question for the student to answ
 
 
 # ============================================================================
-# JEEVES EDUCATIONAL ENGINE v11.6 - Physics, Math, CS Knowledge
+# JEEVES DEEP INTEGRATION WITH LOGSCRAPER v11.6 SOTA
 # ============================================================================
+
+# Add jeeves_db reference for logscraper integration
+jeeves_db = mongo_client.codedock_jeeves
+
+class AdaptiveTutoringRequest(BaseModel):
+    user_id: str
+    question: str
+    context: Optional[str] = None
+    preferred_style: Optional[str] = None
+    session_id: Optional[str] = None
+
+
+@router.post("/adaptive-tutoring")
+async def adaptive_tutoring(request: AdaptiveTutoringRequest):
+    """Jeeves provides deeply personalized tutoring using logscraper insights"""
+    
+    # Fetch user's comprehensive learning profile from logscraper
+    profile = await jeeves_db.learning_profiles.find_one({"user_id": request.user_id})
+    patterns = await jeeves_db.patterns.find({"user_id": request.user_id}).to_list(20)
+    insights = await jeeves_db.insights.find(
+        {"user_id": request.user_id, "acted_upon": False}
+    ).sort("priority", -1).to_list(5)
+    
+    # Build personalized context
+    personalization = []
+    
+    if profile:
+        # Struggle areas - be extra patient here
+        struggle_areas = profile.get("struggle_areas", [])
+        if struggle_areas:
+            personalization.append(f"IMPORTANT: User struggles with: {', '.join(struggle_areas[:5])}. Be extra patient and thorough when explaining these topics.")
+        
+        # Strength areas - can go faster
+        strength_areas = profile.get("strength_areas", [])
+        if strength_areas:
+            personalization.append(f"User is strong in: {', '.join(strength_areas[:5])}. Can reference these as building blocks.")
+        
+        # Topics studied - avoid redundant explanations
+        topics_studied = profile.get("topics_studied", [])
+        if topics_studied:
+            personalization.append(f"User has studied: {', '.join(topics_studied[:10])}. Assume familiarity with these.")
+        
+        # Learning velocity - adjust depth
+        velocity = profile.get("learning_velocity", 1.0)
+        if velocity > 1.5:
+            personalization.append("User is a fast learner. Can be more concise and advanced.")
+        elif velocity < 0.5:
+            personalization.append("User prefers slower pace. Break down concepts into smaller steps.")
+        
+        # Learning style
+        style = profile.get("learning_style_detected")
+        if style:
+            style_instructions = {
+                "visual": "Use diagrams, code examples, and visual analogies.",
+                "auditory": "Explain concepts conversationally, use metaphors.",
+                "reading/writing": "Provide detailed written explanations and documentation.",
+                "kinesthetic": "Focus on hands-on exercises and interactive examples."
+            }
+            personalization.append(f"Learning style: {style}. {style_instructions.get(style, '')}")
+        
+        # Engagement score
+        engagement = profile.get("engagement_score", 50)
+        if engagement < 30:
+            personalization.append("User engagement is low. Make responses more engaging and encouraging.")
+        elif engagement > 70:
+            personalization.append("Highly engaged user. Can include advanced topics and challenges.")
+        
+        # Game/vault activity
+        game_stats = profile.get("game_stats", {})
+        if game_stats.get("games_completed", 0) > 5:
+            personalization.append("User is an active game creator. Use game development examples when relevant.")
+        
+        vault_stats = profile.get("vault_stats", {})
+        if vault_stats.get("code_saves", 0) > 20:
+            personalization.append("User actively saves code. Encourage saving useful snippets.")
+    
+    # Add patterns-based personalization
+    for pattern in patterns:
+        pattern_type = pattern.get("pattern_type")
+        if pattern_type == "hint_dependent":
+            personalization.append("User often needs hints. Proactively offer guidance steps.")
+        elif pattern_type == "fast_learner":
+            personalization.append("Quick learner. Can provide condensed explanations.")
+        elif pattern_type == "night_owl":
+            personalization.append("User often learns late. Keep energy high in responses.")
+        elif pattern_type == "perseverant_learner":
+            personalization.append("User shows great persistence. Acknowledge their effort.")
+    
+    # Add insights-based adjustments
+    for insight in insights[:3]:
+        if insight.get("insight_type") == "struggle":
+            topic = insight.get("topic")
+            if topic:
+                personalization.append(f"Recent struggle detected with {topic}. Offer extra support here.")
+    
+    # Build the personalized prompt
+    personalization_str = "\n".join(f"- {p}" for p in personalization) if personalization else "No specific personalization data available."
+    
+    prompt = f"""USER'S QUESTION: {request.question}
+
+{f'ADDITIONAL CONTEXT: {request.context}' if request.context else ''}
+
+PERSONALIZATION DATA (Use this to tailor your response):
+{personalization_str}
+
+Provide a helpful, personalized response that:
+1. Directly addresses their question
+2. Adapts to their learning style and pace
+3. Builds on their existing knowledge
+4. Is extra supportive for their struggle areas
+5. Provides appropriate level of detail based on their engagement
+
+Be warm, encouraging, and genuinely helpful."""
+
+    try:
+        # Determine personality based on user preferences
+        personality = request.preferred_style or "encouraging"
+        skill_level = profile.get("preferred_difficulty", "intermediate") if profile else "intermediate"
+        
+        response = await call_jeeves(prompt, personality, skill_level, request.session_id)
+        
+        # Log this interaction for logscraper
+        await logs_db.ai_queries.insert_one({
+            "query_type": "adaptive_tutoring",
+            "user_id": request.user_id,
+            "user_input": request.question[:500],
+            "personalization_used": bool(personalization),
+            "patterns_count": len(patterns),
+            "insights_count": len(insights),
+            "timestamp": datetime.utcnow()
+        })
+        
+        return {
+            "response": response,
+            "personalized": bool(personalization),
+            "adaptations_applied": len(personalization),
+            "session_id": request.session_id,
+            "user_profile_summary": {
+                "struggles": profile.get("struggle_areas", [])[:3] if profile else [],
+                "strengths": profile.get("strength_areas", [])[:3] if profile else [],
+                "learning_style": profile.get("learning_style_detected") if profile else None,
+                "engagement_level": "high" if profile and profile.get("engagement_score", 0) > 70 else "medium" if profile and profile.get("engagement_score", 0) > 30 else "building"
+            }
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/user-learning-summary/{user_id}")
+async def get_user_learning_summary(user_id: str):
+    """Get a comprehensive summary of user's learning journey for Jeeves"""
+    
+    # Get profile from logscraper
+    profile = await jeeves_db.learning_profiles.find_one({"user_id": user_id})
+    patterns = await jeeves_db.patterns.find({"user_id": user_id}).to_list(20)
+    insights = await jeeves_db.insights.find({"user_id": user_id}).sort("created_at", -1).to_list(10)
+    
+    # Get recent scrape results
+    recent_scrape = await jeeves_db.scrape_results.find_one(
+        {"user_id": user_id},
+        sort=[("scraped_at", -1)]
+    )
+    
+    # Get game completions
+    game_completions = await jeeves_db.game_completions.find(
+        {"user_id": user_id}
+    ).sort("timestamp", -1).to_list(10)
+    
+    if not profile:
+        return {
+            "user_id": user_id,
+            "status": "new_user",
+            "message": "No learning history found. Start learning to build your profile!",
+            "recommendations": [
+                "Complete your first challenge",
+                "Take a quiz to assess your level",
+                "Ask Jeeves a question about coding"
+            ],
+            "last_scrape": recent_scrape.get("scraped_at").isoformat() if recent_scrape else None
+        }
+    
+    # Compute summary statistics
+    challenges = profile.get("challenges_attempted", [])
+    passed_challenges = [c for c in challenges if c.get("passed")]
+    
+    quiz_history = profile.get("quiz_history", [])
+    avg_quiz_score = sum(q.get("score", 0) for q in quiz_history) / len(quiz_history) if quiz_history else 0
+    
+    return {
+        "user_id": user_id,
+        "status": "active_learner",
+        "profile_summary": {
+            "topics_mastered": len(profile.get("strength_areas", [])),
+            "topics_studying": len(profile.get("topics_studied", [])),
+            "topics_struggling": len(profile.get("struggle_areas", [])),
+            "total_study_time_hours": round(profile.get("total_study_time_minutes", 0) / 60, 1),
+            "session_count": profile.get("session_count", 0),
+            "engagement_score": profile.get("engagement_score", 50),
+            "learning_velocity": profile.get("learning_velocity", 1.0),
+            "learning_style": profile.get("learning_style_detected", "unknown")
+        },
+        "challenge_stats": {
+            "total_attempted": len(challenges),
+            "total_passed": len(passed_challenges),
+            "success_rate": round(len(passed_challenges) / len(challenges) * 100, 1) if challenges else 0
+        },
+        "quiz_stats": {
+            "quizzes_taken": len(quiz_history),
+            "average_score": round(avg_quiz_score, 1)
+        },
+        "game_stats": profile.get("game_stats", {}),
+        "vault_stats": profile.get("vault_stats", {}),
+        "ai_interaction_stats": profile.get("ai_interaction_stats", {}),
+        "detected_patterns": [
+            {
+                "type": p.get("pattern_type"),
+                "confidence": p.get("confidence"),
+                "description": get_pattern_description(p.get("pattern_type"))
+            }
+            for p in patterns[:5]
+        ],
+        "recent_insights": [
+            {
+                "type": i.get("insight_type"),
+                "description": i.get("description"),
+                "recommendation": i.get("recommendation")
+            }
+            for i in insights[:3]
+        ],
+        "recent_games": [
+            {
+                "game_type": g.get("game_type"),
+                "score": g.get("score"),
+                "completed_at": g.get("timestamp").isoformat() if g.get("timestamp") else None
+            }
+            for g in game_completions[:5]
+        ],
+        "jeeves_recommendations": await generate_jeeves_recommendations(profile, patterns)
+    }
+
+
+def get_pattern_description(pattern_type: str) -> str:
+    """Get human-readable description for a pattern type"""
+    descriptions = {
+        "fast_learner": "Completes challenges quickly and efficiently",
+        "hint_dependent": "Often uses hints for guidance",
+        "repeated_struggle": "Experiences difficulty with certain topics",
+        "game_enthusiast": "Actively creates and plays games",
+        "prolific_creator": "Creates many projects and games",
+        "vault_power_user": "Organizes code effectively in the vault",
+        "ai_collaborator": "Works effectively with AI assistance",
+        "night_owl": "Prefers learning late at night",
+        "early_bird": "Prefers learning early in the morning",
+        "consistent_learner": "Maintains regular study habits",
+        "quiz_master": "Achieves high scores on quizzes",
+        "perseverant_learner": "Shows persistence in overcoming challenges"
+    }
+    return descriptions.get(pattern_type, "Learning pattern detected")
+
+
+async def generate_jeeves_recommendations(profile: Dict, patterns: List) -> List[Dict]:
+    """Generate personalized recommendations from Jeeves"""
+    recommendations = []
+    
+    # Based on struggle areas
+    struggles = profile.get("struggle_areas", [])
+    if struggles:
+        recommendations.append({
+            "type": "review",
+            "title": "Strengthen Foundations",
+            "description": f"I noticed you're working through {struggles[0]}. Would you like me to explain it differently?",
+            "action": f"Ask Jeeves about {struggles[0]}"
+        })
+    
+    # Based on engagement
+    engagement = profile.get("engagement_score", 50)
+    if engagement < 40:
+        recommendations.append({
+            "type": "engagement",
+            "title": "Daily Challenge",
+            "description": "A quick 5-minute challenge could help build momentum!",
+            "action": "Try Daily Challenge"
+        })
+    
+    # Based on patterns
+    pattern_types = [p.get("pattern_type") for p in patterns]
+    
+    if "fast_learner" in pattern_types:
+        recommendations.append({
+            "type": "advancement",
+            "title": "Ready for More",
+            "description": "Your quick progress suggests you're ready for expert-level content!",
+            "action": "Try Expert Challenges"
+        })
+    
+    if "game_enthusiast" in pattern_types:
+        recommendations.append({
+            "type": "creation",
+            "title": "Share Your Work",
+            "description": "You've created some great games! Consider publishing one.",
+            "action": "Publish a Game"
+        })
+    
+    if "consistent_learner" in pattern_types:
+        recommendations.append({
+            "type": "streak",
+            "title": "Keep the Streak!",
+            "description": "Your consistency is paying off. Don't break the chain!",
+            "action": "Continue Learning"
+        })
+    
+    # Default recommendation
+    if not recommendations:
+        recommendations.append({
+            "type": "start",
+            "title": "Begin Your Journey",
+            "description": "Ready to learn something new? Let's start with a quick lesson!",
+            "action": "Start a Lesson"
+        })
+    
+    return recommendations[:3]
+
+
+@router.post("/log-jeeves-interaction")
+async def log_jeeves_interaction(
+    user_id: str,
+    interaction_type: str,
+    topic: Optional[str] = None,
+    was_helpful: Optional[bool] = None,
+    feedback: Optional[str] = None
+):
+    """Log a Jeeves interaction for logscraper to process"""
+    
+    # Determine action type based on interaction
+    if was_helpful is True:
+        action_type = "jeeves_feedback_positive"
+    elif was_helpful is False:
+        action_type = "jeeves_feedback_negative"
+    else:
+        action_type = "jeeves_asked"
+    
+    # Log to user_actions for logscraper
+    await logs_db.user_actions.insert_one({
+        "action_id": f"act_{uuid.uuid4().hex[:12]}",
+        "user_id": user_id,
+        "action_type": action_type,
+        "action_data": {
+            "interaction_type": interaction_type,
+            "topic": topic,
+            "was_helpful": was_helpful,
+            "feedback": feedback
+        },
+        "timestamp": datetime.utcnow(),
+        "processed": False
+    })
+    
+    return {
+        "logged": True,
+        "message": "Thank you for your feedback! It helps me improve." if was_helpful is not None else "Interaction logged.",
+        "jeeves_says": "I appreciate you letting me know!" if was_helpful else "I'm always here to help!"
+    }
 
 # Import the educational curricula
 from routes.physics_engine import PHYSICS_CURRICULUM, PHYSICS_SIMULATIONS

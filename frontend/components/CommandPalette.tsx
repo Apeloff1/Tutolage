@@ -69,7 +69,9 @@ const FEATURE_CATEGORIES: FeatureCategory[] = [
     icon: 'school',
     color: '#EC4899',
     features: [
+      { id: 'reading_corner', name: 'Reading Corner', icon: 'library', description: '1600+ hours • Full-stack library' },
       { id: 'learning_hub', name: 'Learning Hub', icon: 'rocket', description: 'XP, Challenges, Quizzes, Achievements' },
+      { id: 'jeeves_eq', name: 'Jeeves EQ', icon: 'heart', description: 'Emotional Intelligence Dashboard' },
       { id: 'physics_academy', name: 'Physics', icon: 'nuclear', description: '315hrs • Mechanics, collisions, fluids' },
       { id: 'math_academy', name: 'Mathematics', icon: 'calculator', description: '340hrs • Linear algebra, calculus, noise' },
       { id: 'cs_academy', name: 'Computer Science', icon: 'code-slash', description: '600hrs • Data structures, graphics, AI' },
@@ -110,6 +112,7 @@ const FEATURE_CATEGORIES: FeatureCategory[] = [
     features: [
       { id: 'advanced', name: 'Advanced Tools', icon: 'analytics', description: 'Benchmark, verify, starlog' },
       { id: 'vault', name: 'Vault', icon: 'filing', description: 'Save code & assets' },
+      { id: 'export_github', name: 'Export & GitHub', icon: 'git-branch', description: 'PDF, GitHub push/pull' },
       { id: 'collab', name: 'Live Collab', icon: 'people-circle', description: 'AI Pair programming' },
       { id: 'intelligence', name: 'Code Intel', icon: 'bulb', description: 'Auto-docs, tests, review' },
     ]

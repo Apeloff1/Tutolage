@@ -81,6 +81,10 @@ import { HybridPipelineModal } from '../features/HybridPipeline/HybridPipelineMo
 import { SOTAExtendedModal } from '../features/SOTAExtended/SOTAExtendedModal';
 import { ImmersiveLearningModal } from '../features/ImmersiveLearning/ImmersiveLearningModal';
 
+// v11.8 Reading Corner, Jeeves EQ & Export
+import { ReadingCornerModal } from '../features/ReadingCorner/ReadingCornerModal';
+import { JeevesEQModal } from '../features/JeevesEQ/JeevesEQModal';
+
 // Types
 import { Language, Template, AIMode } from '../types';
 
@@ -179,6 +183,11 @@ export default function CodeDockApp() {
   const [showHybridPipelineModal, setShowHybridPipelineModal] = useState(false);
   const [showSOTAExtendedModal, setShowSOTAExtendedModal] = useState(false);
   const [showImmersiveLearningModal, setShowImmersiveLearningModal] = useState(false);
+  
+  // v11.8 Reading Corner, Jeeves EQ & Export Modal States
+  const [showReadingCornerModal, setShowReadingCornerModal] = useState(false);
+  const [showJeevesEQModal, setShowJeevesEQModal] = useState(false);
+  const [showExportGitHubModal, setShowExportGitHubModal] = useState(false);
   
   // Voice Command Handler
   const handleVoiceCommand = useCallback((action: string, params?: any) => {
@@ -436,6 +445,9 @@ export default function CodeDockApp() {
       case 'math_academy': setShowMathAcademyModal(true); break;
       case 'cs_academy': setShowCSAcademyModal(true); break;
       case 'learning_hub': setShowImmersiveLearningModal(true); break;
+      // v11.8 Academy actions
+      case 'reading_corner': setShowReadingCornerModal(true); break;
+      case 'jeeves_eq': setShowJeevesEQModal(true); break;
       // Learn actions
       case 'masterclass': setShowMasterclassModal(true); break;
       case 'education': setShowEducationModal(true); break;
@@ -453,6 +465,7 @@ export default function CodeDockApp() {
       // Pro tools
       case 'advanced': setShowAdvancedModal(true); break;
       case 'vault': setShowVaultModal(true); break;
+      case 'export_github': setShowExportGitHubModal(true); break;
       case 'collab': setShowLiveCollabModal(true); break;
       case 'intelligence': setShowCodeIntelligenceModal(true); break;
       // SOTA features
@@ -1262,6 +1275,21 @@ export default function CodeDockApp() {
       <ImmersiveLearningModal
         visible={showImmersiveLearningModal}
         onClose={() => setShowImmersiveLearningModal(false)}
+        colors={colors}
+        userId="default_user"
+      />
+      
+      {/* v11.8 Reading Corner Modal */}
+      <ReadingCornerModal
+        visible={showReadingCornerModal}
+        onClose={() => setShowReadingCornerModal(false)}
+        colors={colors}
+      />
+      
+      {/* v11.8 Jeeves EQ Modal */}
+      <JeevesEQModal
+        visible={showJeevesEQModal}
+        onClose={() => setShowJeevesEQModal(false)}
         colors={colors}
         userId="default_user"
       />

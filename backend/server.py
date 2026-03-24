@@ -98,6 +98,9 @@ from routes.synergy import router as synergy_router
 # v12.5 - Multi-Layer Learning Engine
 from routes.learning_engine import router as learning_engine_router
 
+# v13.0 - Jeeves Hyperion (20x Knowledge Base + Self-Learning)
+from routes.jeeves_hyperion import router as jeeves_hyperion_router
+
 # Import the 15-Year CS Bible Curriculum (for backward compatibility)
 from cs_bible import CS_BIBLE, get_year_info, get_course, get_all_courses, get_curriculum_stats
 
@@ -6427,3 +6430,5 @@ app.include_router(ai_toolkit_router)
 app.include_router(synergy_router)
 # v12.5 - Multi-Layer Learning Engine
 app.include_router(learning_engine_router)
+# v13.0 - Jeeves Hyperion (20x Knowledge Base + Self-Learning)
+app.include_router(jeeves_hyperion_router)

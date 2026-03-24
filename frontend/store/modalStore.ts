@@ -55,6 +55,7 @@ export type ModalType =
   | 'aiInteractionsLog'
   | 'dashboard'
   | 'learningHub'
+  | 'immersiveTutor'
   | null;
 
 interface ModalState {

@@ -96,6 +96,9 @@ import { useSessionTracker } from '../hooks/useSessionTracker';
 // v12.5 Learning Hub - Multi-Layer Learning System
 import { LearningHubModal } from '../features/LearningHub/LearningHubModal';
 
+// v14.5 Immersive Tutor - Jeeves Synergy Learning System
+import { ImmersiveTutorModal } from '../features/ImmersiveTutor/ImmersiveTutorModal';
+
 // i18n Provider
 import { I18nProvider, useTranslation } from '../i18n';
 import { LanguageSwitcher } from '../components/LanguageSwitcher';
@@ -432,6 +435,8 @@ function CodeDockAppContent() {
       case 'dashboard': openModal('dashboard'); break;
       // v12.5 Learning Hub (Multi-Layer Learning System)
       case 'learning_hub': openModal('learningHub'); break;
+      // v14.5 Immersive Tutor (Jeeves Synergy)
+      case 'immersive_tutor': openModal('immersiveTutor'); break;
       // Learn actions
       case 'masterclass': openModal('masterclass'); break;
       case 'education': openModal('education'); break;
@@ -1307,6 +1312,14 @@ function CodeDockAppContent() {
       {/* v12.5 Learning Hub Modal */}
       <LearningHubModal
         visible={isModalOpen('learningHub')}
+        onClose={closeModal}
+        colors={colors}
+        userId="default_user"
+      />
+      
+      {/* v14.5 Immersive Tutor Modal */}
+      <ImmersiveTutorModal
+        visible={isModalOpen('immersiveTutor')}
         onClose={closeModal}
         colors={colors}
         userId="default_user"

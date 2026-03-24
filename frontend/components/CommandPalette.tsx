@@ -71,6 +71,7 @@ const FEATURE_CATEGORIES: FeatureCategory[] = [
     features: [
       { id: 'reading_corner', name: 'Reading Corner', icon: 'library', description: '1600+ hours • Full-stack library' },
       { id: 'learning_hub', name: 'Learning Hub', icon: 'rocket', description: '6-layer redundant learning • 1320hrs' },
+      { id: 'immersive_tutor', name: 'Immersive Tutor', icon: 'school', description: 'Jeeves Synergy • Gamification • ZPD' },
       { id: 'jeeves_eq', name: 'Jeeves EQ', icon: 'heart', description: 'Emotional Intelligence Dashboard' },
       { id: 'physics_academy', name: 'Physics', icon: 'nuclear', description: '315hrs • Mechanics, collisions, fluids' },
       { id: 'math_academy', name: 'Mathematics', icon: 'calculator', description: '340hrs • Linear algebra, calculus, noise' },

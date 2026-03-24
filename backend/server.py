@@ -3215,12 +3215,12 @@ class QuantumCompilerService:
                 for node in ast.walk(tree):
                     if isinstance(node, ast.FunctionDef):
                         ir_lines.append(f"define void @{node.name}() {{")
-                        ir_lines.append(f"entry:")
+                        ir_lines.append("entry:")
                         for stmt in node.body[:3]:  # First few statements
                             if isinstance(stmt, ast.Assign):
                                 ir_lines.append(f"  %{hash(str(stmt)) % 1000} = alloca i64")
                             elif isinstance(stmt, ast.Return):
-                                ir_lines.append(f"  ret void")
+                                ir_lines.append("  ret void")
                         ir_lines.append("}")
                         ir_lines.append("")
             except:

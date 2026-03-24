@@ -223,7 +223,7 @@ function CodeDockAppContent() {
   // Show tutorial for first-time users
   useEffect(() => {
     if (!tutorialCompleted && !isLoading && tutorialSteps.length > 0) {
-      setTimeout(() => openModal('tutorial'), 1000);
+      setTimeout(() => setShowTutorial(true), 1000);
     }
   }, [tutorialCompleted, isLoading, tutorialSteps]);
 
@@ -232,7 +232,7 @@ function CodeDockAppContent() {
   // ============================================================================
   const selectLanguage = useCallback((lang: Language) => {
     setSelectedLanguage(lang);
-    closeModal();
+    setShowLanguageModal(false);
     setCode('');
     setOutput('');
     setShowOutput(false);
@@ -298,7 +298,7 @@ function CodeDockAppContent() {
 
   const applyTemplate = useCallback((template: Template) => {
     setCode(template.code);
-    closeModal();
+    setShowTemplateModal(false);
     setShowOutput(false);
     setExecutionTime(null);
   }, []);
@@ -324,7 +324,7 @@ function CodeDockAppContent() {
       setSelectedLanguage(lang);
       setCode(file.code);
       setCurrentFileName(file.name.replace(/\.[^/.]+$/, ''));
-      closeModal();
+      setShowFilesModal(false);
       setShowOutput(false);
       loadTemplates(lang.key);
     }
@@ -361,14 +361,14 @@ function CodeDockAppContent() {
     if (currentTutorialStep < tutorialSteps.length - 1) {
       setCurrentTutorialStep(prev => prev + 1);
     } else {
-      closeModal();
+      setShowTutorial(false);
       setTutorialCompleted(true);
       Alert.alert('🎉 Welcome!', 'You\'re ready to start coding. Have fun!');
     }
   }, [currentTutorialStep, tutorialSteps.length, setTutorialCompleted]);
 
   const skipTutorial = useCallback(() => {
-    closeModal();
+    setShowTutorial(false);
     setTutorialCompleted(true);
   }, [setTutorialCompleted]);
 
@@ -655,12 +655,12 @@ function CodeDockAppContent() {
       {/* ============ MODALS ============ */}
 
       {/* Language Modal */}
-      <Modal visible={isModalOpen('language')} transparent animationType="slide" onRequestClose={closeModal}>
-        <Pressable style={styles.modalOverlay} onPress={() => closeModal()}>
+      <Modal visible={showLanguageModal} transparent animationType="slide" onRequestClose={() => setShowLanguageModal(false)}>
+        <Pressable style={styles.modalOverlay} onPress={() => setShowLanguageModal(false)}>
           <View style={[styles.modalContent, { backgroundColor: colors.surface }]}>
             <View style={[styles.modalHeader, { borderBottomColor: colors.border }]}>
               <Text style={[styles.modalTitle, { color: colors.text }]}>Select Language</Text>
-              <TouchableOpacity onPress={() => closeModal()}>
+              <TouchableOpacity onPress={() => setShowLanguageModal(false)}>
                 <Ionicons name="close" size={24} color={colors.textSecondary} />
               </TouchableOpacity>
             </View>
@@ -691,12 +691,12 @@ function CodeDockAppContent() {
       </Modal>
 
       {/* Templates Modal */}
-      <Modal visible={isModalOpen('template')} transparent animationType="slide" onRequestClose={closeModal}>
-        <Pressable style={styles.modalOverlay} onPress={() => closeModal()}>
+      <Modal visible={showTemplateModal} transparent animationType="slide" onRequestClose={() => setShowTemplateModal(false)}>
+        <Pressable style={styles.modalOverlay} onPress={() => setShowTemplateModal(false)}>
           <View style={[styles.modalContent, { backgroundColor: colors.surface }]}>
             <View style={[styles.modalHeader, { borderBottomColor: colors.border }]}>
               <Text style={[styles.modalTitle, { color: colors.text }]}>Templates</Text>
-              <TouchableOpacity onPress={() => closeModal()}>
+              <TouchableOpacity onPress={() => setShowTemplateModal(false)}>
                 <Ionicons name="close" size={24} color={colors.textSecondary} />
               </TouchableOpacity>
             </View>
@@ -727,12 +727,12 @@ function CodeDockAppContent() {
       </Modal>
 
       {/* Files Modal */}
-      <Modal visible={isModalOpen('files')} transparent animationType="slide" onRequestClose={closeModal}>
-        <Pressable style={styles.modalOverlay} onPress={() => closeModal()}>
+      <Modal visible={showFilesModal} transparent animationType="slide" onRequestClose={() => setShowFilesModal(false)}>
+        <Pressable style={styles.modalOverlay} onPress={() => setShowFilesModal(false)}>
           <View style={[styles.modalContent, { backgroundColor: colors.surface }]}>
             <View style={[styles.modalHeader, { borderBottomColor: colors.border }]}>
               <Text style={[styles.modalTitle, { color: colors.text }]}>Your Files</Text>
-              <TouchableOpacity onPress={() => closeModal()}>
+              <TouchableOpacity onPress={() => setShowFilesModal(false)}>
                 <Ionicons name="close" size={24} color={colors.textSecondary} />
               </TouchableOpacity>
             </View>
@@ -765,15 +765,15 @@ function CodeDockAppContent() {
       </Modal>
 
       {/* AI Modal */}
-      <Modal visible={isModalOpen('ai')} transparent animationType="slide" onRequestClose={closeModal}>
-        <Pressable style={styles.modalOverlay} onPress={() => closeModal()}>
+      <Modal visible={showAIModal} transparent animationType="slide" onRequestClose={() => setShowAIModal(false)}>
+        <Pressable style={styles.modalOverlay} onPress={() => setShowAIModal(false)}>
           <View style={[styles.modalContent, { backgroundColor: colors.surface, maxHeight: '85%' }]}>
             <View style={[styles.modalHeader, { borderBottomColor: colors.border }]}>
               <View style={styles.aiModalTitle}>
                 <Ionicons name="sparkles" size={22} color={colors.primary} />
                 <Text style={[styles.modalTitle, { color: colors.text }]}>AI Assistant</Text>
               </View>
-              <TouchableOpacity onPress={() => closeModal()}>
+              <TouchableOpacity onPress={() => setShowAIModal(false)}>
                 <Ionicons name="close" size={24} color={colors.textSecondary} />
               </TouchableOpacity>
             </View>
@@ -824,12 +824,12 @@ function CodeDockAppContent() {
       </Modal>
 
       {/* Settings Modal */}
-      <Modal visible={isModalOpen('settings')} transparent animationType="slide" onRequestClose={closeModal}>
-        <Pressable style={styles.modalOverlay} onPress={() => closeModal()}>
+      <Modal visible={showSettingsModal} transparent animationType="slide" onRequestClose={() => setShowSettingsModal(false)}>
+        <Pressable style={styles.modalOverlay} onPress={() => setShowSettingsModal(false)}>
           <View style={[styles.modalContent, { backgroundColor: colors.surface }]}>
             <View style={[styles.modalHeader, { borderBottomColor: colors.border }]}>
               <Text style={[styles.modalTitle, { color: colors.text }]}>Settings</Text>
-              <TouchableOpacity onPress={() => closeModal()}>
+              <TouchableOpacity onPress={() => setShowSettingsModal(false)}>
                 <Ionicons name="close" size={24} color={colors.textSecondary} />
               </TouchableOpacity>
             </View>
@@ -857,7 +857,7 @@ function CodeDockAppContent() {
               {/* Tutorial */}
               <TouchableOpacity 
                 style={[styles.settingItem, { backgroundColor: colors.surfaceAlt }]} 
-                onPress={() => { closeModal(); setCurrentTutorialStep(0); openModal('tutorial'); }}
+                onPress={() => { setShowSettingsModal(false); setCurrentTutorialStep(0); setShowTutorial(true); }}
               >
                 <Ionicons name="school" size={22} color={colors.secondary} />
                 <View style={styles.settingInfo}>
@@ -879,7 +879,7 @@ function CodeDockAppContent() {
       </Modal>
 
       {/* Tutorial Modal */}
-      <Modal visible={isModalOpen('tutorial') && tutorialSteps.length > 0} transparent animationType="fade" onRequestClose={skipTutorial}>
+      <Modal visible={showTutorial && tutorialSteps.length > 0} transparent animationType="fade" onRequestClose={skipTutorial}>
         <View style={styles.tutorialOverlay}>
           <View style={[styles.tutorialCard, { backgroundColor: colors.surface }]}>
             <View style={[styles.tutorialHeader, { borderBottomColor: colors.border }]}>
@@ -953,8 +953,8 @@ function CodeDockAppContent() {
 
       {/* Bible Modal */}
       <BibleModal
-        visible={isModalOpen('bible')}
-        onClose={closeModal}
+        visible={showBibleModal}
+        onClose={() => setShowBibleModal(false)}
         colors={colors}
         progress={bibleProgress}
         onMarkComplete={markChapterComplete}
@@ -964,8 +964,8 @@ function CodeDockAppContent() {
 
       {/* Compiler Suite Modal */}
       <CompilerModal
-        visible={isModalOpen('compiler')}
-        onClose={closeModal}
+        visible={showCompilerModal}
+        onClose={() => setShowCompilerModal(false)}
         colors={colors}
         code={code}
         language={selectedLanguage?.key || 'python'}
@@ -974,22 +974,22 @@ function CodeDockAppContent() {
 
       {/* Pipeline Visualizer Modal */}
       <PipelineVisualizer
-        visible={isModalOpen('pipeline')}
-        onClose={closeModal}
+        visible={showPipelineModal}
+        onClose={() => setShowPipelineModal(false)}
         colors={colors}
       />
 
       {/* Learning Dashboard Modal */}
       <LearningDashboard
-        visible={isModalOpen('learning')}
-        onClose={closeModal}
+        visible={showLearningModal}
+        onClose={() => setShowLearningModal(false)}
         colors={colors}
       />
 
       {/* Collaboration Modal */}
       <CollaborationModal
-        visible={isModalOpen('collaboration')}
-        onClose={closeModal}
+        visible={showCollaborationModal}
+        onClose={() => setShowCollaborationModal(false)}
         colors={colors}
         code={code}
         language={selectedLanguage?.key || 'python'}
@@ -998,15 +998,15 @@ function CodeDockAppContent() {
 
       {/* Ultimate Hub Modal */}
       <HubModal
-        visible={isModalOpen('hub')}
-        onClose={closeModal}
+        visible={showHubModal}
+        onClose={() => setShowHubModal(false)}
         colors={colors}
       />
 
       {/* AI Feature Suggestions Modal */}
       <AISuggestionsModal
-        visible={isModalOpen('aiSuggestions')}
-        onClose={closeModal}
+        visible={showAISuggestionsModal}
+        onClose={() => setShowAISuggestionsModal(false)}
         colors={colors}
         context={{
           languages: [selectedLanguage?.key || 'python'],
@@ -1016,8 +1016,8 @@ function CodeDockAppContent() {
 
       {/* v11.0 AI Pipeline Modal */}
       <AIPipelineModal
-        visible={isModalOpen('aiPipeline')}
-        onClose={closeModal}
+        visible={showAIPipelineModal}
+        onClose={() => setShowAIPipelineModal(false)}
         colors={colors}
         onCodeGenerated={(generatedCode, lang) => {
           setCode(generatedCode);
@@ -1031,8 +1031,8 @@ function CodeDockAppContent() {
 
       {/* v11.0 Curriculum Browser Modal */}
       <CurriculumBrowser
-        visible={isModalOpen('curriculum')}
-        onClose={closeModal}
+        visible={showCurriculumModal}
+        onClose={() => setShowCurriculumModal(false)}
         colors={colors}
         onCodeExample={(exampleCode, lang) => {
           setCode(exampleCode);
@@ -1046,8 +1046,8 @@ function CodeDockAppContent() {
 
       {/* v11.0 Vault Modal */}
       <VaultModal
-        visible={isModalOpen('vault')}
-        onClose={closeModal}
+        visible={showVaultModal}
+        onClose={() => setShowVaultModal(false)}
         colors={colors}
         currentCode={code}
         currentLanguage={selectedLanguage?.key}
@@ -1063,8 +1063,8 @@ function CodeDockAppContent() {
 
       {/* v11.0 Advanced Features Modal */}
       <AdvancedFeaturesModal
-        visible={isModalOpen('advanced')}
-        onClose={closeModal}
+        visible={showAdvancedModal}
+        onClose={() => setShowAdvancedModal(false)}
         colors={colors}
         currentCode={code}
         currentLanguage={selectedLanguage?.key}
@@ -1072,8 +1072,8 @@ function CodeDockAppContent() {
 
       {/* v11.0 Code-to-App Modal */}
       <CodeToAppModal
-        visible={isModalOpen('codeToApp')}
-        onClose={closeModal}
+        visible={showCodeToAppModal}
+        onClose={() => setShowCodeToAppModal(false)}
         colors={colors}
         currentCode={code}
         currentLanguage={selectedLanguage?.key}
@@ -1081,16 +1081,16 @@ function CodeDockAppContent() {
 
       {/* v11.0 Imagine (Image Generation) Modal */}
       <ImagineModal
-        visible={isModalOpen('imagine')}
-        onClose={closeModal}
+        visible={showImagineModal}
+        onClose={() => setShowImagineModal(false)}
         colors={colors}
       />
 
       {/* v11.1 SOTA 2026 Feature Modals */}
       {/* AI Debugger Modal */}
       <DebuggerModal
-        visible={isModalOpen('debugger')}
-        onClose={closeModal}
+        visible={showDebuggerModal}
+        onClose={() => setShowDebuggerModal(false)}
         colors={colors}
         currentCode={code}
         currentLanguage={selectedLanguage?.key}
@@ -1099,15 +1099,15 @@ function CodeDockAppContent() {
 
       {/* Music Pipeline Modal */}
       <MusicPipelineModal
-        visible={isModalOpen('musicPipeline')}
-        onClose={closeModal}
+        visible={showMusicPipelineModal}
+        onClose={() => setShowMusicPipelineModal(false)}
         colors={colors}
       />
 
       {/* Interactive Education Modal */}
       <EducationModal
-        visible={isModalOpen('education')}
-        onClose={closeModal}
+        visible={showEducationModal}
+        onClose={() => setShowEducationModal(false)}
         colors={colors}
         onCodeLoad={(loadedCode, lang) => {
           setCode(loadedCode);
@@ -1121,8 +1121,8 @@ function CodeDockAppContent() {
 
       {/* Jeeves AI Tutor Modal */}
       <JeevesModal
-        visible={isModalOpen('jeeves')}
-        onClose={closeModal}
+        visible={showJeevesModal}
+        onClose={() => setShowJeevesModal(false)}
         colors={colors}
         currentCode={code}
         currentLanguage={selectedLanguage?.key}
@@ -1130,45 +1130,45 @@ function CodeDockAppContent() {
 
       {/* v11.2 Masterclass Modal */}
       <MasterclassModal
-        visible={isModalOpen('masterclass')}
-        onClose={closeModal}
+        visible={showMasterclassModal}
+        onClose={() => setShowMasterclassModal(false)}
         colors={colors}
       />
 
       {/* Asset Pipeline Modal */}
       <AssetPipelineModal
-        visible={isModalOpen('assetPipeline')}
-        onClose={closeModal}
+        visible={showAssetPipelineModal}
+        onClose={() => setShowAssetPipelineModal(false)}
         colors={colors}
       />
 
       {/* Game Genres Modal */}
       <GameGenresModal
-        visible={isModalOpen('gameGenres')}
-        onClose={closeModal}
+        visible={showGameGenresModal}
+        onClose={() => setShowGameGenresModal(false)}
         colors={colors}
       />
 
       {/* v11.3 Command Palette */}
       <CommandPalette
-        visible={isModalOpen('commandPalette')}
-        onClose={closeModal}
+        visible={showCommandPalette}
+        onClose={() => setShowCommandPalette(false)}
         onSelectAction={handleCommandPaletteAction}
         colors={colors}
       />
 
       {/* v11.3 SOTA Feature Modals */}
       <MultiAgentModal
-        visible={isModalOpen('multiAgent')}
-        onClose={closeModal}
+        visible={showMultiAgentModal}
+        onClose={() => setShowMultiAgentModal(false)}
         colors={colors}
         currentCode={code}
         currentLanguage={selectedLanguage?.key || 'python'}
       />
 
       <SOTAModal
-        visible={isModalOpen('sota')}
-        onClose={closeModal}
+        visible={showSOTAModal}
+        onClose={() => setShowSOTAModal(false)}
         colors={colors}
         currentCode={code}
         currentLanguage={selectedLanguage?.key || 'python'}
@@ -1176,16 +1176,16 @@ function CodeDockAppContent() {
       />
 
       <CodeIntelligenceModal
-        visible={isModalOpen('codeIntelligence')}
-        onClose={closeModal}
+        visible={showCodeIntelligenceModal}
+        onClose={() => setShowCodeIntelligenceModal(false)}
         colors={colors}
         currentCode={code}
         currentLanguage={selectedLanguage?.key || 'python'}
       />
 
       <LiveCollabModal
-        visible={isModalOpen('liveCollab')}
-        onClose={closeModal}
+        visible={showLiveCollabModal}
+        onClose={() => setShowLiveCollabModal(false)}
         colors={colors}
         currentCode={code}
         currentLanguage={selectedLanguage?.key || 'python'}
@@ -1194,80 +1194,80 @@ function CodeDockAppContent() {
 
       {/* v11.5 AI-to-Game Pipelines */}
       <WorldEngineModal
-        visible={isModalOpen('worldEngine')}
-        onClose={closeModal}
+        visible={showWorldEngineModal}
+        onClose={() => setShowWorldEngineModal(false)}
         colors={colors}
       />
 
       <NarrativeModal
-        visible={isModalOpen('narrative')}
-        onClose={closeModal}
+        visible={showNarrativeModal}
+        onClose={() => setShowNarrativeModal(false)}
         colors={colors}
       />
 
       <LogicEngineModal
-        visible={isModalOpen('logicEngine')}
-        onClose={closeModal}
+        visible={showLogicEngineModal}
+        onClose={() => setShowLogicEngineModal(false)}
         colors={colors}
       />
 
       {/* v11.6 Educational Academy & SOTA Extended */}
       <PhysicsAcademyModal
-        visible={isModalOpen('physicsAcademy')}
-        onClose={closeModal}
+        visible={showPhysicsAcademyModal}
+        onClose={() => setShowPhysicsAcademyModal(false)}
         colors={colors}
       />
 
       <MathAcademyModal
-        visible={isModalOpen('mathAcademy')}
-        onClose={closeModal}
+        visible={showMathAcademyModal}
+        onClose={() => setShowMathAcademyModal(false)}
         colors={colors}
       />
 
       <CSAcademyModal
-        visible={isModalOpen('csAcademy')}
-        onClose={closeModal}
+        visible={showCSAcademyModal}
+        onClose={() => setShowCSAcademyModal(false)}
         colors={colors}
       />
 
       <HybridPipelineModal
-        visible={isModalOpen('hybridPipeline')}
-        onClose={closeModal}
+        visible={showHybridPipelineModal}
+        onClose={() => setShowHybridPipelineModal(false)}
         colors={colors}
       />
 
       <SOTAExtendedModal
-        visible={isModalOpen('sotaExtended')}
-        onClose={closeModal}
+        visible={showSOTAExtendedModal}
+        onClose={() => setShowSOTAExtendedModal(false)}
         colors={colors}
       />
 
       <ImmersiveLearningModal
-        visible={isModalOpen('immersiveLearning')}
-        onClose={closeModal}
+        visible={showImmersiveLearningModal}
+        onClose={() => setShowImmersiveLearningModal(false)}
         colors={colors}
         userId="default_user"
       />
       
       {/* v11.8 Reading Corner Modal */}
       <ReadingCornerModal
-        visible={isModalOpen('readingCorner')}
-        onClose={closeModal}
+        visible={showReadingCornerModal}
+        onClose={() => setShowReadingCornerModal(false)}
         colors={colors}
       />
       
       {/* v11.8 Jeeves EQ Modal */}
       <JeevesEQModal
-        visible={isModalOpen('jeevesEQ')}
-        onClose={closeModal}
+        visible={showJeevesEQModal}
+        onClose={() => setShowJeevesEQModal(false)}
         colors={colors}
         userId="default_user"
       />
       
       {/* v12.0 AI Interactions Log Modal */}
       <AIInteractionsLogModal
-        visible={isModalOpen('aiInteractionsLog')}
-        onClose={closeModal}
+        visible={showAIInteractionsLogModal}
+        onClose={() => setShowAIInteractionsLogModal(false)}
         colors={colors}
         userId="default_user"
       />

@@ -1,7 +1,11 @@
 #!/usr/bin/env python3
 """
-CodeDock v11.9 Enhanced AI Toolkit Backend API Testing Suite
-Testing AI Toolkit endpoints as requested in review
+CodeDock v12.0 Backend API Testing Suite
+Testing v12.0 features as requested in review:
+- Core endpoints (health, languages, ai/modes)
+- New v12.0 features (logscraper, export)
+- Reading curriculum
+- Jeeves EQ
 """
 
 import asyncio
@@ -14,8 +18,9 @@ from pathlib import Path
 # Get backend URL from environment
 BACKEND_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://sota-2026.preview.emergentagent.com')
 API_BASE = f"{BACKEND_URL}/api"
+USER_ID = "default_user"
 
-class CodeDockTester:
+class CodeDockV12Tester:
     def __init__(self):
         self.client = httpx.AsyncClient(timeout=30.0)
         self.results = []
@@ -73,164 +78,197 @@ class CodeDockTester:
             print(f"   Exception: {str(e)}")
             return result
 
-    async def test_ai_toolkit_info(self):
-        """Test AI Toolkit info endpoint"""
-        print("\n🤖 TESTING AI TOOLKIT INFO ENDPOINT")
+    async def test_core_endpoints(self):
+        """Test core endpoints: health, languages, ai/modes"""
+        print("\n🏥 TESTING CORE ENDPOINTS")
         print("=" * 60)
         
-        # GET /api/ai-toolkit/info - Should return AI toolkit capabilities (10 tools)
+        # GET /api/health - Verify server health
         result = await self.test_endpoint(
-            "GET", "/ai-toolkit/info",
-            description="AI toolkit capabilities (should have 10 tools)"
+            "GET", "/health",
+            description="Server health check"
         )
         
-        # Validate response structure
         if result["success"] and "response_data" in result:
             data = result["response_data"]
-            capabilities = data.get("capabilities", [])
-            print(f"   Found {len(capabilities)} capabilities")
-            if len(capabilities) == 10:
-                print("   ✅ Correct number of capabilities (10)")
-            else:
-                print(f"   ⚠️  Expected 10 capabilities, found {len(capabilities)}")
+            status = data.get("status", "unknown")
+            print(f"   Health Status: {status}")
         
-        return result
-
-    async def test_ai_toolkit_code_review(self):
-        """Test AI Toolkit code review endpoint"""
-        print("\n🔍 TESTING AI TOOLKIT CODE REVIEW ENDPOINT")
-        print("=" * 60)
-        
-        # POST /api/ai-toolkit/code-review with specific body as requested
-        code_review_data = {
-            "code": "def hello():\n    print('Hello World')\n    x = 1\n    y = 2\n    return x + y",
-            "language": "python",
-            "review_depth": "standard"
-        }
-        
+        # GET /api/languages - Get available programming languages
         result = await self.test_endpoint(
-            "POST", "/ai-toolkit/code-review",
-            data=code_review_data,
-            description="Code review with structure analysis, security analysis, quality score, and AI review"
+            "GET", "/languages",
+            description="Available programming languages"
         )
         
-        # Validate response structure
         if result["success"] and "response_data" in result:
             data = result["response_data"]
-            required_fields = ["structure_analysis", "security_analysis", "quality_score", "ai_review"]
-            
-            for field in required_fields:
-                if field in data:
-                    print(f"   ✅ Found {field}")
-                else:
-                    print(f"   ❌ Missing {field}")
-            
-            # Check structure analysis details
-            if "structure_analysis" in data:
-                structure = data["structure_analysis"]
-                print(f"   Structure: {structure.get('total_lines', 0)} lines, complexity {structure.get('cyclomatic_complexity', 0)}")
-            
-            # Check quality score
-            if "quality_score" in data:
-                quality = data["quality_score"]
-                print(f"   Quality Score: {quality.get('overall', 0)}/100 (Grade: {quality.get('grade', 'N/A')})")
+            if isinstance(data, list):
+                print(f"   Found {len(data)} languages")
+                executable_count = sum(1 for lang in data if lang.get("executable", False))
+                print(f"   Executable languages: {executable_count}")
+            elif isinstance(data, dict) and "languages" in data:
+                languages = data["languages"]
+                print(f"   Found {len(languages)} languages")
+                executable_count = sum(1 for lang in languages if lang.get("executable", False))
+                print(f"   Executable languages: {executable_count}")
         
-        return result
+        # GET /api/ai/modes - Get AI modes
+        result = await self.test_endpoint(
+            "GET", "/ai/modes",
+            description="AI assistant modes"
+        )
+        
+        if result["success"] and "response_data" in result:
+            data = result["response_data"]
+            if isinstance(data, list):
+                print(f"   Found {len(data)} AI modes")
+            elif isinstance(data, dict) and "modes" in data:
+                modes = data["modes"]
+                print(f"   Found {len(modes)} AI modes")
+        
+        return True
 
-    async def test_ai_toolkit_quality_score(self):
-        """Test AI Toolkit quality score endpoint"""
-        print("\n📊 TESTING AI TOOLKIT QUALITY SCORE ENDPOINT")
+    async def test_v12_features(self):
+        """Test new v12.0 features"""
+        print("\n🚀 TESTING v12.0 NEW FEATURES")
         print("=" * 60)
         
-        # GET /api/ai-toolkit/quality-score with query params as requested
+        # GET /api/logscraper/profile/{user_id} - Test AI interaction profile
+        result = await self.test_endpoint(
+            "GET", f"/logscraper/profile/{USER_ID}",
+            description="AI interaction profile for user"
+        )
+        
+        if result["success"] and "response_data" in result:
+            data = result["response_data"]
+            print(f"   Profile data keys: {list(data.keys()) if isinstance(data, dict) else 'Not a dict'}")
+        
+        # GET /api/logscraper/insights/{user_id} - Test AI insights
+        result = await self.test_endpoint(
+            "GET", f"/logscraper/insights/{USER_ID}",
+            description="AI insights for user"
+        )
+        
+        if result["success"] and "response_data" in result:
+            data = result["response_data"]
+            print(f"   Insights data keys: {list(data.keys()) if isinstance(data, dict) else 'Not a dict'}")
+        
+        # GET /api/export/ai-interactions/{user_id} - Test AI interaction export
+        result = await self.test_endpoint(
+            "GET", f"/export/ai-interactions/{USER_ID}",
+            description="AI interaction export for user"
+        )
+        
+        if result["success"] and "response_data" in result:
+            data = result["response_data"]
+            print(f"   Export data keys: {list(data.keys()) if isinstance(data, dict) else 'Not a dict'}")
+            if isinstance(data, dict) and "interactions" in data:
+                interactions = data["interactions"]
+                print(f"   Total interactions: {len(interactions) if isinstance(interactions, list) else 'Not a list'}")
+        
+        return True
+
+    async def test_reading_curriculum(self):
+        """Test reading curriculum endpoints"""
+        print("\n📚 TESTING READING CURRICULUM")
+        print("=" * 60)
+        
+        # GET /api/reading/info - Get reading curriculum info
+        result = await self.test_endpoint(
+            "GET", "/reading/info",
+            description="Reading curriculum info"
+        )
+        
+        if result["success"] and "response_data" in result:
+            data = result["response_data"]
+            if isinstance(data, dict):
+                total_hours = data.get("total_curriculum_hours", 0)
+                tracks = data.get("knowledge_tracks", [])
+                print(f"   Total curriculum hours: {total_hours}")
+                print(f"   Knowledge tracks: {len(tracks)}")
+        
+        # GET /api/reading/tracks - Get all learning tracks
+        result = await self.test_endpoint(
+            "GET", "/reading/tracks",
+            description="All learning tracks"
+        )
+        
+        if result["success"] and "response_data" in result:
+            data = result["response_data"]
+            if isinstance(data, dict) and "tracks" in data:
+                tracks = data["tracks"]
+                print(f"   Found {len(tracks)} tracks")
+                for track in tracks[:3]:  # Show first 3
+                    name = track.get("name", "Unknown")
+                    hours = track.get("total_hours", 0)
+                    print(f"   - {name}: {hours} hours")
+        
+        return True
+
+    async def test_jeeves_eq(self):
+        """Test Jeeves EQ endpoints"""
+        print("\n🧠 TESTING JEEVES EQ")
+        print("=" * 60)
+        
+        # GET /api/jeeves-eq/info - Get Jeeves EQ info
+        result = await self.test_endpoint(
+            "GET", "/jeeves-eq/info",
+            description="Jeeves EQ system info"
+        )
+        
+        if result["success"] and "response_data" in result:
+            data = result["response_data"]
+            if isinstance(data, dict):
+                capabilities = data.get("capabilities", [])
+                emotional_states = data.get("emotional_states_detected", [])
+                print(f"   Capabilities: {len(capabilities)}")
+                print(f"   Emotional states detected: {len(emotional_states)}")
+        
+        # POST /api/jeeves-eq/detect-emotion - Test emotion detection
+        # This endpoint expects query parameters, not JSON body
         params = {
-            "code": "def test(): pass",
-            "language": "python"
+            "user_id": USER_ID,
+            "text_input": "I'm feeling frustrated with this coding challenge. I've been stuck for hours."
         }
         
+        # The recent_actions should be passed as the body (list)
+        recent_actions = [
+            {"action_type": "challenge_failed", "timestamp": "2026-03-24T06:45:00Z"},
+            {"action_type": "hint_requested", "timestamp": "2026-03-24T06:45:30Z"},
+            {"action_type": "challenge_failed", "timestamp": "2026-03-24T06:46:00Z"}
+        ]
+        
         result = await self.test_endpoint(
-            "GET", "/ai-toolkit/quality-score",
+            "POST", "/jeeves-eq/detect-emotion",
+            data=recent_actions,
             params=params,
-            description="Quality score with metrics"
+            description="Emotion detection from user actions and text"
         )
         
-        # Validate response structure
         if result["success"] and "response_data" in result:
             data = result["response_data"]
-            required_fields = ["code_metrics", "quality_score"]
-            
-            for field in required_fields:
-                if field in data:
-                    print(f"   ✅ Found {field}")
-                else:
-                    print(f"   ❌ Missing {field}")
-            
-            # Check quality score details
-            if "quality_score" in data:
-                quality = data["quality_score"]
-                print(f"   Overall Score: {quality.get('overall', 0)}/100")
-                print(f"   Grade: {quality.get('grade', 'N/A')}")
-                if "breakdown" in quality:
-                    breakdown = quality["breakdown"]
-                    print(f"   Breakdown: Maintainability={breakdown.get('maintainability', 0)}, Security={breakdown.get('security', 0)}")
+            print(f"   Emotion detection data keys: {list(data.keys()) if isinstance(data, dict) else 'Not a dict'}")
+            if isinstance(data, dict) and "emotional_state" in data:
+                emotion_state = data["emotional_state"]
+                primary = emotion_state.get("primary", "unknown")
+                intensity = emotion_state.get("intensity", 0)
+                print(f"   Detected emotion: {primary} (intensity: {intensity})")
         
-        return result
-
-    async def test_ai_toolkit_generate_tests(self):
-        """Test AI Toolkit generate tests endpoint"""
-        print("\n🧪 TESTING AI TOOLKIT GENERATE TESTS ENDPOINT")
-        print("=" * 60)
-        
-        # POST /api/ai-toolkit/generate-tests with specific body as requested
-        test_generation_data = {
-            "code": "def add(a, b):\n    return a + b",
-            "language": "python",
-            "test_framework": "pytest",
-            "test_types": ["unit", "edge_cases"]
-        }
-        
-        result = await self.test_endpoint(
-            "POST", "/ai-toolkit/generate-tests",
-            data=test_generation_data,
-            description="Generate automated tests for code"
-        )
-        
-        # Validate response structure
-        if result["success"] and "response_data" in result:
-            data = result["response_data"]
-            required_fields = ["test_code", "framework", "test_types"]
-            
-            for field in required_fields:
-                if field in data:
-                    print(f"   ✅ Found {field}")
-                else:
-                    print(f"   ❌ Missing {field}")
-            
-            # Check test generation details
-            if "test_code" in data:
-                test_code = data["test_code"]
-                print(f"   Generated test code length: {len(test_code)} characters")
-            
-            if "estimated_test_count" in data:
-                print(f"   Estimated test count: {data['estimated_test_count']}")
-            
-            if "framework" in data:
-                print(f"   Framework: {data['framework']}")
-        
-        return result
+        return True
 
     async def run_all_tests(self):
         """Run all test suites"""
-        print(f"🚀 STARTING CODEDOCK v11.9 ENHANCED AI TOOLKIT TESTING")
+        print(f"🚀 STARTING CODEDOCK v12.0 BACKEND API TESTING")
         print(f"Backend URL: {BACKEND_URL}")
         print(f"API Base: {API_BASE}")
+        print(f"User ID: {USER_ID}")
         print(f"Test started at: {datetime.now().isoformat()}")
         
-        # Run AI Toolkit test suites as requested
-        await self.test_ai_toolkit_info()
-        await self.test_ai_toolkit_code_review()
-        await self.test_ai_toolkit_quality_score()
-        await self.test_ai_toolkit_generate_tests()
+        # Run all test suites as requested
+        await self.test_core_endpoints()
+        await self.test_v12_features()
+        await self.test_reading_curriculum()
+        await self.test_jeeves_eq()
         
         # Generate summary
         await self.generate_summary()
@@ -252,10 +290,16 @@ class CodeDockTester:
         print(f"Success Rate: {success_rate:.1f}%")
         
         # Group by endpoint category
-        ai_toolkit_tests = [r for r in self.results if r["endpoint"].startswith("/ai-toolkit")]
+        core_tests = [r for r in self.results if r["endpoint"] in ["/health", "/languages", "/ai/modes"]]
+        v12_tests = [r for r in self.results if r["endpoint"].startswith("/logscraper") or r["endpoint"].startswith("/export")]
+        reading_tests = [r for r in self.results if r["endpoint"].startswith("/reading")]
+        jeeves_tests = [r for r in self.results if r["endpoint"].startswith("/jeeves-eq")]
         
         print(f"\n📊 RESULTS BY CATEGORY:")
-        print(f"AI Toolkit Enhanced: {sum(1 for r in ai_toolkit_tests if r['success'])}/{len(ai_toolkit_tests)} passed")
+        print(f"Core Endpoints: {sum(1 for r in core_tests if r['success'])}/{len(core_tests)} passed")
+        print(f"v12.0 Features: {sum(1 for r in v12_tests if r['success'])}/{len(v12_tests)} passed")
+        print(f"Reading Curriculum: {sum(1 for r in reading_tests if r['success'])}/{len(reading_tests)} passed")
+        print(f"Jeeves EQ: {sum(1 for r in jeeves_tests if r['success'])}/{len(jeeves_tests)} passed")
         
         # Show failed tests
         failed_results = [r for r in self.results if not r["success"]]
@@ -274,33 +318,32 @@ class CodeDockTester:
                 if "response_data" in result and isinstance(result["response_data"], dict):
                     # Show key response data
                     data = result["response_data"]
-                    if "name" in data:
-                        print(f"    Name: {data['name']}")
-                    if "capabilities" in data and isinstance(data["capabilities"], list):
-                        print(f"    Capabilities: {len(data['capabilities'])}")
-                    if "quality_score" in data and isinstance(data["quality_score"], dict):
-                        quality = data["quality_score"]
-                        print(f"    Quality Score: {quality.get('overall', 0)}/100 (Grade: {quality.get('grade', 'N/A')})")
-                    if "test_code" in data:
-                        print(f"    Generated test code: {len(data['test_code'])} characters")
-                    if "framework" in data:
-                        print(f"    Test framework: {data['framework']}")
+                    if "status" in data:
+                        print(f"    Status: {data['status']}")
+                    if "languages" in data and isinstance(data["languages"], list):
+                        print(f"    Languages: {len(data['languages'])}")
+                    if "modes" in data and isinstance(data["modes"], list):
+                        print(f"    AI Modes: {len(data['modes'])}")
+                    if "interactions" in data and isinstance(data["interactions"], list):
+                        print(f"    Interactions: {len(data['interactions'])}")
+                    if "emotion" in data:
+                        print(f"    Detected Emotion: {data['emotion']}")
         
         print(f"\n🎯 CONCLUSION:")
         if success_rate >= 90:
-            print("🏆 EXCELLENT! All AI Toolkit endpoints are working correctly.")
+            print("🏆 EXCELLENT! All v12.0 backend endpoints are working correctly.")
         elif success_rate >= 75:
-            print("✅ GOOD! Most AI Toolkit endpoints are working with minor issues.")
+            print("✅ GOOD! Most v12.0 backend endpoints are working with minor issues.")
         elif success_rate >= 50:
-            print("⚠️  MODERATE! Some AI Toolkit endpoints need attention.")
+            print("⚠️  MODERATE! Some v12.0 backend endpoints need attention.")
         else:
-            print("🚨 CRITICAL! Multiple AI Toolkit endpoints are failing.")
+            print("🚨 CRITICAL! Multiple v12.0 backend endpoints are failing.")
         
         await self.client.aclose()
 
 async def main():
     """Main test runner"""
-    tester = CodeDockTester()
+    tester = CodeDockV12Tester()
     await tester.run_all_tests()
 
 if __name__ == "__main__":

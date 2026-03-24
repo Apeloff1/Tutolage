@@ -5,6 +5,25 @@ const expoConfig = require('eslint-config-expo/flat');
 module.exports = defineConfig([
   expoConfig,
   {
-    ignores: ['dist/*'],
+    ignores: ['dist/*', 'node_modules/*', '.expo/*'],
+  },
+  {
+    files: ['**/*.ts', '**/*.tsx'],
+    languageOptions: {
+      parserOptions: {
+        ecmaVersion: 'latest',
+        sourceType: 'module',
+        ecmaFeatures: {
+          jsx: true,
+        },
+      },
+    },
+    rules: {
+      // Disable rules that conflict with TypeScript
+      'no-unused-vars': 'off',
+      'no-undef': 'off',
+      // Allow any types during development
+      '@typescript-eslint/no-explicit-any': 'off',
+    },
   },
 ]);

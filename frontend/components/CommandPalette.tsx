@@ -69,6 +69,7 @@ const FEATURE_CATEGORIES: FeatureCategory[] = [
     icon: 'school',
     color: '#EC4899',
     features: [
+      { id: 'learning_hub', name: 'Learning Hub', icon: 'rocket', description: 'XP, Challenges, Quizzes, Achievements' },
       { id: 'physics_academy', name: 'Physics', icon: 'nuclear', description: '315hrs • Mechanics, collisions, fluids' },
       { id: 'math_academy', name: 'Mathematics', icon: 'calculator', description: '340hrs • Linear algebra, calculus, noise' },
       { id: 'cs_academy', name: 'Computer Science', icon: 'code-slash', description: '600hrs • Data structures, graphics, AI' },

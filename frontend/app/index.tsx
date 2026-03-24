@@ -79,6 +79,7 @@ import { MathAcademyModal } from '../features/MathAcademy/MathAcademyModal';
 import { CSAcademyModal } from '../features/CSAcademy/CSAcademyModal';
 import { HybridPipelineModal } from '../features/HybridPipeline/HybridPipelineModal';
 import { SOTAExtendedModal } from '../features/SOTAExtended/SOTAExtendedModal';
+import { ImmersiveLearningModal } from '../features/ImmersiveLearning/ImmersiveLearningModal';
 
 // Types
 import { Language, Template, AIMode } from '../types';
@@ -177,6 +178,7 @@ export default function CodeDockApp() {
   const [showCSAcademyModal, setShowCSAcademyModal] = useState(false);
   const [showHybridPipelineModal, setShowHybridPipelineModal] = useState(false);
   const [showSOTAExtendedModal, setShowSOTAExtendedModal] = useState(false);
+  const [showImmersiveLearningModal, setShowImmersiveLearningModal] = useState(false);
   
   // Voice Command Handler
   const handleVoiceCommand = useCallback((action: string, params?: any) => {
@@ -433,6 +435,7 @@ export default function CodeDockApp() {
       case 'physics_academy': setShowPhysicsAcademyModal(true); break;
       case 'math_academy': setShowMathAcademyModal(true); break;
       case 'cs_academy': setShowCSAcademyModal(true); break;
+      case 'learning_hub': setShowImmersiveLearningModal(true); break;
       // Learn actions
       case 'masterclass': setShowMasterclassModal(true); break;
       case 'education': setShowEducationModal(true); break;
@@ -1254,6 +1257,13 @@ export default function CodeDockApp() {
         visible={showSOTAExtendedModal}
         onClose={() => setShowSOTAExtendedModal(false)}
         colors={colors}
+      />
+
+      <ImmersiveLearningModal
+        visible={showImmersiveLearningModal}
+        onClose={() => setShowImmersiveLearningModal(false)}
+        colors={colors}
+        userId="default_user"
       />
     </SafeAreaView>
     </ErrorBoundary>

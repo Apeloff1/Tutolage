@@ -1,350 +1,300 @@
 #!/usr/bin/env python3
 """
-CodeDock v12.0 Backend API Testing Suite
-Testing v12.0 features as requested in review:
-- Core endpoints (health, languages, ai/modes)
-- New v12.0 features (logscraper, export)
-- Reading curriculum
-- Jeeves EQ
+CodeDock Synergy Integration API Testing Suite
+Tests the new v12.0 Synergy Integration endpoints
 """
 
-import asyncio
-import httpx
+import requests
 import json
-import os
+import sys
 from datetime import datetime
-from pathlib import Path
 
-# Get backend URL from environment
-BACKEND_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://sota-2026.preview.emergentagent.com')
-API_BASE = f"{BACKEND_URL}/api"
-USER_ID = "default_user"
+# Base URL from the review request
+BASE_URL = "https://sota-2026.preview.emergentagent.com"
 
-class CodeDockV12Tester:
-    def __init__(self):
-        self.client = httpx.AsyncClient(timeout=30.0)
-        self.results = []
+def test_unified_context():
+    """Test POST /api/synergy/context - Get unified user context"""
+    print("🔍 Testing GET unified context...")
+    
+    url = f"{BASE_URL}/api/synergy/context"
+    payload = {
+        "user_id": "test_user",
+        "include_recommendations": True,
+        "include_insights": True
+    }
+    
+    try:
+        response = requests.post(url, json=payload, timeout=30)
+        print(f"   Status: {response.status_code}")
         
-    async def test_endpoint(self, method: str, endpoint: str, data=None, params=None, description=""):
-        """Test a single endpoint and record results"""
-        url = f"{API_BASE}{endpoint}"
-        
-        try:
-            if method.upper() == "GET":
-                response = await self.client.get(url, params=params)
-            elif method.upper() == "POST":
-                response = await self.client.post(url, json=data, params=params)
-            else:
-                raise ValueError(f"Unsupported method: {method}")
+        if response.status_code == 200:
+            data = response.json()
+            print(f"   ✅ SUCCESS: User context retrieved")
+            print(f"   User ID: {data.get('user_id')}")
+            print(f"   Timestamp: {data.get('timestamp')}")
             
-            success = response.status_code == 200
-            result = {
-                "endpoint": endpoint,
-                "method": method,
-                "status_code": response.status_code,
-                "success": success,
-                "description": description,
-                "response_size": len(response.text) if response.text else 0,
-                "error": None if success else response.text[:500]
-            }
+            # Check context structure
+            context = data.get('context', {})
+            if 'learning' in context and 'emotional' in context:
+                print(f"   Learning modules completed: {context['learning'].get('modules_completed', 0)}")
+                print(f"   Current emotional state: {context['emotional'].get('current_state', 'unknown')}")
             
-            if success:
-                try:
-                    json_data = response.json()
-                    result["response_data"] = json_data
-                except:
-                    result["response_data"] = response.text[:200]
+            # Check recommendations
+            if 'recommendations' in data:
+                print(f"   Recommendations included: {len(data['recommendations'])} items")
             
-            self.results.append(result)
+            # Check insights
+            if 'insights' in data:
+                insights = data['insights']
+                print(f"   Total AI interactions: {insights.get('total_ai_interactions', 0)}")
+                print(f"   Interactions this week: {insights.get('interactions_this_week', 0)}")
+                print(f"   Learning velocity: {insights.get('learning_velocity', 0)}")
+                print(f"   Engagement trend: {insights.get('engagement_trend', 'unknown')}")
             
-            status = "✅ PASS" if success else "❌ FAIL"
-            print(f"{status} {method} {endpoint} - {description}")
-            if not success:
-                print(f"   Error: {response.status_code} - {response.text[:200]}")
-            
-            return result
-            
-        except Exception as e:
-            result = {
-                "endpoint": endpoint,
-                "method": method,
-                "status_code": 0,
-                "success": False,
-                "description": description,
-                "error": str(e)
-            }
-            self.results.append(result)
-            print(f"❌ FAIL {method} {endpoint} - {description}")
-            print(f"   Exception: {str(e)}")
-            return result
-
-    async def test_core_endpoints(self):
-        """Test core endpoints: health, languages, ai/modes"""
-        print("\n🏥 TESTING CORE ENDPOINTS")
-        print("=" * 60)
-        
-        # GET /api/health - Verify server health
-        result = await self.test_endpoint(
-            "GET", "/health",
-            description="Server health check"
-        )
-        
-        if result["success"] and "response_data" in result:
-            data = result["response_data"]
-            status = data.get("status", "unknown")
-            print(f"   Health Status: {status}")
-        
-        # GET /api/languages - Get available programming languages
-        result = await self.test_endpoint(
-            "GET", "/languages",
-            description="Available programming languages"
-        )
-        
-        if result["success"] and "response_data" in result:
-            data = result["response_data"]
-            if isinstance(data, list):
-                print(f"   Found {len(data)} languages")
-                executable_count = sum(1 for lang in data if lang.get("executable", False))
-                print(f"   Executable languages: {executable_count}")
-            elif isinstance(data, dict) and "languages" in data:
-                languages = data["languages"]
-                print(f"   Found {len(languages)} languages")
-                executable_count = sum(1 for lang in languages if lang.get("executable", False))
-                print(f"   Executable languages: {executable_count}")
-        
-        # GET /api/ai/modes - Get AI modes
-        result = await self.test_endpoint(
-            "GET", "/ai/modes",
-            description="AI assistant modes"
-        )
-        
-        if result["success"] and "response_data" in result:
-            data = result["response_data"]
-            if isinstance(data, list):
-                print(f"   Found {len(data)} AI modes")
-            elif isinstance(data, dict) and "modes" in data:
-                modes = data["modes"]
-                print(f"   Found {len(modes)} AI modes")
-        
-        return True
-
-    async def test_v12_features(self):
-        """Test new v12.0 features"""
-        print("\n🚀 TESTING v12.0 NEW FEATURES")
-        print("=" * 60)
-        
-        # GET /api/logscraper/profile/{user_id} - Test AI interaction profile
-        result = await self.test_endpoint(
-            "GET", f"/logscraper/profile/{USER_ID}",
-            description="AI interaction profile for user"
-        )
-        
-        if result["success"] and "response_data" in result:
-            data = result["response_data"]
-            print(f"   Profile data keys: {list(data.keys()) if isinstance(data, dict) else 'Not a dict'}")
-        
-        # GET /api/logscraper/insights/{user_id} - Test AI insights
-        result = await self.test_endpoint(
-            "GET", f"/logscraper/insights/{USER_ID}",
-            description="AI insights for user"
-        )
-        
-        if result["success"] and "response_data" in result:
-            data = result["response_data"]
-            print(f"   Insights data keys: {list(data.keys()) if isinstance(data, dict) else 'Not a dict'}")
-        
-        # GET /api/export/ai-interactions/{user_id} - Test AI interaction export
-        result = await self.test_endpoint(
-            "GET", f"/export/ai-interactions/{USER_ID}",
-            description="AI interaction export for user"
-        )
-        
-        if result["success"] and "response_data" in result:
-            data = result["response_data"]
-            print(f"   Export data keys: {list(data.keys()) if isinstance(data, dict) else 'Not a dict'}")
-            if isinstance(data, dict) and "interactions" in data:
-                interactions = data["interactions"]
-                print(f"   Total interactions: {len(interactions) if isinstance(interactions, list) else 'Not a list'}")
-        
-        return True
-
-    async def test_reading_curriculum(self):
-        """Test reading curriculum endpoints"""
-        print("\n📚 TESTING READING CURRICULUM")
-        print("=" * 60)
-        
-        # GET /api/reading/info - Get reading curriculum info
-        result = await self.test_endpoint(
-            "GET", "/reading/info",
-            description="Reading curriculum info"
-        )
-        
-        if result["success"] and "response_data" in result:
-            data = result["response_data"]
-            if isinstance(data, dict):
-                total_hours = data.get("total_curriculum_hours", 0)
-                tracks = data.get("knowledge_tracks", [])
-                print(f"   Total curriculum hours: {total_hours}")
-                print(f"   Knowledge tracks: {len(tracks)}")
-        
-        # GET /api/reading/tracks - Get all learning tracks
-        result = await self.test_endpoint(
-            "GET", "/reading/tracks",
-            description="All learning tracks"
-        )
-        
-        if result["success"] and "response_data" in result:
-            data = result["response_data"]
-            if isinstance(data, dict) and "tracks" in data:
-                tracks = data["tracks"]
-                print(f"   Found {len(tracks)} tracks")
-                for track in tracks[:3]:  # Show first 3
-                    name = track.get("name", "Unknown")
-                    hours = track.get("total_hours", 0)
-                    print(f"   - {name}: {hours} hours")
-        
-        return True
-
-    async def test_jeeves_eq(self):
-        """Test Jeeves EQ endpoints"""
-        print("\n🧠 TESTING JEEVES EQ")
-        print("=" * 60)
-        
-        # GET /api/jeeves-eq/info - Get Jeeves EQ info
-        result = await self.test_endpoint(
-            "GET", "/jeeves-eq/info",
-            description="Jeeves EQ system info"
-        )
-        
-        if result["success"] and "response_data" in result:
-            data = result["response_data"]
-            if isinstance(data, dict):
-                capabilities = data.get("capabilities", [])
-                emotional_states = data.get("emotional_states_detected", [])
-                print(f"   Capabilities: {len(capabilities)}")
-                print(f"   Emotional states detected: {len(emotional_states)}")
-        
-        # POST /api/jeeves-eq/detect-emotion - Test emotion detection
-        # This endpoint expects query parameters, not JSON body
-        params = {
-            "user_id": USER_ID,
-            "text_input": "I'm feeling frustrated with this coding challenge. I've been stuck for hours."
-        }
-        
-        # The recent_actions should be passed as the body (list)
-        recent_actions = [
-            {"action_type": "challenge_failed", "timestamp": "2026-03-24T06:45:00Z"},
-            {"action_type": "hint_requested", "timestamp": "2026-03-24T06:45:30Z"},
-            {"action_type": "challenge_failed", "timestamp": "2026-03-24T06:46:00Z"}
-        ]
-        
-        result = await self.test_endpoint(
-            "POST", "/jeeves-eq/detect-emotion",
-            data=recent_actions,
-            params=params,
-            description="Emotion detection from user actions and text"
-        )
-        
-        if result["success"] and "response_data" in result:
-            data = result["response_data"]
-            print(f"   Emotion detection data keys: {list(data.keys()) if isinstance(data, dict) else 'Not a dict'}")
-            if isinstance(data, dict) and "emotional_state" in data:
-                emotion_state = data["emotional_state"]
-                primary = emotion_state.get("primary", "unknown")
-                intensity = emotion_state.get("intensity", 0)
-                print(f"   Detected emotion: {primary} (intensity: {intensity})")
-        
-        return True
-
-    async def run_all_tests(self):
-        """Run all test suites"""
-        print(f"🚀 STARTING CODEDOCK v12.0 BACKEND API TESTING")
-        print(f"Backend URL: {BACKEND_URL}")
-        print(f"API Base: {API_BASE}")
-        print(f"User ID: {USER_ID}")
-        print(f"Test started at: {datetime.now().isoformat()}")
-        
-        # Run all test suites as requested
-        await self.test_core_endpoints()
-        await self.test_v12_features()
-        await self.test_reading_curriculum()
-        await self.test_jeeves_eq()
-        
-        # Generate summary
-        await self.generate_summary()
-        
-    async def generate_summary(self):
-        """Generate test summary"""
-        print("\n" + "=" * 80)
-        print("📊 TEST SUMMARY")
-        print("=" * 80)
-        
-        total_tests = len(self.results)
-        passed_tests = sum(1 for r in self.results if r["success"])
-        failed_tests = total_tests - passed_tests
-        success_rate = (passed_tests / total_tests * 100) if total_tests > 0 else 0
-        
-        print(f"Total Tests: {total_tests}")
-        print(f"Passed: {passed_tests} ✅")
-        print(f"Failed: {failed_tests} ❌")
-        print(f"Success Rate: {success_rate:.1f}%")
-        
-        # Group by endpoint category
-        core_tests = [r for r in self.results if r["endpoint"] in ["/health", "/languages", "/ai/modes"]]
-        v12_tests = [r for r in self.results if r["endpoint"].startswith("/logscraper") or r["endpoint"].startswith("/export")]
-        reading_tests = [r for r in self.results if r["endpoint"].startswith("/reading")]
-        jeeves_tests = [r for r in self.results if r["endpoint"].startswith("/jeeves-eq")]
-        
-        print(f"\n📊 RESULTS BY CATEGORY:")
-        print(f"Core Endpoints: {sum(1 for r in core_tests if r['success'])}/{len(core_tests)} passed")
-        print(f"v12.0 Features: {sum(1 for r in v12_tests if r['success'])}/{len(v12_tests)} passed")
-        print(f"Reading Curriculum: {sum(1 for r in reading_tests if r['success'])}/{len(reading_tests)} passed")
-        print(f"Jeeves EQ: {sum(1 for r in jeeves_tests if r['success'])}/{len(jeeves_tests)} passed")
-        
-        # Show failed tests
-        failed_results = [r for r in self.results if not r["success"]]
-        if failed_results:
-            print(f"\n❌ FAILED TESTS:")
-            for result in failed_results:
-                print(f"  • {result['method']} {result['endpoint']} - {result['description']}")
-                print(f"    Status: {result['status_code']}, Error: {result.get('error', 'Unknown')[:100]}")
-        
-        # Show successful tests with key data
-        successful_results = [r for r in self.results if r["success"]]
-        if successful_results:
-            print(f"\n✅ SUCCESSFUL TESTS:")
-            for result in successful_results:
-                print(f"  • {result['method']} {result['endpoint']} - {result['description']}")
-                if "response_data" in result and isinstance(result["response_data"], dict):
-                    # Show key response data
-                    data = result["response_data"]
-                    if "status" in data:
-                        print(f"    Status: {data['status']}")
-                    if "languages" in data and isinstance(data["languages"], list):
-                        print(f"    Languages: {len(data['languages'])}")
-                    if "modes" in data and isinstance(data["modes"], list):
-                        print(f"    AI Modes: {len(data['modes'])}")
-                    if "interactions" in data and isinstance(data["interactions"], list):
-                        print(f"    Interactions: {len(data['interactions'])}")
-                    if "emotion" in data:
-                        print(f"    Detected Emotion: {data['emotion']}")
-        
-        print(f"\n🎯 CONCLUSION:")
-        if success_rate >= 90:
-            print("🏆 EXCELLENT! All v12.0 backend endpoints are working correctly.")
-        elif success_rate >= 75:
-            print("✅ GOOD! Most v12.0 backend endpoints are working with minor issues.")
-        elif success_rate >= 50:
-            print("⚠️  MODERATE! Some v12.0 backend endpoints need attention.")
+            return True
         else:
-            print("🚨 CRITICAL! Multiple v12.0 backend endpoints are failing.")
-        
-        await self.client.aclose()
+            print(f"   ❌ FAILED: HTTP {response.status_code}")
+            print(f"   Response: {response.text[:200]}")
+            return False
+            
+    except Exception as e:
+        print(f"   ❌ ERROR: {str(e)}")
+        return False
 
-async def main():
-    """Main test runner"""
-    tester = CodeDockV12Tester()
-    await tester.run_all_tests()
+def test_session_start():
+    """Test POST /api/synergy/session/start - Start learning session"""
+    print("🚀 Testing session start...")
+    
+    url = f"{BASE_URL}/api/synergy/session/start"
+    payload = {
+        "user_id": "test_user",
+        "module_id": "gp_001",
+        "session_type": "reading"
+    }
+    
+    try:
+        response = requests.post(url, json=payload, timeout=30)
+        print(f"   Status: {response.status_code}")
+        
+        if response.status_code == 200:
+            data = response.json()
+            print(f"   ✅ SUCCESS: Session started")
+            print(f"   Session started: {data.get('session_started')}")
+            print(f"   Module ID: {data.get('module_id')}")
+            
+            # Check emotional context
+            emotional_context = data.get('emotional_context', {})
+            print(f"   Detected emotion: {emotional_context.get('detected_emotion', 'unknown')}")
+            print(f"   Stress level: {emotional_context.get('stress_level', 0)}")
+            
+            # Check adaptations
+            adaptations = data.get('content_adaptations', [])
+            print(f"   Content adaptations: {len(adaptations)} items")
+            if adaptations:
+                print(f"   Adaptations: {', '.join(adaptations)}")
+            
+            # Check recommendations
+            print(f"   Recommended session length: {data.get('recommended_session_length', 0)} minutes")
+            
+            tips = data.get('tips', [])
+            if tips:
+                print(f"   Tips provided: {len(tips)} tips")
+                print(f"   First tip: {tips[0][:50]}...")
+            
+            return True
+        else:
+            print(f"   ❌ FAILED: HTTP {response.status_code}")
+            print(f"   Response: {response.text[:200]}")
+            return False
+            
+    except Exception as e:
+        print(f"   ❌ ERROR: {str(e)}")
+        return False
+
+def test_session_update():
+    """Test POST /api/synergy/session/update - Update session progress"""
+    print("📈 Testing session update (progress tracking)...")
+    
+    url = f"{BASE_URL}/api/synergy/session/update"
+    payload = {
+        "user_id": "test_user",
+        "module_id": "gp_001",
+        "progress": 50.0,
+        "time_spent_seconds": 300
+    }
+    
+    try:
+        response = requests.post(url, json=payload, timeout=30)
+        print(f"   Status: {response.status_code}")
+        
+        if response.status_code == 200:
+            data = response.json()
+            print(f"   ✅ SUCCESS: Progress updated")
+            print(f"   Progress updated: {data.get('progress_updated')}")
+            print(f"   Current progress: {data.get('current_progress')}%")
+            print(f"   XP earned: {data.get('xp_earned', 0)}")
+            
+            # Check achievements
+            achievements = data.get('new_achievements', [])
+            if achievements:
+                print(f"   New achievements: {len(achievements)} unlocked")
+                for achievement in achievements:
+                    print(f"     - {achievement.get('name', 'Unknown')} (+{achievement.get('xp', 0)} XP)")
+            else:
+                print(f"   No new achievements unlocked")
+            
+            return True
+        else:
+            print(f"   ❌ FAILED: HTTP {response.status_code}")
+            print(f"   Response: {response.text[:200]}")
+            return False
+            
+    except Exception as e:
+        print(f"   ❌ ERROR: {str(e)}")
+        return False
+
+def test_ai_interaction_logging():
+    """Test POST /api/synergy/ai/log - Log AI interaction"""
+    print("🤖 Testing AI interaction logging...")
+    
+    url = f"{BASE_URL}/api/synergy/ai/log"
+    payload = {
+        "user_id": "test_user",
+        "interaction_type": "code_generation",
+        "prompt": "Create a function to reverse a string",
+        "response": "def reverse_string(s): return s[::-1]"
+    }
+    
+    try:
+        response = requests.post(url, json=payload, timeout=30)
+        print(f"   Status: {response.status_code}")
+        
+        if response.status_code == 200:
+            data = response.json()
+            print(f"   ✅ SUCCESS: AI interaction logged")
+            print(f"   Logged: {data.get('logged')}")
+            print(f"   Interaction ID: {data.get('interaction_id', 'N/A')}")
+            print(f"   Pattern updated: {data.get('pattern_updated')}")
+            
+            return True
+        else:
+            print(f"   ❌ FAILED: HTTP {response.status_code}")
+            print(f"   Response: {response.text[:200]}")
+            return False
+            
+    except Exception as e:
+        print(f"   ❌ ERROR: {str(e)}")
+        return False
+
+def test_unified_dashboard():
+    """Test POST /api/synergy/dashboard - Get unified dashboard"""
+    print("📊 Testing unified dashboard...")
+    
+    url = f"{BASE_URL}/api/synergy/dashboard"
+    payload = {
+        "user_id": "test_user",
+        "time_range_days": 7
+    }
+    
+    try:
+        response = requests.post(url, json=payload, timeout=30)
+        print(f"   Status: {response.status_code}")
+        
+        if response.status_code == 200:
+            data = response.json()
+            print(f"   ✅ SUCCESS: Dashboard data retrieved")
+            print(f"   User ID: {data.get('user_id')}")
+            print(f"   Period: {data.get('period')}")
+            
+            # Check learning data
+            learning = data.get('learning', {})
+            print(f"   Learning - Study minutes: {learning.get('total_study_minutes', 0)}")
+            print(f"   Learning - Modules completed: {learning.get('modules_completed', 0)}")
+            print(f"   Learning - Current streak: {learning.get('current_streak', 0)} days")
+            print(f"   Learning - XP earned: {learning.get('xp_earned', 0)}")
+            
+            # Check AI usage
+            ai_usage = data.get('ai_usage', {})
+            print(f"   AI Usage - Total interactions: {ai_usage.get('total_interactions', 0)}")
+            print(f"   AI Usage - Average per day: {ai_usage.get('avg_per_day', 0):.1f}")
+            
+            by_type = ai_usage.get('by_type', {})
+            if by_type:
+                print(f"   AI Usage by type:")
+                for interaction_type, count in by_type.items():
+                    print(f"     - {interaction_type}: {count}")
+            
+            # Check emotional wellness
+            emotional = data.get('emotional_wellness', {})
+            print(f"   Emotional - Current state: {emotional.get('current_state', 'unknown')}")
+            print(f"   Emotional - Avg stress level: {emotional.get('avg_stress_level', 0):.1f}")
+            print(f"   Emotional - Pomodoro sessions: {emotional.get('pomodoro_sessions', 0)}")
+            
+            # Check recommendations
+            recommendations = data.get('recommendations', [])
+            print(f"   Recommendations: {len(recommendations)} items")
+            
+            return True
+        else:
+            print(f"   ❌ FAILED: HTTP {response.status_code}")
+            print(f"   Response: {response.text[:200]}")
+            return False
+            
+    except Exception as e:
+        print(f"   ❌ ERROR: {str(e)}")
+        return False
+
+def main():
+    """Run all synergy integration tests"""
+    print("=" * 80)
+    print("🧪 CODEDOCK SYNERGY INTEGRATION API TESTING SUITE")
+    print("=" * 80)
+    print(f"Base URL: {BASE_URL}")
+    print(f"Test started at: {datetime.now().isoformat()}")
+    print()
+    
+    tests = [
+        ("Unified Context", test_unified_context),
+        ("Session Start", test_session_start),
+        ("Session Update", test_session_update),
+        ("AI Interaction Logging", test_ai_interaction_logging),
+        ("Unified Dashboard", test_unified_dashboard),
+    ]
+    
+    results = []
+    
+    for test_name, test_func in tests:
+        print(f"🧪 Running {test_name} test...")
+        try:
+            success = test_func()
+            results.append((test_name, success))
+            print(f"   Result: {'✅ PASSED' if success else '❌ FAILED'}")
+        except Exception as e:
+            print(f"   ❌ EXCEPTION: {str(e)}")
+            results.append((test_name, False))
+        print()
+    
+    # Summary
+    print("=" * 80)
+    print("📊 TEST SUMMARY")
+    print("=" * 80)
+    
+    passed = sum(1 for _, success in results if success)
+    total = len(results)
+    
+    for test_name, success in results:
+        status = "✅ PASSED" if success else "❌ FAILED"
+        print(f"   {test_name}: {status}")
+    
+    print()
+    print(f"📈 OVERALL RESULTS: {passed}/{total} tests passed ({passed/total*100:.1f}%)")
+    
+    if passed == total:
+        print("🎉 ALL SYNERGY INTEGRATION TESTS PASSED!")
+        return 0
+    else:
+        print("⚠️  SOME TESTS FAILED - CHECK LOGS ABOVE")
+        return 1
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    sys.exit(main())

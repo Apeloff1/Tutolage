@@ -92,6 +92,9 @@ from routes.export_github import router as export_github_router
 # v11.9 - Enhanced AI Toolkit
 from routes.ai_toolkit_enhanced import router as ai_toolkit_router
 
+# v12.0 - Synergy Integration
+from routes.synergy import router as synergy_router
+
 # Import the 15-Year CS Bible Curriculum (for backward compatibility)
 from cs_bible import CS_BIBLE, get_year_info, get_course, get_all_courses, get_curriculum_stats
 
@@ -2415,7 +2418,7 @@ async def system_info():
         "features": SYSTEM_FEATURES,
         "feature_flags": {k.value: v for k, v in FEATURE_FLAGS.items()},
         "hotfixes": list(HOTFIX_REGISTRY.keys()),
-        "languages_installed": sum(1 for l in LANGUAGE_DOCK_REGISTRY.values() if l.get("status") == DockStatus.INSTALLED),
+        "languages_installed": sum(1 for lang in LANGUAGE_DOCK_REGISTRY.values() if lang.get("status") == DockStatus.INSTALLED),
         "languages_available": len(LANGUAGE_DOCK_REGISTRY)
     }
 
@@ -6417,3 +6420,5 @@ app.include_router(jeeves_eq_router)
 app.include_router(export_github_router)
 # v11.9 - Enhanced AI Toolkit
 app.include_router(ai_toolkit_router)
+# v12.0 - Synergy Integration (Cross-Feature Data Flow)
+app.include_router(synergy_router)

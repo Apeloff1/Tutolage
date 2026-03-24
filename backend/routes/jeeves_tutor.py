@@ -700,3 +700,458 @@ Make it conversational and engaging. End with a question for the student to answ
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+# ============================================================================
+# JEEVES EDUCATIONAL ENGINE v11.6 - Physics, Math, CS Knowledge
+# ============================================================================
+
+# Import the educational curricula
+from routes.physics_engine import PHYSICS_CURRICULUM, PHYSICS_SIMULATIONS
+from routes.math_engine import MATH_CURRICULUM
+from routes.cs_engine import CS_CURRICULUM
+
+# Jeeves' comprehensive knowledge base for game dev education
+JEEVES_KNOWLEDGE_BASE = {
+    "physics": {
+        "total_hours": sum(cat["hours"] for cat in PHYSICS_CURRICULUM.values()),
+        "categories": list(PHYSICS_CURRICULUM.keys()),
+        "core_topics": [
+            "Classical Mechanics for Character Movement",
+            "Collision Detection & Response",
+            "Rigid Body Dynamics",
+            "Soft Body & Cloth Physics",
+            "Fluid Simulation",
+            "Particle Systems",
+            "Quaternions for Rotation"
+        ]
+    },
+    "math": {
+        "total_hours": sum(cat["hours"] for cat in MATH_CURRICULUM.values()),
+        "categories": list(MATH_CURRICULUM.keys()),
+        "core_topics": [
+            "Vectors & Vector Operations",
+            "Matrix Transformations",
+            "Quaternions for 3D Rotation",
+            "Bezier Curves & Splines",
+            "Perlin & Simplex Noise",
+            "Numerical Integration (Euler, RK4)",
+            "Probability for Game Balance"
+        ]
+    },
+    "cs": {
+        "total_hours": sum(cat["hours"] for cat in CS_CURRICULUM.values()),
+        "categories": list(CS_CURRICULUM.keys()),
+        "core_topics": [
+            "Data Structures (Spatial Trees, Hash Maps)",
+            "A* Pathfinding",
+            "Behavior Trees & Game AI",
+            "ECS Architecture",
+            "Rendering Pipeline",
+            "Shader Programming",
+            "Multiplayer Networking"
+        ]
+    }
+}
+
+
+class GameDevEducationRequest(BaseModel):
+    subject: Literal["physics", "math", "cs", "all"]
+    topic: str
+    skill_level: str = "intermediate"
+    include_code: bool = True
+    include_game_examples: bool = True
+    language: str = "python"
+
+
+@router.get("/knowledge-base")
+async def get_jeeves_knowledge():
+    """Get Jeeves' complete knowledge base for game development education"""
+    return {
+        "name": "Jeeves Educational Knowledge Base v11.6",
+        "description": "Comprehensive Physics, Math, and CS education for Game Development",
+        "total_hours": (
+            JEEVES_KNOWLEDGE_BASE["physics"]["total_hours"] +
+            JEEVES_KNOWLEDGE_BASE["math"]["total_hours"] +
+            JEEVES_KNOWLEDGE_BASE["cs"]["total_hours"]
+        ),
+        "subjects": {
+            "physics": {
+                "hours": JEEVES_KNOWLEDGE_BASE["physics"]["total_hours"],
+                "categories": JEEVES_KNOWLEDGE_BASE["physics"]["categories"],
+                "key_topics": JEEVES_KNOWLEDGE_BASE["physics"]["core_topics"]
+            },
+            "math": {
+                "hours": JEEVES_KNOWLEDGE_BASE["math"]["total_hours"],
+                "categories": JEEVES_KNOWLEDGE_BASE["math"]["categories"],
+                "key_topics": JEEVES_KNOWLEDGE_BASE["math"]["core_topics"]
+            },
+            "cs": {
+                "hours": JEEVES_KNOWLEDGE_BASE["cs"]["total_hours"],
+                "categories": JEEVES_KNOWLEDGE_BASE["cs"]["categories"],
+                "key_topics": JEEVES_KNOWLEDGE_BASE["cs"]["core_topics"]
+            }
+        },
+        "capabilities": [
+            "Interactive physics lessons with simulations",
+            "Math tutorials with step-by-step solutions",
+            "CS algorithm visualization and explanation",
+            "Game-specific application examples",
+            "Code implementations in multiple languages",
+            "Practice problems with guided solutions"
+        ]
+    }
+
+
+@router.post("/teach-physics")
+async def teach_physics(
+    topic: str,
+    skill_level: str = "intermediate",
+    include_simulation: bool = True,
+    game_context: Optional[str] = None,
+    personality: str = "encouraging"
+):
+    """Have Jeeves teach a physics topic for game development"""
+    
+    # Find relevant curriculum info
+    relevant_modules = []
+    for cat_key, category in PHYSICS_CURRICULUM.items():
+        for module in category["modules"]:
+            if topic.lower() in module["name"].lower() or any(topic.lower() in t.lower() for t in module.get("topics", [])):
+                relevant_modules.append({
+                    "category": category["name"],
+                    "module": module["name"],
+                    "topics": module.get("topics", []),
+                    "game_applications": module.get("game_applications", [])
+                })
+    
+    curriculum_context = f"Relevant curriculum modules: {relevant_modules}" if relevant_modules else ""
+    
+    prompt = f"""Teach the physics concept: **{topic}**
+
+{curriculum_context}
+
+Student level: {skill_level}
+{f'Game context: {game_context}' if game_context else 'Focus on game development applications'}
+
+Provide a comprehensive lesson including:
+
+1. **Introduction** - What is this concept and why does it matter for games?
+
+2. **The Physics** - Explain the underlying physics clearly
+   - Key equations with explanation
+   - Intuitive understanding (not just formulas)
+
+3. **Game Development Application** - How is this used in games?
+   - Real game examples (mention actual games if possible)
+   - Common implementations
+
+4. **Code Implementation** - Show how to implement this
+   - Provide working code in Python
+   - Comment every important line
+   - Show both simple and optimized versions
+
+5. **Common Pitfalls** - What mistakes do developers make?
+
+6. **Practice Problem** - Give a challenge to solidify understanding
+
+{'7. **Interactive Simulation** - Describe a simple simulation they can try' if include_simulation else ''}
+
+Make the lesson engaging and practical. Use analogies where helpful."""
+
+    try:
+        response = await call_jeeves(prompt, personality, skill_level)
+        
+        return {
+            "subject": "physics",
+            "topic": topic,
+            "skill_level": skill_level,
+            "lesson": response,
+            "relevant_curriculum": relevant_modules,
+            "simulations_available": list(PHYSICS_SIMULATIONS.keys()),
+            "next_topics": [m["module"] for m in relevant_modules[:3]] if relevant_modules else []
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/teach-math")
+async def teach_math(
+    topic: str,
+    skill_level: str = "intermediate",
+    include_visualization: bool = True,
+    game_context: Optional[str] = None,
+    language: str = "python",
+    personality: str = "encouraging"
+):
+    """Have Jeeves teach a math topic for game development"""
+    
+    # Find relevant curriculum info
+    relevant_modules = []
+    for cat_key, category in MATH_CURRICULUM.items():
+        for module in category["modules"]:
+            if topic.lower() in module["name"].lower() or any(topic.lower() in t.lower() for t in module.get("topics", [])):
+                relevant_modules.append({
+                    "category": category["name"],
+                    "module": module["name"],
+                    "topics": module.get("topics", []),
+                    "game_applications": module.get("game_applications", [])
+                })
+    
+    curriculum_context = f"Relevant curriculum modules: {relevant_modules}" if relevant_modules else ""
+    
+    prompt = f"""Teach the mathematics concept: **{topic}**
+
+{curriculum_context}
+
+Student level: {skill_level}
+Programming language: {language}
+{f'Game context: {game_context}' if game_context else 'Focus on game development applications'}
+
+Provide a comprehensive lesson including:
+
+1. **Introduction** - What is this concept and why do game developers need it?
+
+2. **The Math** - Explain the mathematics clearly
+   - Definitions and notation
+   - Key formulas with derivation/explanation
+   - Intuitive geometric/visual understanding
+
+3. **Step-by-Step Examples** - Work through 2-3 examples
+   - Show every step
+   - Explain why each step is taken
+
+4. **Game Development Application** - How is this used in games?
+   - Specific use cases (camera systems, physics, animation, etc.)
+   - Real game examples
+
+5. **Code Implementation** - Show how to implement this
+   - Provide working {language} code
+   - Optimized version for game loops
+   - Common library functions (numpy, etc.)
+
+6. **Common Mistakes** - What errors do people make with this concept?
+
+7. **Practice Problems** - 3 problems of increasing difficulty with hints
+
+{'8. **Visualization** - Describe how to visualize this concept' if include_visualization else ''}
+
+Make math accessible and show its practical value in game development."""
+
+    try:
+        response = await call_jeeves(prompt, personality, skill_level)
+        
+        return {
+            "subject": "math",
+            "topic": topic,
+            "skill_level": skill_level,
+            "language": language,
+            "lesson": response,
+            "relevant_curriculum": relevant_modules,
+            "related_topics": [m["module"] for m in relevant_modules[:3]] if relevant_modules else []
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/teach-cs")
+async def teach_cs(
+    topic: str,
+    skill_level: str = "intermediate",
+    include_complexity: bool = True,
+    game_context: Optional[str] = None,
+    language: str = "python",
+    personality: str = "encouraging"
+):
+    """Have Jeeves teach a computer science topic for game development"""
+    
+    # Find relevant curriculum info
+    relevant_modules = []
+    for cat_key, category in CS_CURRICULUM.items():
+        for module in category["modules"]:
+            if topic.lower() in module["name"].lower() or any(topic.lower() in t.lower() for t in module.get("topics", [])):
+                relevant_modules.append({
+                    "category": category["name"],
+                    "module": module["name"],
+                    "topics": module.get("topics", []),
+                    "implementations": module.get("implementations", []),
+                    "game_applications": module.get("game_applications", [])
+                })
+    
+    curriculum_context = f"Relevant curriculum modules: {relevant_modules}" if relevant_modules else ""
+    
+    prompt = f"""Teach the computer science concept: **{topic}**
+
+{curriculum_context}
+
+Student level: {skill_level}
+Programming language: {language}
+{f'Game context: {game_context}' if game_context else 'Focus on game development applications'}
+
+Provide a comprehensive lesson including:
+
+1. **Introduction** - What is this concept and why is it crucial for games?
+
+2. **The Concept** - Explain the CS fundamentals
+   - Core idea and intuition
+   - How it works internally
+   - Diagrams/visual representation (describe in text)
+
+{'3. **Complexity Analysis** - Big O notation' if include_complexity else '3. **Key Points**'}
+   {'- Time complexity' if include_complexity else '- Main advantages'}
+   {'- Space complexity' if include_complexity else '- When to use'}
+   {'- When this matters in games (frame budget, etc.)' if include_complexity else '- Trade-offs'}
+
+4. **Game Development Application** - How is this used in games?
+   - Specific systems that use this (rendering, AI, physics, etc.)
+   - Real engine implementations (Unity, Unreal, Godot)
+
+5. **Code Implementation** - Complete working implementation
+   - {language} code with detailed comments
+   - Both naive and optimized versions
+   - Production-ready patterns
+
+6. **Common Pitfalls** - What do developers get wrong?
+   - Performance traps
+   - Incorrect usage
+   - Debugging tips
+
+7. **Practice Challenge** - Implement a game-related feature using this concept
+
+Make CS practical and directly applicable to game development."""
+
+    try:
+        response = await call_jeeves(prompt, personality, skill_level)
+        
+        return {
+            "subject": "computer_science",
+            "topic": topic,
+            "skill_level": skill_level,
+            "language": language,
+            "lesson": response,
+            "relevant_curriculum": relevant_modules,
+            "implementations_available": [impl for m in relevant_modules for impl in m.get("implementations", [])]
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/game-dev-qa")
+async def game_dev_question(
+    question: str,
+    category: Optional[Literal["physics", "math", "cs", "general"]] = None,
+    skill_level: str = "intermediate",
+    include_code: bool = True,
+    personality: str = "friendly"
+):
+    """Ask Jeeves any game development question - he knows Physics, Math, and CS!"""
+    
+    # Build comprehensive context
+    knowledge_context = f"""You have comprehensive knowledge of:
+
+**PHYSICS ({JEEVES_KNOWLEDGE_BASE['physics']['total_hours']} hours of curriculum):**
+Categories: {', '.join(JEEVES_KNOWLEDGE_BASE['physics']['categories'])}
+Core Topics: {', '.join(JEEVES_KNOWLEDGE_BASE['physics']['core_topics'])}
+
+**MATHEMATICS ({JEEVES_KNOWLEDGE_BASE['math']['total_hours']} hours of curriculum):**
+Categories: {', '.join(JEEVES_KNOWLEDGE_BASE['math']['categories'])}
+Core Topics: {', '.join(JEEVES_KNOWLEDGE_BASE['math']['core_topics'])}
+
+**COMPUTER SCIENCE ({JEEVES_KNOWLEDGE_BASE['cs']['total_hours']} hours of curriculum):**
+Categories: {', '.join(JEEVES_KNOWLEDGE_BASE['cs']['categories'])}
+Core Topics: {', '.join(JEEVES_KNOWLEDGE_BASE['cs']['core_topics'])}"""
+    
+    prompt = f"""{knowledge_context}
+
+Student's Question: {question}
+{f'Category focus: {category}' if category else 'Answer drawing from all your knowledge'}
+Student level: {skill_level}
+
+Provide a helpful, comprehensive answer that:
+1. Directly addresses the question
+2. Explains underlying concepts
+3. Shows practical game dev application
+{'4. Includes code examples' if include_code else ''}
+5. Suggests related topics to explore
+
+Be the knowledgeable, supportive tutor you are!"""
+
+    try:
+        response = await call_jeeves(prompt, personality, skill_level)
+        
+        return {
+            "question": question,
+            "category": category or "general",
+            "answer": response,
+            "knowledge_sources": ["physics", "math", "cs"],
+            "jeeves_says": "I'm here to help you master game development. Ask me anything!"
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/study-path/{goal}")
+async def get_study_path(
+    goal: str,
+    current_level: str = "beginner",
+    hours_per_week: int = 10
+):
+    """Get a personalized study path from Jeeves for a game dev goal"""
+    
+    prompt = f"""Create a personalized study path for someone who wants to: **{goal}**
+
+Current skill level: {current_level}
+Available time: {hours_per_week} hours per week
+
+Available curriculum:
+- Physics: {JEEVES_KNOWLEDGE_BASE['physics']['total_hours']} hours ({', '.join(JEEVES_KNOWLEDGE_BASE['physics']['categories'])})
+- Math: {JEEVES_KNOWLEDGE_BASE['math']['total_hours']} hours ({', '.join(JEEVES_KNOWLEDGE_BASE['math']['categories'])})
+- CS: {JEEVES_KNOWLEDGE_BASE['cs']['total_hours']} hours ({', '.join(JEEVES_KNOWLEDGE_BASE['cs']['categories'])})
+
+Create a structured learning path with:
+
+1. **Phase 1: Foundations** (what to learn first)
+   - Essential topics from each subject
+   - Estimated time
+   - Why these are prerequisites
+
+2. **Phase 2: Core Skills** (main learning phase)
+   - Key topics in order
+   - Projects to build
+   - Milestones
+
+3. **Phase 3: Advanced/Specialization**
+   - Deep dive areas
+   - Real project work
+   - Portfolio pieces
+
+4. **Weekly Schedule Template**
+   - How to split time between subjects
+   - Practice vs theory balance
+
+5. **Milestones & Checkpoints**
+   - How to know you're progressing
+   - Skills to demonstrate
+
+Be specific and actionable. Include estimated weeks/months for each phase."""
+
+    try:
+        response = await call_jeeves(prompt, "encouraging", current_level)
+        
+        total_curriculum_hours = (
+            JEEVES_KNOWLEDGE_BASE['physics']['total_hours'] +
+            JEEVES_KNOWLEDGE_BASE['math']['total_hours'] +
+            JEEVES_KNOWLEDGE_BASE['cs']['total_hours']
+        )
+        
+        return {
+            "goal": goal,
+            "current_level": current_level,
+            "hours_per_week": hours_per_week,
+            "study_path": response,
+            "total_curriculum_available": f"{total_curriculum_hours} hours",
+            "estimated_journey": f"~{total_curriculum_hours // hours_per_week} weeks to complete everything",
+            "jeeves_encouragement": "Remember, consistency beats intensity. Let's build your skills together!"
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

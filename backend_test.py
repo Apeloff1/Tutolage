@@ -1,7 +1,17 @@
 #!/usr/bin/env python3
 """
-CodeDock v11.5 AI-to-Game Pipeline Backend API Testing
-Testing World Engine, Narrative Engine, and Logic Engine APIs
+CodeDock v11.6 MASSIVE EXPANSION Backend API Testing
+Testing all new Educational Academy and SOTA Extended Features
+
+New Features to Test:
+1. Physics Engine - GET /api/physics/info
+2. Math Engine - GET /api/math/info  
+3. CS Engine - GET /api/cs/info
+4. Hybrid Pipeline - GET /api/hybrid/info
+5. SOTA Extended - GET /api/sota-extended/info
+6. Jeeves Knowledge Base - GET /api/jeeves/knowledge-base
+
+Plus additional endpoints for comprehensive testing.
 """
 
 import requests
@@ -9,37 +19,12 @@ import json
 import sys
 from datetime import datetime
 
-# Backend URL from environment
-BACKEND_URL = "https://ai-tutor-stage.preview.emergentagent.com"
-
-class Colors:
-    GREEN = '\033[92m'
-    RED = '\033[91m'
-    YELLOW = '\033[93m'
-    BLUE = '\033[94m'
-    BOLD = '\033[1m'
-    END = '\033[0m'
-
-def print_test_header(title):
-    print(f"\n{Colors.BLUE}{Colors.BOLD}{'='*60}{Colors.END}")
-    print(f"{Colors.BLUE}{Colors.BOLD}{title}{Colors.END}")
-    print(f"{Colors.BLUE}{Colors.BOLD}{'='*60}{Colors.END}")
-
-def print_success(message):
-    print(f"{Colors.GREEN}✅ {message}{Colors.END}")
-
-def print_error(message):
-    print(f"{Colors.RED}❌ {message}{Colors.END}")
-
-def print_warning(message):
-    print(f"{Colors.YELLOW}⚠️  {message}{Colors.END}")
-
-def print_info(message):
-    print(f"{Colors.BLUE}ℹ️  {message}{Colors.END}")
+# Base URL from frontend environment
+BASE_URL = "https://codedock-sota-v116.preview.emergentagent.com/api"
 
 def test_endpoint(method, endpoint, data=None, expected_status=200):
     """Test a single API endpoint"""
-    url = f"{BACKEND_URL}{endpoint}"
+    url = f"{BASE_URL}{endpoint}"
     
     try:
         if method.upper() == "GET":
@@ -47,181 +32,298 @@ def test_endpoint(method, endpoint, data=None, expected_status=200):
         elif method.upper() == "POST":
             response = requests.post(url, json=data, timeout=30)
         else:
-            print_error(f"Unsupported method: {method}")
+            print(f"❌ Unsupported method: {method}")
             return False
+            
+        print(f"🔍 {method} {endpoint}")
+        print(f"   Status: {response.status_code}")
         
         if response.status_code == expected_status:
-            print_success(f"{method} {endpoint} - Status: {response.status_code}")
-            
-            # Try to parse JSON response
             try:
-                json_response = response.json()
-                if isinstance(json_response, dict):
-                    # Print key information from response
-                    if 'name' in json_response:
-                        print_info(f"  Name: {json_response['name']}")
-                    if 'version' in json_response:
-                        print_info(f"  Version: {json_response['version']}")
-                    if 'capabilities' in json_response:
-                        print_info(f"  Capabilities: {len(json_response['capabilities'])} features")
-                    if 'id' in json_response:
-                        print_info(f"  Generated ID: {json_response['id']}")
-                    if 'title' in json_response:
-                        print_info(f"  Title: {json_response['title']}")
-                    
-                    # Print response size
-                    response_text = json.dumps(json_response)
-                    print_info(f"  Response size: {len(response_text)} characters")
+                json_data = response.json()
+                print(f"   ✅ SUCCESS - Response length: {len(str(json_data))} chars")
+                
+                # Print key information for verification
+                if "name" in json_data:
+                    print(f"   📋 Name: {json_data['name']}")
+                if "version" in json_data:
+                    print(f"   📋 Version: {json_data['version']}")
+                if "total_hours" in json_data:
+                    print(f"   📋 Total Hours: {json_data['total_hours']}")
+                if "categories" in json_data:
+                    print(f"   📋 Categories: {len(json_data['categories'])} found")
+                if "features" in json_data:
+                    print(f"   📋 Features: {len(json_data['features'])} found")
+                if "capabilities" in json_data:
+                    print(f"   📋 Capabilities: {len(json_data['capabilities'])} found")
+                if "genres_supported" in json_data:
+                    print(f"   📋 Genres: {len(json_data['genres_supported'])} supported")
+                if "total_upgrades" in json_data:
+                    print(f"   📋 Total Upgrades: {json_data['total_upgrades']}")
+                if "subjects" in json_data:
+                    print(f"   📋 Subjects: {list(json_data['subjects'].keys())}")
                     
                 return True
             except json.JSONDecodeError:
-                print_warning(f"  Response is not valid JSON")
-                return True
-                
+                print(f"   ❌ FAILED - Invalid JSON response")
+                return False
         else:
-            print_error(f"{method} {endpoint} - Status: {response.status_code}")
+            print(f"   ❌ FAILED - Expected {expected_status}, got {response.status_code}")
             try:
-                error_detail = response.json()
-                print_error(f"  Error: {error_detail}")
+                error_data = response.json()
+                print(f"   📋 Error: {error_data}")
             except:
-                print_error(f"  Error: {response.text[:200]}")
+                print(f"   📋 Raw response: {response.text[:200]}...")
             return False
             
     except requests.exceptions.RequestException as e:
-        print_error(f"{method} {endpoint} - Request failed: {str(e)}")
+        print(f"   ❌ FAILED - Network error: {str(e)}")
+        return False
+    except Exception as e:
+        print(f"   ❌ FAILED - Unexpected error: {str(e)}")
         return False
 
-def test_world_engine():
-    """Test World Engine APIs"""
-    print_test_header("WORLD ENGINE API TESTING")
-    
-    tests = []
-    
-    # Test GET endpoints
-    tests.append(test_endpoint("GET", "/api/world-engine/info"))
-    tests.append(test_endpoint("GET", "/api/world-engine/styles"))
-    tests.append(test_endpoint("GET", "/api/world-engine/biomes"))
-    
-    # Test POST generate endpoint
-    world_request = {
-        "prompt": "A mystical forest with ancient ruins",
-        "style": "fantasy",
-        "scale": "medium",
-        "include_terrain": True,
-        "include_structures": True
-    }
-    tests.append(test_endpoint("POST", "/api/world-engine/generate", world_request))
-    
-    passed = sum(tests)
-    total = len(tests)
-    print_info(f"World Engine Tests: {passed}/{total} passed")
-    return passed, total
-
-def test_narrative_engine():
-    """Test Narrative Engine APIs"""
-    print_test_header("NARRATIVE ENGINE API TESTING")
-    
-    tests = []
-    
-    # Test GET endpoints
-    tests.append(test_endpoint("GET", "/api/narrative/info"))
-    tests.append(test_endpoint("GET", "/api/narrative/structures"))
-    tests.append(test_endpoint("GET", "/api/narrative/archetypes"))
-    
-    # Test POST generate-story endpoint
-    story_request = {
-        "premise": "A hero discovers an ancient artifact",
-        "genre": "fantasy",
-        "tone": "epic",
-        "structure": "hero_journey"
-    }
-    tests.append(test_endpoint("POST", "/api/narrative/generate-story", story_request))
-    
-    # Test POST generate-quest endpoint
-    quest_request = {
-        "description": "Retrieve the stolen crown",
-        "quest_type": "main",
-        "difficulty": "medium"
-    }
-    tests.append(test_endpoint("POST", "/api/narrative/generate-quest", quest_request))
-    
-    passed = sum(tests)
-    total = len(tests)
-    print_info(f"Narrative Engine Tests: {passed}/{total} passed")
-    return passed, total
-
-def test_logic_engine():
-    """Test Logic Engine APIs"""
-    print_test_header("LOGIC ENGINE API TESTING")
-    
-    tests = []
-    
-    # Test GET endpoints
-    tests.append(test_endpoint("GET", "/api/game-logic/info"))
-    tests.append(test_endpoint("GET", "/api/game-logic/templates"))
-    tests.append(test_endpoint("GET", "/api/game-logic/ai-templates"))
-    
-    # Test POST generate-mechanic endpoint
-    mechanic_request = {
-        "description": "Turn-based combat with elemental weaknesses",
-        "mechanic_type": "combat",
-        "complexity": "medium"
-    }
-    tests.append(test_endpoint("POST", "/api/game-logic/generate-mechanic", mechanic_request))
-    
-    # Test POST generate-ai endpoint
-    ai_request = {
-        "entity_type": "boss",
-        "description": "A dragon that adapts to player tactics",
-        "behavior_style": "tactical",
-        "intelligence_level": "boss"
-    }
-    tests.append(test_endpoint("POST", "/api/game-logic/generate-ai", ai_request))
-    
-    passed = sum(tests)
-    total = len(tests)
-    print_info(f"Logic Engine Tests: {passed}/{total} passed")
-    return passed, total
-
 def main():
-    """Run all tests"""
-    print_test_header("CODEDOCK v11.5 AI-TO-GAME PIPELINE API TESTING")
-    print_info(f"Backend URL: {BACKEND_URL}")
-    print_info(f"Test started at: {datetime.now().isoformat()}")
+    print("=" * 80)
+    print("🚀 CODEDOCK v11.6 MASSIVE EXPANSION - BACKEND API TESTING")
+    print("=" * 80)
+    print(f"🌐 Base URL: {BASE_URL}")
+    print(f"⏰ Started at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    print()
     
-    total_passed = 0
-    total_tests = 0
+    # Test results tracking
+    tests_passed = 0
+    tests_total = 0
+    failed_tests = []
     
-    # Test World Engine
-    passed, tests = test_world_engine()
-    total_passed += passed
-    total_tests += tests
+    # ========================================================================
+    # CORE v11.6 FEATURES TESTING
+    # ========================================================================
     
-    # Test Narrative Engine
-    passed, tests = test_narrative_engine()
-    total_passed += passed
-    total_tests += tests
+    print("📚 TESTING NEW EDUCATIONAL ENGINES")
+    print("-" * 50)
     
-    # Test Logic Engine
-    passed, tests = test_logic_engine()
-    total_passed += passed
-    total_tests += tests
-    
-    # Final Results
-    print_test_header("FINAL RESULTS")
-    success_rate = (total_passed / total_tests) * 100 if total_tests > 0 else 0
-    
-    if success_rate == 100:
-        print_success(f"ALL TESTS PASSED: {total_passed}/{total_tests} ({success_rate:.1f}%)")
-    elif success_rate >= 80:
-        print_warning(f"MOSTLY SUCCESSFUL: {total_passed}/{total_tests} ({success_rate:.1f}%)")
+    # 1. Physics Engine
+    tests_total += 1
+    if test_endpoint("GET", "/physics/info"):
+        tests_passed += 1
     else:
-        print_error(f"MULTIPLE FAILURES: {total_passed}/{total_tests} ({success_rate:.1f}%)")
+        failed_tests.append("Physics Engine - GET /api/physics/info")
     
-    print_info(f"Test completed at: {datetime.now().isoformat()}")
+    tests_total += 1
+    if test_endpoint("GET", "/physics/curriculum"):
+        tests_passed += 1
+    else:
+        failed_tests.append("Physics Engine - GET /api/physics/curriculum")
+        
+    tests_total += 1
+    if test_endpoint("GET", "/physics/simulations"):
+        tests_passed += 1
+    else:
+        failed_tests.append("Physics Engine - GET /api/physics/simulations")
     
-    # Return appropriate exit code
-    return 0 if success_rate == 100 else 1
+    print()
+    
+    # 2. Math Engine
+    tests_total += 1
+    if test_endpoint("GET", "/math/info"):
+        tests_passed += 1
+    else:
+        failed_tests.append("Math Engine - GET /api/math/info")
+        
+    tests_total += 1
+    if test_endpoint("GET", "/math/curriculum"):
+        tests_passed += 1
+    else:
+        failed_tests.append("Math Engine - GET /api/math/curriculum")
+        
+    # Test math visualizations (if endpoint exists)
+    tests_total += 1
+    if test_endpoint("GET", "/math/formulas/vectors"):
+        tests_passed += 1
+    else:
+        failed_tests.append("Math Engine - GET /api/math/formulas/vectors")
+    
+    print()
+    
+    # 3. CS Engine
+    tests_total += 1
+    if test_endpoint("GET", "/cs/info"):
+        tests_passed += 1
+    else:
+        failed_tests.append("CS Engine - GET /api/cs/info")
+        
+    tests_total += 1
+    if test_endpoint("GET", "/cs/curriculum"):
+        tests_passed += 1
+    else:
+        failed_tests.append("CS Engine - GET /api/cs/curriculum")
+        
+    tests_total += 1
+    if test_endpoint("GET", "/cs/implementations/algorithms"):
+        tests_passed += 1
+    else:
+        failed_tests.append("CS Engine - GET /api/cs/implementations/algorithms")
+    
+    print()
+    
+    # 4. Hybrid Pipeline
+    print("🔄 TESTING HYBRID PIPELINE")
+    print("-" * 50)
+    
+    tests_total += 1
+    if test_endpoint("GET", "/hybrid/info"):
+        tests_passed += 1
+    else:
+        failed_tests.append("Hybrid Pipeline - GET /api/hybrid/info")
+        
+    # Test game generation
+    game_concept = {
+        "concept": "A magical forest adventure where players collect mystical crystals",
+        "genre": "action_rpg",
+        "style": "fantasy",
+        "scope": "demo"
+    }
+    tests_total += 1
+    if test_endpoint("POST", "/hybrid/generate", game_concept):
+        tests_passed += 1
+    else:
+        failed_tests.append("Hybrid Pipeline - POST /api/hybrid/generate")
+    
+    print()
+    
+    # 5. SOTA Extended
+    print("🔬 TESTING SOTA EXTENDED FEATURES")
+    print("-" * 50)
+    
+    tests_total += 1
+    if test_endpoint("GET", "/sota-extended/info"):
+        tests_passed += 1
+    else:
+        failed_tests.append("SOTA Extended - GET /api/sota-extended/info")
+        
+    tests_total += 1
+    if test_endpoint("GET", "/sota-extended/upgrades"):
+        tests_passed += 1
+    else:
+        failed_tests.append("SOTA Extended - GET /api/sota-extended/upgrades")
+        
+    # Test applying an upgrade
+    tests_total += 1
+    if test_endpoint("POST", "/sota-extended/apply/predictive_v2", {"config": {"enabled": True}}):
+        tests_passed += 1
+    else:
+        failed_tests.append("SOTA Extended - POST /api/sota-extended/apply/predictive_v2")
+    
+    print()
+    
+    # 6. Jeeves Enhanced
+    print("🎩 TESTING JEEVES AI TUTOR ENHANCED")
+    print("-" * 50)
+    
+    tests_total += 1
+    if test_endpoint("GET", "/jeeves/knowledge-base"):
+        tests_passed += 1
+    else:
+        failed_tests.append("Jeeves Knowledge Base - GET /api/jeeves/knowledge-base")
+        
+    # Test physics teaching (using query parameters)
+    tests_total += 1
+    if test_endpoint("POST", "/jeeves/teach-physics?topic=collision%20detection&skill_level=intermediate&include_simulation=true&game_context=2D%20platformer%20game"):
+        tests_passed += 1
+    else:
+        failed_tests.append("Jeeves Tutor - POST /api/jeeves/teach-physics")
+        
+    # Test math teaching (using query parameters)
+    tests_total += 1
+    if test_endpoint("POST", "/jeeves/teach-math?topic=vectors&skill_level=beginner&include_visualization=true&game_context=3D%20game%20development"):
+        tests_passed += 1
+    else:
+        failed_tests.append("Jeeves Tutor - POST /api/jeeves/teach-math")
+        
+    # Test CS teaching (using query parameters)
+    tests_total += 1
+    if test_endpoint("POST", "/jeeves/teach-cs?topic=pathfinding&skill_level=intermediate&include_complexity=true&language=python"):
+        tests_passed += 1
+    else:
+        failed_tests.append("Jeeves Tutor - POST /api/jeeves/teach-cs")
+        
+    # Test general game dev Q&A (using query parameters)
+    tests_total += 1
+    if test_endpoint("POST", "/jeeves/game-dev-qa?question=How%20do%20I%20implement%20A*%20pathfinding%20in%20Unity?&category=cs&skill_level=intermediate&include_code=true"):
+        tests_passed += 1
+    else:
+        failed_tests.append("Jeeves Tutor - POST /api/jeeves/game-dev-qa")
+        
+    # Test personalized study path
+    tests_total += 1
+    if test_endpoint("GET", "/jeeves/study-path/build-a-3d-game-engine"):
+        tests_passed += 1
+    else:
+        failed_tests.append("Jeeves Tutor - GET /api/jeeves/study-path/build-a-3d-game-engine")
+    
+    print()
+    
+    # ========================================================================
+    # VERIFICATION TESTS - Existing APIs
+    # ========================================================================
+    
+    print("✅ VERIFICATION - EXISTING APIs")
+    print("-" * 50)
+    
+    # Health check
+    tests_total += 1
+    if test_endpoint("GET", "/health"):
+        tests_passed += 1
+    else:
+        failed_tests.append("Health Check - GET /api/health")
+    
+    # Languages
+    tests_total += 1
+    if test_endpoint("GET", "/languages"):
+        tests_passed += 1
+    else:
+        failed_tests.append("Languages - GET /api/languages")
+    
+    # Code execution
+    code_test = {
+        "language": "python",
+        "code": "print('CodeDock v11.6 Testing!')\nresult = 2 + 2\nprint(f'2 + 2 = {result}')"
+    }
+    tests_total += 1
+    if test_endpoint("POST", "/execute", code_test):
+        tests_passed += 1
+    else:
+        failed_tests.append("Code Execution - POST /api/execute")
+    
+    print()
+    
+    # ========================================================================
+    # FINAL RESULTS
+    # ========================================================================
+    
+    print("=" * 80)
+    print("📊 FINAL TEST RESULTS")
+    print("=" * 80)
+    
+    success_rate = (tests_passed / tests_total) * 100 if tests_total > 0 else 0
+    
+    print(f"✅ Tests Passed: {tests_passed}/{tests_total}")
+    print(f"📈 Success Rate: {success_rate:.1f}%")
+    print(f"⏰ Completed at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    
+    if failed_tests:
+        print(f"\n❌ FAILED TESTS ({len(failed_tests)}):")
+        for i, test in enumerate(failed_tests, 1):
+            print(f"   {i}. {test}")
+    else:
+        print(f"\n🎉 ALL TESTS PASSED! CodeDock v11.6 is fully operational!")
+    
+    print("\n" + "=" * 80)
+    
+    # Return success status
+    return len(failed_tests) == 0
 
 if __name__ == "__main__":
-    sys.exit(main())
+    success = main()
+    sys.exit(0 if success else 1)

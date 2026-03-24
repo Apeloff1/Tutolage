@@ -75,6 +75,12 @@ from routes.collaboration import router as collab_router
 from routes.world_engine import router as world_engine_router
 from routes.narrative_engine import router as narrative_router
 from routes.logic_engine import router as logic_router
+# v11.6 SOTA Extended & Educational Engines
+from routes.physics_engine import router as physics_router
+from routes.math_engine import router as math_router
+from routes.cs_engine import router as cs_router
+from routes.hybrid_pipeline import router as hybrid_router
+from routes.sota_extended import router as sota_extended_router
 
 # Import the 15-Year CS Bible Curriculum (for backward compatibility)
 from cs_bible import CS_BIBLE, get_year_info, get_course, get_all_courses, get_curriculum_stats
@@ -6385,3 +6391,9 @@ app.include_router(collab_router, prefix="/api")
 app.include_router(world_engine_router)
 app.include_router(narrative_router)
 app.include_router(logic_router)
+# v11.6 SOTA Extended & Educational Engines
+app.include_router(physics_router)
+app.include_router(math_router)
+app.include_router(cs_router)
+app.include_router(hybrid_router)
+app.include_router(sota_extended_router)

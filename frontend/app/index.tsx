@@ -73,6 +73,13 @@ import { WorldEngineModal } from '../features/WorldEngine/WorldEngineModal';
 import { NarrativeModal } from '../features/Narrative/NarrativeModal';
 import { LogicEngineModal } from '../features/LogicEngine/LogicEngineModal';
 
+// v11.6 Educational Academy & SOTA Extended
+import { PhysicsAcademyModal } from '../features/PhysicsAcademy/PhysicsAcademyModal';
+import { MathAcademyModal } from '../features/MathAcademy/MathAcademyModal';
+import { CSAcademyModal } from '../features/CSAcademy/CSAcademyModal';
+import { HybridPipelineModal } from '../features/HybridPipeline/HybridPipelineModal';
+import { SOTAExtendedModal } from '../features/SOTAExtended/SOTAExtendedModal';
+
 // Types
 import { Language, Template, AIMode } from '../types';
 
@@ -163,6 +170,13 @@ export default function CodeDockApp() {
   const [showWorldEngineModal, setShowWorldEngineModal] = useState(false);
   const [showNarrativeModal, setShowNarrativeModal] = useState(false);
   const [showLogicEngineModal, setShowLogicEngineModal] = useState(false);
+  
+  // v11.6 Educational Academy & SOTA Extended Modal States
+  const [showPhysicsAcademyModal, setShowPhysicsAcademyModal] = useState(false);
+  const [showMathAcademyModal, setShowMathAcademyModal] = useState(false);
+  const [showCSAcademyModal, setShowCSAcademyModal] = useState(false);
+  const [showHybridPipelineModal, setShowHybridPipelineModal] = useState(false);
+  const [showSOTAExtendedModal, setShowSOTAExtendedModal] = useState(false);
   
   // Voice Command Handler
   const handleVoiceCommand = useCallback((action: string, params?: any) => {
@@ -414,12 +428,18 @@ export default function CodeDockApp() {
       case 'code_to_app': setShowCodeToAppModal(true); break;
       case 'imagine': setShowImagineModal(true); break;
       case 'multi_agent': setShowMultiAgentModal(true); break;
+      case 'sota_extended': setShowSOTAExtendedModal(true); break;
+      // Academy actions (v11.6)
+      case 'physics_academy': setShowPhysicsAcademyModal(true); break;
+      case 'math_academy': setShowMathAcademyModal(true); break;
+      case 'cs_academy': setShowCSAcademyModal(true); break;
       // Learn actions
       case 'masterclass': setShowMasterclassModal(true); break;
       case 'education': setShowEducationModal(true); break;
       case 'curriculum': setShowCurriculumModal(true); break;
       case 'jeeves': setShowJeevesModal(true); break;
       // Create actions
+      case 'hybrid_pipeline': setShowHybridPipelineModal(true); break;
       case 'assets': setShowAssetPipelineModal(true); break;
       case 'games': setShowGameGenresModal(true); break;
       case 'music': setShowMusicPipelineModal(true); break;
@@ -1202,6 +1222,37 @@ export default function CodeDockApp() {
       <LogicEngineModal
         visible={showLogicEngineModal}
         onClose={() => setShowLogicEngineModal(false)}
+        colors={colors}
+      />
+
+      {/* v11.6 Educational Academy & SOTA Extended */}
+      <PhysicsAcademyModal
+        visible={showPhysicsAcademyModal}
+        onClose={() => setShowPhysicsAcademyModal(false)}
+        colors={colors}
+      />
+
+      <MathAcademyModal
+        visible={showMathAcademyModal}
+        onClose={() => setShowMathAcademyModal(false)}
+        colors={colors}
+      />
+
+      <CSAcademyModal
+        visible={showCSAcademyModal}
+        onClose={() => setShowCSAcademyModal(false)}
+        colors={colors}
+      />
+
+      <HybridPipelineModal
+        visible={showHybridPipelineModal}
+        onClose={() => setShowHybridPipelineModal(false)}
+        colors={colors}
+      />
+
+      <SOTAExtendedModal
+        visible={showSOTAExtendedModal}
+        onClose={() => setShowSOTAExtendedModal(false)}
         colors={colors}
       />
     </SafeAreaView>

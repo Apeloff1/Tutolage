@@ -60,18 +60,30 @@ const FEATURE_CATEGORIES: FeatureCategory[] = [
       { id: 'imagine', name: 'Imagine', icon: 'image', description: 'AI image generation' },
       { id: 'multi_agent', name: 'Multi-Agent', icon: 'people', description: 'Agent swarm systems' },
       { id: 'sota', name: 'SOTA 2026', icon: 'rocket', description: 'Predictive AI & Auto-refactor' },
+      { id: 'sota_extended', name: 'SOTA Extended', icon: 'flash', description: '15+ bleeding edge upgrades' },
+    ]
+  },
+  {
+    id: 'academy',
+    name: 'Academy',
+    icon: 'school',
+    color: '#EC4899',
+    features: [
+      { id: 'physics_academy', name: 'Physics', icon: 'nuclear', description: '315hrs • Mechanics, collisions, fluids' },
+      { id: 'math_academy', name: 'Mathematics', icon: 'calculator', description: '340hrs • Linear algebra, calculus, noise' },
+      { id: 'cs_academy', name: 'Computer Science', icon: 'code-slash', description: '600hrs • Data structures, graphics, AI' },
+      { id: 'jeeves', name: 'Jeeves AI Tutor', icon: 'chatbubbles', description: '1255hr knowledge base' },
     ]
   },
   {
     id: 'learn',
     name: 'Learn',
-    icon: 'school',
+    icon: 'book',
     color: '#10B981',
     features: [
       { id: 'masterclass', name: 'Masterclass', icon: 'school', description: '2860+ hours of courses' },
-      { id: 'education', name: 'Academy', icon: 'game-controller', description: 'Coding challenges' },
+      { id: 'education', name: 'Challenges', icon: 'game-controller', description: 'Coding challenges' },
       { id: 'curriculum', name: 'Curriculum', icon: 'library', description: 'CS Bible & courses' },
-      { id: 'jeeves', name: 'Jeeves AI', icon: 'chatbubbles', description: 'Personal AI tutor' },
     ]
   },
   {
@@ -80,12 +92,13 @@ const FEATURE_CATEGORIES: FeatureCategory[] = [
     icon: 'create',
     color: '#F59E0B',
     features: [
-      { id: 'assets', name: 'Asset Pipeline', icon: 'cube', description: '2D sprites & 3D models' },
-      { id: 'games', name: 'Game Builder', icon: 'game-controller', description: '11 genres, full pipeline' },
-      { id: 'music', name: 'Music Studio', icon: 'musical-notes', description: 'Game audio generation' },
+      { id: 'hybrid_pipeline', name: 'Hybrid Pipeline', icon: 'rocket', description: 'Complete game from text' },
       { id: 'world_engine', name: 'World Engine', icon: 'globe', description: 'Text-to-Environment' },
       { id: 'narrative', name: 'Narrative', icon: 'book', description: 'Stories, quests, dialogue' },
       { id: 'logic_engine', name: 'Logic Engine', icon: 'code-working', description: 'Mechanics & AI behavior' },
+      { id: 'assets', name: 'Asset Pipeline', icon: 'cube', description: '2D sprites & 3D models' },
+      { id: 'games', name: 'Game Builder', icon: 'game-controller', description: '11 genres, full pipeline' },
+      { id: 'music', name: 'Music Studio', icon: 'musical-notes', description: 'Game audio generation' },
     ]
   },
   {

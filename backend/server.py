@@ -104,6 +104,12 @@ from routes.jeeves_hyperion import router as jeeves_hyperion_router
 # v13.5 - Jeeves Voice & Personality (Young English Butler)
 from routes.jeeves_voice import router as jeeves_voice_router
 
+# v14.0 - Immersive Tutoring Engine (Adaptive Learning Curve System)
+from routes.immersive_tutor import router as immersive_tutor_router
+
+# v14.5 - Jeeves Synergy Engine (Full System Integration)
+from routes.jeeves_synergy import router as jeeves_synergy_router
+
 # Import the 15-Year CS Bible Curriculum (for backward compatibility)
 from cs_bible import CS_BIBLE, get_year_info, get_course, get_all_courses, get_curriculum_stats
 
@@ -6437,3 +6443,9 @@ app.include_router(learning_engine_router)
 app.include_router(jeeves_hyperion_router)
 # v13.5 - Jeeves Voice & Personality (Young English Butler)
 app.include_router(jeeves_voice_router)
+
+# v14.0 - Immersive Tutoring Engine
+app.include_router(immersive_tutor_router)
+
+# v14.5 - Jeeves Synergy Engine (Full System Integration)
+app.include_router(jeeves_synergy_router)

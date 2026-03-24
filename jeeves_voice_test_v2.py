@@ -10,7 +10,7 @@ import sys
 from typing import Dict, Any
 
 # Base URL from the review request
-BASE_URL = "https://sota-2026.preview.emergentagent.com"
+BASE_URL = "https://synergy-learn-1.preview.emergentagent.com"
 
 class JeevesVoiceTester:
     def __init__(self):

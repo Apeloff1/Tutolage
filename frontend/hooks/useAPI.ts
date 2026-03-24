@@ -4,7 +4,7 @@
 // ============================================================================
 
 import { useState, useEffect, useCallback } from 'react';
-import ApiService, { parseError, retryWithBackoff } from '../services/api';
+import { ApiService, parseError, retryWithBackoff } from '../services/api';
 import { 
   Language, Template, CodeFile, AIMode, 
   TutorialStep, Tooltip, ConnectionStatus, AppError 

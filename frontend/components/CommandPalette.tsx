@@ -115,6 +115,7 @@ const FEATURE_CATEGORIES: FeatureCategory[] = [
       { id: 'export_github', name: 'Export & GitHub', icon: 'git-branch', description: 'PDF, GitHub push/pull' },
       { id: 'collab', name: 'Live Collab', icon: 'people-circle', description: 'AI Pair programming' },
       { id: 'intelligence', name: 'Code Intel', icon: 'bulb', description: 'Auto-docs, tests, review' },
+      { id: 'ai_interactions_log', name: 'AI Interactions Log', icon: 'document-text', description: 'Direct-to-Jeeves AI history' },
     ]
   },
 ];

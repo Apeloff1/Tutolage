@@ -85,6 +85,13 @@ import { ImmersiveLearningModal } from '../features/ImmersiveLearning/ImmersiveL
 import { ReadingCornerModal } from '../features/ReadingCorner/ReadingCornerModal';
 import { JeevesEQModal } from '../features/JeevesEQ/JeevesEQModal';
 
+// v12.0 AI Interactions Log
+import { AIInteractionsLogModal } from '../features/AIInteractionsLog/AIInteractionsLogModal';
+
+// i18n Provider
+import { I18nProvider, useTranslation } from '../i18n';
+import { LanguageSwitcher } from '../components/LanguageSwitcher';
+
 // Types
 import { Language, Template, AIMode } from '../types';
 
@@ -96,7 +103,7 @@ const { width: SCREEN_WIDTH } = Dimensions.get('window');
 // ============================================================================
 // MAIN APP COMPONENT
 // ============================================================================
-export default function CodeDockApp() {
+function CodeDockAppContent() {
   // Core Hooks
   const { theme, colors, toggleTheme, isLoading: themeLoading } = useTheme();
   const { 
@@ -188,6 +195,9 @@ export default function CodeDockApp() {
   const [showReadingCornerModal, setShowReadingCornerModal] = useState(false);
   const [showJeevesEQModal, setShowJeevesEQModal] = useState(false);
   const [showExportGitHubModal, setShowExportGitHubModal] = useState(false);
+  
+  // v12.0 AI Interactions Log Modal State
+  const [showAIInteractionsLogModal, setShowAIInteractionsLogModal] = useState(false);
   
   // Voice Command Handler
   const handleVoiceCommand = useCallback((action: string, params?: any) => {
@@ -448,6 +458,8 @@ export default function CodeDockApp() {
       // v11.8 Academy actions
       case 'reading_corner': setShowReadingCornerModal(true); break;
       case 'jeeves_eq': setShowJeevesEQModal(true); break;
+      // v12.0 AI Interactions Log
+      case 'ai_interactions_log': setShowAIInteractionsLogModal(true); break;
       // Learn actions
       case 'masterclass': setShowMasterclassModal(true); break;
       case 'education': setShowEducationModal(true); break;
@@ -884,6 +896,16 @@ export default function CodeDockApp() {
                 <Ionicons name="chevron-forward" size={18} color={colors.textMuted} />
               </TouchableOpacity>
               
+              {/* Language */}
+              <View style={[styles.settingItem, { backgroundColor: colors.surfaceAlt }]}>
+                <Ionicons name="language" size={22} color="#10B981" />
+                <View style={styles.settingInfo}>
+                  <Text style={[styles.settingName, { color: colors.text }]}>Language</Text>
+                  <Text style={[styles.settingValue, { color: colors.textMuted }]}>App language</Text>
+                </View>
+                <LanguageSwitcher colors={colors} compact />
+              </View>
+              
               {/* Tutorial */}
               <TouchableOpacity 
                 style={[styles.settingItem, { backgroundColor: colors.surfaceAlt }]} 
@@ -1293,8 +1315,27 @@ export default function CodeDockApp() {
         colors={colors}
         userId="default_user"
       />
+      
+      {/* v12.0 AI Interactions Log Modal */}
+      <AIInteractionsLogModal
+        visible={showAIInteractionsLogModal}
+        onClose={() => setShowAIInteractionsLogModal(false)}
+        colors={colors}
+        userId="default_user"
+      />
     </SafeAreaView>
     </ErrorBoundary>
+  );
+}
+
+// ============================================================================
+// APP WRAPPER WITH PROVIDERS
+// ============================================================================
+export default function CodeDockApp() {
+  return (
+    <I18nProvider defaultLanguage="en">
+      <CodeDockAppContent />
+    </I18nProvider>
   );
 }
 

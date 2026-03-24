@@ -1,0 +1,133 @@
+# ============================================================================
+# CodeDock Docker Compose
+# ============================================================================
+# One-command local development and production setup
+# Usage: docker compose up -d
+# ============================================================================
+
+version: '3.9'
+
+services:
+  # ==========================================================================
+  # Backend API Service
+  # ==========================================================================
+  backend:
+    build:
+      context: ./backend
+      target: ${BUILD_TARGET:-development}
+    container_name: codedock-backend
+    restart: unless-stopped
+    ports:
+      - "${BACKEND_PORT:-8001}:8001"
+    environment:
+      - MONGO_URL=mongodb://mongo:27017/codedock
+      - ENVIRONMENT=${ENVIRONMENT:-development}
+      - DEBUG=${DEBUG:-true}
+      - EMERGENT_LLM_KEY=${EMERGENT_LLM_KEY:-}
+      - CHROMA_PERSIST_DIR=/app/chroma_data
+    volumes:
+      - ./backend:/app
+      - backend_chroma:/app/chroma_data
+      - /app/__pycache__
+    depends_on:
+      mongo:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    networks:
+      - codedock-network
+
+  # ==========================================================================
+  # Frontend Service (Expo)
+  # ==========================================================================
+  frontend:
+    build:
+      context: ./frontend
+      target: development
+    container_name: codedock-frontend
+    restart: unless-stopped
+    ports:
+      - "${FRONTEND_PORT:-3000}:3000"
+      - "8081:8081"      # Metro bundler
+      - "19000:19000"    # Expo
+      - "19001:19001"    # Expo
+      - "19002:19002"    # Expo DevTools
+    environment:
+      - EXPO_PUBLIC_BACKEND_URL=http://backend:8001
+      - NODE_ENV=${NODE_ENV:-development}
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+    networks:
+      - codedock-network
+
+  # ==========================================================================
+  # MongoDB Database
+  # ==========================================================================
+  mongo:
+    image: mongo:7.0
+    container_name: codedock-mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME:-admin}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD:-changeme}
+      - MONGO_INITDB_DATABASE=${MONGO_INITDB_DATABASE:-codedock}
+    volumes:
+      - mongo_data:/data/db
+      - mongo_config:/data/configdb
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - codedock-network
+
+  # ==========================================================================
+  # ChromaDB Vector Database (Optional, for RAG)
+  # ==========================================================================
+  chroma:
+    image: chromadb/chroma:latest
+    container_name: codedock-chroma
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    volumes:
+      - chroma_data:/chroma/chroma
+    environment:
+      - IS_PERSISTENT=TRUE
+      - PERSIST_DIRECTORY=/chroma/chroma
+      - ANONYMIZED_TELEMETRY=FALSE
+    networks:
+      - codedock-network
+    profiles:
+      - full  # Only start with: docker compose --profile full up
+
+# ==========================================================================
+# Networks
+# ==========================================================================
+networks:
+  codedock-network:
+    driver: bridge
+
+# ==========================================================================
+# Volumes
+# ==========================================================================
+volumes:
+  mongo_data:
+    driver: local
+  mongo_config:
+    driver: local
+  backend_chroma:
+    driver: local
+  chroma_data:
+    driver: local

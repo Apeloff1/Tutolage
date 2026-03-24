@@ -110,6 +110,12 @@ from routes.immersive_tutor import router as immersive_tutor_router
 # v14.5 - Jeeves Synergy Engine (Full System Integration)
 from routes.jeeves_synergy import router as jeeves_synergy_router
 
+# v15.0 - New Pipelines & Jeeves Core
+from routes.npc_pipeline import router as npc_pipeline_router
+from routes.game_logic_pipeline import router as game_logic_pipeline_router
+from routes.animation_pipeline import router as animation_pipeline_router
+from routes.jeeves_core import router as jeeves_core_router
+
 # Import the 15-Year CS Bible Curriculum (for backward compatibility)
 from cs_bible import CS_BIBLE, get_year_info, get_course, get_all_courses, get_curriculum_stats
 
@@ -6449,3 +6455,9 @@ app.include_router(immersive_tutor_router)
 
 # v14.5 - Jeeves Synergy Engine (Full System Integration)
 app.include_router(jeeves_synergy_router)
+
+# v15.0 - New Pipelines & Jeeves Core
+app.include_router(npc_pipeline_router)
+app.include_router(game_logic_pipeline_router)
+app.include_router(animation_pipeline_router)
+app.include_router(jeeves_core_router)

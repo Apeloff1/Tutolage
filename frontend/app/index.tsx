@@ -422,7 +422,7 @@ function CodeDockAppContent() {
       case 'physics_academy': openModal('physicsAcademy'); break;
       case 'math_academy': openModal('mathAcademy'); break;
       case 'cs_academy': openModal('csAcademy'); break;
-      case 'learning_hub': openModal('immersiveLearning'); break;
+      case 'immersive': openModal('immersiveLearning'); break;
       // v11.8 Academy actions
       case 'reading_corner': openModal('readingCorner'); break;
       case 'jeeves_eq': openModal('jeevesEQ'); break;
@@ -430,7 +430,7 @@ function CodeDockAppContent() {
       case 'ai_interactions_log': openModal('aiInteractionsLog'); break;
       // v12.0 Dashboard
       case 'dashboard': openModal('dashboard'); break;
-      // v12.5 Learning Hub
+      // v12.5 Learning Hub (Multi-Layer Learning System)
       case 'learning_hub': openModal('learningHub'); break;
       // Learn actions
       case 'masterclass': openModal('masterclass'); break;

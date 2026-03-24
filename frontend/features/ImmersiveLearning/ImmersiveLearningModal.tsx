@@ -295,11 +295,11 @@ export const ImmersiveLearningModal = memo(function ImmersiveLearningModal({
             </View>
             <View style={localStyles.profileInfo}>
               <Text style={[localStyles.xpText, { color: colors.text }]}>
-                {profile.xp.toLocaleString()} XP
+                {(profile?.xp || 0).toLocaleString()} XP
               </Text>
               <View style={localStyles.xpBarContainer}>
                 <View style={[localStyles.xpBar, { 
-                  width: `${(profile.current_level_xp / Math.max(1, profile.level_total_xp)) * 100}%`,
+                  width: `${((profile?.current_level_xp || 0) / Math.max(1, profile?.level_total_xp || 1)) * 100}%`,
                   backgroundColor: '#6366F1'
                 }]} />
               </View>
@@ -809,7 +809,7 @@ export const ImmersiveLearningModal = memo(function ImmersiveLearningModal({
             </Text>
           </View>
           <View style={localStyles.leaderXp}>
-            <Text style={[localStyles.leaderXpText, { color: '#F59E0B' }]}>{entry.xp.toLocaleString()}</Text>
+            <Text style={[localStyles.leaderXpText, { color: '#F59E0B' }]}>{(entry?.xp || 0).toLocaleString()}</Text>
             <Text style={[localStyles.leaderXpLabel, { color: colors.textMuted }]}>XP</Text>
           </View>
         </View>

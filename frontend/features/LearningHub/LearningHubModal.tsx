@@ -204,29 +204,33 @@ const ModeSelector: React.FC<{
 const StatsOverview: React.FC<{
   stats: any;
   colors: any;
-}> = ({ stats, colors }) => (
-  <View style={[styles.statsContainer, { backgroundColor: colors.surfaceAlt }]}>
-    <View style={styles.statItem}>
-      <Text style={[styles.statValue, { color: colors.primary }]}>{stats.total_domains}</Text>
-      <Text style={[styles.statLabel, { color: colors.textMuted }]}>Domains</Text>
+}> = ({ stats, colors }) => {
+  if (!stats) return null;
+  
+  return (
+    <View style={[styles.statsContainer, { backgroundColor: colors.surfaceAlt }]}>
+      <View style={styles.statItem}>
+        <Text style={[styles.statValue, { color: colors.primary }]}>{stats.total_domains || 0}</Text>
+        <Text style={[styles.statLabel, { color: colors.textMuted }]}>Domains</Text>
+      </View>
+      <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
+      <View style={styles.statItem}>
+        <Text style={[styles.statValue, { color: '#10B981' }]}>{stats.total_learning_hours || 0}</Text>
+        <Text style={[styles.statLabel, { color: colors.textMuted }]}>Hours</Text>
+      </View>
+      <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
+      <View style={styles.statItem}>
+        <Text style={[styles.statValue, { color: '#F59E0B' }]}>{stats.redundancy_layers || 6}</Text>
+        <Text style={[styles.statLabel, { color: colors.textMuted }]}>Layers</Text>
+      </View>
+      <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
+      <View style={styles.statItem}>
+        <Text style={[styles.statValue, { color: '#EF4444' }]}>{stats.learning_modes || 5}</Text>
+        <Text style={[styles.statLabel, { color: colors.textMuted }]}>Modes</Text>
+      </View>
     </View>
-    <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
-    <View style={styles.statItem}>
-      <Text style={[styles.statValue, { color: '#10B981' }]}>{stats.total_learning_hours}</Text>
-      <Text style={[styles.statLabel, { color: colors.textMuted }]}>Hours</Text>
-    </View>
-    <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
-    <View style={styles.statItem}>
-      <Text style={[styles.statValue, { color: '#F59E0B' }]}>{stats.redundancy_layers}</Text>
-      <Text style={[styles.statLabel, { color: colors.textMuted }]}>Layers</Text>
-    </View>
-    <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
-    <View style={styles.statItem}>
-      <Text style={[styles.statValue, { color: '#EF4444' }]}>{stats.learning_modes}</Text>
-      <Text style={[styles.statLabel, { color: colors.textMuted }]}>Modes</Text>
-    </View>
-  </View>
-);
+  );
+};
 
 // Main Learning Hub Modal
 export const LearningHubModal: React.FC<LearningHubModalProps> = ({
